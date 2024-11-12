@@ -1,0 +1,126 @@
+﻿@page "/ydelser"
+@using BlazorAppClientServer.Client.Models
+@using Radzen  <!-- Importer Radzen -->
+@using Radzen.Blazor
+
+<h3>Book Ydelse</h3>
+
+<RadzenRow>
+    <RadzenColumn Width="8">
+        <!-- Booking formularen -->
+        <EditForm Model="_entryModel" OnValidSubmit="HandleBooking">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <RadzenCard>
+                <RadzenFieldset>
+                    <legend>Booking Information</legend>
+
+                    <div class="form-group">
+                        <label for="name">Navn:</label>
+                        <InputText id="name" @bind-Value="_entryModel.Name" class="form-control" placeholder="Indtast dit navn" required />
+                    </div>
+
+                    <div class="form-group">
+                        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Gap="0.5rem" class="rz-p-sm-12">
+                            <RadzenLabel Text="Vælg Ydelse" />
+                            <RadzenDropDown @bind-Value="_entryModel.SelectedYdelse"
+                                            Data="@_services"
+                                            TextProperty="Name"
+                                            ValueProperty="Name"
+                                            Change="UpdatePrice"
+                                            Placeholder="Vælg en ydelse"
+                                            Style="width: 100%; max-width: 400px;"
+                                            Name="YdelseDropDown"
+                                            required />
+                        </RadzenStack>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="price">Pris:</label>
+                        <RadzenNumeric id="price"
+                                       Value="_entryModel.Price"
+                                       Disabled="true"
+                                       Style="width: 100%;"
+                        FormatString="C2" /> <!-- Format the price with 2 decimal places -->
+                        <span class="ml-2">DKK</span> <!-- Add DKK after the price -->
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date">Dato:</label>
+                        <InputDate id="date" @bind-Value="_entryModel.Date" class="form-control" min="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                    </div>
+                </RadzenFieldset>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-block">Bekræft Booking</button>
+                </div>
+            </RadzenCard>
+        </EditForm>
+
+        <!-- Booking confirmation will be shown here -->
+        <RenderYdelse EntryDetails="_entryModel" ShowConfirmation="_isBooked" />
+    </RadzenColumn>
+
+    <!-- Prisliste til højre -->
+    <RadzenColumn Width="4">
+        <RadzenCard>
+            <RadzenFieldset>
+                <legend>Vores Ydelser</legend>
+                <ul class="list-group">
+                    @foreach (var service in _services)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            @service.Name
+                            <span class="badge badge-primary">@service.Price.ToString("C")</span>
+                        </li>
+                    }
+                </ul>
+            </RadzenFieldset>
+        </RadzenCard>
+    </RadzenColumn>
+</RadzenRow>
+
+@code {
+    private EntryModel _entryModel = new();
+    private bool _isBooked = false;
+
+    private List<Service> _services = new()
+    {
+        new Service { Name = "Skiftet dæk", Price = 500 },
+        new Service { Name = "Lille service, 2-takt", Price = 750 },
+        new Service { Name = "Lille service, 4-takt", Price = 850 },
+        new Service { Name = "Stor service, 2-takt", Price = 1500 },
+        new Service { Name = "Stor service, 4-takt", Price = 1600 },
+        new Service { Name = "Udlejning af scooter, én uge", Price = 700 },
+        new Service { Name = "Udlejning af scooter, én måned", Price = 2500 }
+    };
+
+    private void UpdatePrice(object value)
+    {
+        var selectedService = _services.FirstOrDefault(s => s.Name == _entryModel.SelectedYdelse);
+        if (selectedService != null)
+        {
+            _entryModel.Price = selectedService.Price;
+        }
+    }
+
+    private void HandleBooking()
+    {
+        _isBooked = true;
+    }
+
+    private class Service
+    {
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+    }
+}
+
+
+
+
+
+
+
+

@@ -1,0 +1,24 @@
+﻿@using BlazorAppClientServer.Client.Models
+
+@code {
+    [Parameter]
+    public EntryModel EntryDetails { get; set; }
+
+    [Parameter]
+    public bool ShowConfirmation { get; set; }
+}
+
+@if (ShowConfirmation && EntryDetails != null)
+{
+    <div class="confirmation">
+        <h4>Booking Bekræftelse</h4>
+        <p><strong>Navn:</strong> @EntryDetails.Name</p>
+        <p><strong>Ydelse:</strong> @EntryDetails.SelectedYdelse</p>
+        <p><strong>Pris:</strong> @EntryDetails.Price</p>
+        <p><strong>Dato:</strong> @EntryDetails.Date.ToString("dd-MM-yyyy")</p>
+    </div>
+}
+else
+{
+    <p>Vælg en ydelse og udfyld information for at se detaljer.</p>
+}
