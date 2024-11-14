@@ -63,7 +63,7 @@ namespace BlazorAppClientServer.Server.Controllers
 		[HttpPut]
 		public StatusCodeResult UpdateYdelse(Ydelse ydelse)
 		{
-			Console.WriteLine("Server: Update item called = " + ydelse.YdelseId);
+			Console.WriteLine("Server: Update ydelse called = " + ydelse.Navn);
 
 			bool updated = Repository.UpdateYdelse(ydelse);
 			if (updated)
