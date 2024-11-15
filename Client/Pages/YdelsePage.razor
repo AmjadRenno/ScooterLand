@@ -2,6 +2,7 @@
 @using BlazorAppClientServer.Client.Models
 @using Radzen  <!-- Importer Radzen -->
 @using Radzen.Blazor
+@using BlazorAppClientServer.Client.Services
 
 <h3>Book Ydelse</h3>
 
@@ -110,11 +111,10 @@
         _isBooked = true;
     }
 
-    private class Service
-    {
-        public string Name { get; set; }
-        public decimal Price { get; set; }
-    }
+    [Inject]
+
+    public IYdelseService Service { get; set; }
+
 }
 
 
