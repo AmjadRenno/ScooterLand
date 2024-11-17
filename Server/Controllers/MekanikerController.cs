@@ -6,75 +6,75 @@ using System.Net;
 namespace BlazorAppClientServer.Server.Controllers
 {
 	[ApiController]
-	[Route("api/kundeapi")]
+	[Route("api/mekanikerapi")]
 
-	public class KundeController : ControllerBase
+	public class MekanikerController : ControllerBase
 	{
-		private readonly IKundeRepository Repository = new KundeRepository();
+		private readonly IMekanikerRepository Repository = new MekanikerRepository();
 
-		public KundeController(IKundeRepository kundeRepository) 
+		public MekanikerController(IMekanikerRepository mekanikerRepository) 
 		{ 
-			if (Repository == null && kundeRepository != null)
+			if (Repository == null && mekanikerRepository != null)
 			{
-				Repository = kundeRepository;
+				Repository = mekanikerRepository;
 				Console.WriteLine("Repository initialized");
 			}
 		}
 		[HttpGet]
-		public List<Kunde> GetKunder()
+		public List<Mekaniker> GetAllMekaniker()
 		{
-			return Repository.GetKunder();
+			return Repository.GetAllMekaniker();
 		}
 
 		[HttpGet("{id:int}")]
-		public Kunde GetKunde(int id)
+		public Mekaniker GetMekaniker(int id)
 		{
-			Kunde result = Repository.GetKunde(id);
+			Mekaniker result = Repository.GetMekaniker(id);
 			return result;
 		}
 
 		[HttpPost]
-		public void AddKunde(Kunde kunde)
+		public void AddMekaniker(Mekaniker mekaniker)
 		{
-			Console.WriteLine("Add kunde called: " + kunde.ToString());
-			Repository.AddKunde(kunde);
+			Console.WriteLine("Add mekaniker called: " + mekaniker.ToString());
+			Repository.AddMekaniker(mekaniker);
 		}
 
 		[HttpDelete("{id:int}")]
-		public StatusCodeResult DeleteKunde(int id)
+		public StatusCodeResult DeleteMekaniker(int id)
 		{
-			Console.WriteLine("Server: Delete kunde called: id = " + id);
+			Console.WriteLine("Server: Delete mekaniker called: id = " + id);
 
-			bool deleted = Repository.DeleteKunde(id);
+			bool deleted = Repository.DeleteMekaniker(id);
 			if (deleted)
 			{
-				Console.WriteLine("Server: Kunde deleted succces");
+				Console.WriteLine("Server: Mekaniker deleted succces");
 				int code = (int)HttpStatusCode.OK;
 				return new StatusCodeResult(code);
 			}
 			else
 			{
-				Console.WriteLine("Server: Kunde deleted fail - not found");
+				Console.WriteLine("Server: Mekaniker deleted fail - not found");
 				int code = (int)HttpStatusCode.NotFound;
 				return new StatusCodeResult(code);
 			}
 		}
 
 		[HttpPut]
-		public StatusCodeResult UpdateKunde(Kunde kunde)
+		public StatusCodeResult UpdateMekaniker(Mekaniker mekaniker)
 		{
-			Console.WriteLine("Server: Update kunde called = " + kunde.Navn);
+			Console.WriteLine("Server: Update mekaniker called = " + mekaniker.Navn);
 
-			bool updated = Repository.UpdateKunde(kunde);
+			bool updated = Repository.UpdateMekaniker(mekaniker);
 			if (updated)
 			{
-				Console.WriteLine("Server: Kunde update success");
+				Console.WriteLine("Server: Mekaniker update success");
 				int code = (int)HttpStatusCode.OK;
 				return new StatusCodeResult(code);
 			}
 			else
 			{
-				Console.WriteLine("Server: Kunde update fail - not found");
+				Console.WriteLine("Server: Mekaniker update fail - not found");
 				int code = (int)HttpStatusCode.NotFound;
 				return new StatusCodeResult(code);
 			}

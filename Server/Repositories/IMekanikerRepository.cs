@@ -11,3 +11,4 @@ namespace BlazorAppClientServer.Server.Repositories
 		bool UpdateMekaniker(Mekaniker mekaniker);
 	}
 }
+}

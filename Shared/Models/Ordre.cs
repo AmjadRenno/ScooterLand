@@ -3,7 +3,7 @@
 	public class Ordre
 	{
 		public int OrdreId { get; set; }
-		public DateTime OdreDate { get; set; }
+		public DateTime OrdreDate { get; set; }
 		public bool Status { get; set; }
 
 		public int YdelseListeId { get; set; }
