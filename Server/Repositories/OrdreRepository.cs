@@ -7,6 +7,11 @@ namespace BlazorAppClientServer.Server.Repositories
 	{
 		MyDBContext db = new MyDBContext();
 
+		static OrdreRepository()
+		{
+
+		}
+
 		public List<Ordre> GetAllOrdre()
 		{
 			return db.Ordrer.ToList();

@@ -1,5 +1,30 @@
-﻿<h3>OdrePage</h3>
+﻿@using BlazorAppClientServer.Shared.Models;
+@using BlazorAppClientServer.Client.Services;
+@inject HttpClient Http
+
+@page "/ordrepage"
+
+<h3>OdrePage</h3>
+	
+@foreach (var ordre in OrdreList)
+{
+	<p>
+		@ordre
+	</p>
+	
+}
 
 @code {
+	private List<Ordre> OrdreList = new List<Ordre>();
 
+	[Inject]
+
+	public IOrdreService Service { get; set; }
+
+	private int ErrorCode { get; set; } = 0;
+
+	protected override async Task OnInitializedAsync()
+	{
+		OrdreList = (await Service.GetAllOrdre()).ToList();
+	}
 }
