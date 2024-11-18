@@ -15,5 +15,7 @@
 		public int MekanikerId { get; set; }
 		public Mekaniker Mekaniker { get; set; }
 
-	}
+        public ICollection<YdelseListe> YdelseListers { get; set; } = new List<YdelseListe>();
+
+    }
 }
