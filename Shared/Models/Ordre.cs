@@ -19,8 +19,5 @@
 		{
 			return $"Id: {OrdreId}. OrdreDate: {OrdreDate}. Status: {Status}";
 		}
-
-        public ICollection<YdelseListe> YdelseListers { get; set; } = new List<YdelseListe>();
-
     }
 }

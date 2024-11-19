@@ -10,6 +10,5 @@
 
 		public int? YdelseListId { get; set; }
 		public YdelseListe? YdelseListe { get; set; }
-
     }
 }

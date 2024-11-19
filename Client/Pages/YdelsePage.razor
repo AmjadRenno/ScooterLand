@@ -1,160 +1,133 @@
 ﻿@page "/ydelsepage"
-@using BlazorAppClientServer.Client.Models
 @using Radzen  <!-- Importer Radzen -->
 @using Radzen.Blazor
 @using BlazorAppClientServer.Client.Services
 @using BlazorAppClientServer.Shared.Models
+@using System.Net;
 
 <h3>Book Ydelse</h3>
 
-<RadzenRow>
-    <RadzenColumn Width="8">
-        <EditForm Model="_entryModel" OnValidSubmit="HandleBooking">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
+<EditForm Model="ordre" OnValidSubmit="@HandleFormSubmit">
 
-            <RadzenCard>
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <RadzenCard>
                 <RadzenFieldset>
-                    <legend>Booking Information</legend>
+    <legend>Booking Information</legend>
 
-                    <div class="form-group">
-                        <label for="name">Navn:</label>
-                        <InputText id="name" @bind-Value="_entryModel.Name" class="form-control" placeholder="Indtast dit navn" required />
-                    </div>
+    <div class="form-group">
+        <label for="navn">Navn:</label>
+        <InputText id="navn" @bind-Value="ydelse.Navn" class="form-control" placeholder="Indtast navn på kunden" required />
+    </div>
 
-                    <div class="form-group">
-                        <RadzenDropDown @bind-Value="selectedServiceIds"
-                                        Data="@_services"
-                                        TextProperty="Navn"
-                                        ValueProperty="YdelseId"
-                                        Multiple="true"
-                                        Placeholder="Vælg en eller flere ydelser"
-                                        Style="width: 100%; max-width: 400px;"
-                                        Name="YdelseDropDown" />
-                    </div>
+    <div class="form-group">
+                        <RadzenDropDown @bind-Value="selectedYdelse"
+                        Data="@YdelseList"
+                        ValueProperty="YdelseId"
+                        Multiple="true"
+                        Placeholder="Vælg en eller flere ydelser"
+                        Style="width: 100%; max-width: 400px;"
+                        Name="YdelseDropDown" />
+    </div>
+    <div class="form-group">
+        <button class="btn btn-secondary" @onclick="AddSelectedYdelse">Tilføj valgte ydelser</button>
+    </div>
 
-                    <div class="form-group">
-                        <button class="btn btn-secondary" @onclick="AddSelectedServices">Tilføj valgte ydelser</button>
-                    </div>
-
-                    <ul class="list-group mt-3">
-                        @foreach (var service in _entryModel.SelectedYdelser)
-                        {
-                            <li class="list-group-item d-flex flex-column">
-                                @service.Navn - @service.Pris.ToString("C2")
-                                <RadzenDropDown @bind-Value="service.SelectedMekanikerId"
-                                                Data="@_mekanikers"
-                                                TextProperty="Name"
-                                                ValueProperty="MekanikerId"
-                                                Placeholder="Vælg mekaniker"
-                                                Style="width: 100%; max-width: 300px;" />
-                                <button class="btn btn-sm btn-danger mt-2" @onclick="() => RemoveService(service)">Fjern</button>
+     <li class="list-group-item d-flex flex-column">
+                                @ydelse.Navn - @ydelse.Pris.ToString("C2")
+                                <RadzenDropDown @bind-Value="ordre.MekanikerId"
+                                Data="@MekanikerList"
+                                ValueProperty="MekanikerId"
+                                Placeholder="Vælg mekaniker"
+                                Style="width: 100%; max-width: 300px;" />
+                                <button class="btn btn-sm btn-danger mt-2" @onclick="() => RemoveYdelse(ydelse)">Fjern</button>
                             </li>
-                        }
-                    </ul>
 
-
-                    <div class="form-group">
-                        <label for="price">Pris:</label>
-                        <RadzenNumeric id="price"
-                                       Value="_entryModel.Price"
-                                       Disabled="true"
-                                       Style="width: 100%;"
+    <div class="form-group">
+                        <label for="pris">Pris:</label>
+                        <RadzenNumeric id="pris"
+                        Value="ydelse.Pris"
+                        Disabled="true"
+                        Style="width: 100%;"
                         FormatString="C2" /> <!-- Format the price with 2 decimal places -->
                         <span class="ml-2">DKK</span> <!-- Add DKK after the price -->
                     </div>
 
-                    <div class="form-group">
+    <div class="form-group">
                         <label for="date">Dato:</label>
-                        <InputDate id="date" @bind-Value="_entryModel.Date" class="form-control" min="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                        <InputDate id="date" @bind-Value="ordre.OrdreDate" class="form-control" min="@DateTime.Today.ToString("yyyy-MM-dd")" required />
                     </div>
-                </RadzenFieldset>
+        </RadzenFieldset>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary btn-block">Bekræft Booking</button>
+    </div>
 
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary btn-block">Bekræft Booking</button>
-                </div>
+    </RadzenCard>
+</EditForm>
 
-            </RadzenCard>
-        </EditForm>
-
-        <!-- Booking confirmation will be shown here -->
-        <RenderYdelse EntryDetails="_entryModel" ShowConfirmation="_isBooked" />
-    </RadzenColumn>
-
-    <!-- Prisliste til højre -->
-    <RadzenColumn Width="4">
-        <RadzenCard>
-            <RadzenFieldset>
-                <legend>Vores Ydelser</legend>
-                <ul class="list-group">
-                    @foreach (var service in _services)
-                    {
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            @service.Navn
-                            <span class="badge badge-primary">@service.Pris.ToString("C")</span>
-                        </li>
-                    }
-                </ul>
-            </RadzenFieldset>
-        </RadzenCard>
-    </RadzenColumn>
-</RadzenRow>
+<!-- Prisliste til højre -->
+<RadzenColumn Width="4">
+    <RadzenCard>
+        <RadzenFieldset>
+            <legend>Vores Ydelser</legend>
+            <ul class="list-group">
+                @foreach (var ydelse in AddedYdelser)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        @ydelse.Navn
+                        <span class="badge badge-primary">@ydelse.Pris.ToString("C")</span>
+                    </li>
+                }
+            </ul>
+        </RadzenFieldset>
+    </RadzenCard>
+</RadzenColumn>
 
 @code {
-    private EntryModel _entryModel = new();
+    private Ydelse ydelse = new();
     private bool _isBooked = false;
+    private List<Ydelse> AddedYdelser = new();
+    private Ordre ordre = new();
 
-    private List<Ydelse> _services = new();
-    private List<Mekaniker> _mekanikers = new();
-    private List<int> selectedServiceIds = new();
+    private List<Ydelse> YdelseList = new();
+    private List<Mekaniker> MekanikerList = new();
+    private int selectedYdelse = new();
 
     [Inject]
-    public IYdelseService Service { get; set; }
+    private IYdelseService YdelseService { get; set; }
+
+    [Inject]
+    private IMekanikerService MekanikerService { get; set; }
+
+    [Inject]
+    private IOrdreService OrdrerService { get; set;  }
+
+    int ErrorCode { get; set; } = 0;
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadServicesAsync();
+        YdelseList = (await YdelseService.GetAllYdelser()).ToList();
     }
 
-    private async Task LoadServicesAsync()
+    private void AddSelectedYdelse()
     {
-        try
-        {
-            var ydelser = await Service.GetAllYdelser();
-            _services = ydelser?.ToList() ?? new List<Ydelse>();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Fejl ved hentning af ydelser: {ex.Message}");
-        }
+        AddedYdelser.Add(YdelseList.Single(x => x.YdelseId == selectedYdelse));
     }
 
-    private void AddSelectedServices()
+
+    private void RemoveYdelse(Ydelse ydelse)
     {
-        foreach (var id in selectedServiceIds)
-        {
-            var service = _services.FirstOrDefault(s => s.YdelseId == id);
-            if (service != null && !_entryModel.SelectedYdelser.Contains(service))
-            {
-                _entryModel.SelectedYdelser.Add(service);
-                _entryModel.Price += service.Pris;  // Add service price to the total
-            }
-        }
-
-        selectedServiceIds.Clear();  // Clear selected items
+        AddedYdelser.Remove(ydelse);
     }
 
-
-    private void RemoveService(Ydelse service)
-    {
-        _entryModel.SelectedYdelser.Remove(service);
-    }
-
-    private void HandleBooking()
+    private async void HandleFormSubmit()
     {
         _isBooked = true;
-
-        // Log or process booking details
-        Console.WriteLine($"Booked services: {string.Join(", ", _entryModel.SelectedYdelser.Select(s => s.Navn))}");
+        ErrorCode = await OrdrerService.AddOrdre(ordre);
+        if (ErrorCode == (int)HttpStatusCode.OK)
+        {
+            AddedYdelser.Clear();
+        }
     }
 }
