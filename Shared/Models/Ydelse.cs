@@ -8,9 +8,8 @@
 		public string Art {  get; set; }
 		public double Timer { get; set; }
 
-		public int YdelseListId { get; set; }
-		public YdelseListe YdelseListe { get; set; }
-        public int? SelectedMekanikerId { get; set; } // Nullable to handle unassigned mechanics
+		public int? YdelseListId { get; set; }
+		public YdelseListe? YdelseListe { get; set; }
 
     }
 }

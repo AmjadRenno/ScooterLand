@@ -10,5 +10,31 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddScoped<IYdelseService, YdelseService>();
 
+builder.Services.AddHttpClient<IYdelseService, YdelseService>(client =>
+{
+
+	client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+});
+
+builder.Services.AddHttpClient<IMekanikerService, MekanikerService>(client =>
+{
+
+	client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+});
+
+builder.Services.AddHttpClient<IKundeService, KundeService>(client =>
+{
+
+	client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+});
+
+builder.Services.AddHttpClient<IOrdreService, OrdreService>(client =>
+{
+
+	client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+});
+
+
+
 await builder.Build().RunAsync();
 

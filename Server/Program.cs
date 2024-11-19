@@ -8,6 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<IYdelseRepository, YdelseRepository>();
+builder.Services.AddScoped<IKundeRepository, KundeRepository>();
+builder.Services.AddScoped<IMekanikerRepository, MekanikerRepository>();
+builder.Services.AddScoped<IOrdreRepository, OrdreRepository>();
+
 
 var app = builder.Build();
 
