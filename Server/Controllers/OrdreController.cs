@@ -36,25 +36,25 @@ namespace BlazorAppClientServer.Server.Controllers
 		[HttpPost]
 		public void AddOrdre(Ordre ordre)
 		{
-			Console.WriteLine("Add odre called: " + ordre.ToString());
+			Console.WriteLine("Add ordre called: " + ordre.ToString());
 			Repository.AddOrdre(ordre);
 		}
 
 		[HttpDelete("{id:int}")]
 		public StatusCodeResult DeleteOrdre(int id)
 		{
-			Console.WriteLine("Server: Delete odre called: id = " + id);
+			Console.WriteLine("Server: Delete ordre called: id = " + id);
 
 			bool deleted = Repository.DeleteOrdre(id);
 			if (deleted)
 			{
-				Console.WriteLine("Server: Odre deleted succces");
+				Console.WriteLine("Server: Ordre deleted succces");
 				int code = (int)HttpStatusCode.OK;
 				return new StatusCodeResult(code);
 			}
 			else
 			{
-				Console.WriteLine("Server: Odre deleted fail - not found");
+				Console.WriteLine("Server: Ordre deleted fail - not found");
 				int code = (int)HttpStatusCode.NotFound;
 				return new StatusCodeResult(code);
 			}
