@@ -21,6 +21,7 @@ else
 				<th>Status </th>
 				<th>Mekaniker </th>
 				<th>Kunde </th>
+				<th></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -35,22 +36,28 @@ else
 						{
 							@MekanikerListe.Single(x => x.MekanikerId == ordre.MekanikerId).Navn;
 						}
-						</td>				
+					</td>				
 					<td>@ordre.KundeId </td>
 				</tr>
-				<div>
-					<InputSelect @bind-Value="tempOrdre.MekanikerId">
-						@foreach (var mekaniker in MekanikerListe)
-						{
-							<option value="@mekaniker.MekanikerId"> @mekaniker.Navn </option>
-						}
-					</InputSelect>
-					<button @onclick="()=> UpdateMekanikerHandler(ordre)"> Skift Mekaniker</button>
-				</div>
+				
 			}
 
 		</tbody>
 	</table>
+}
+
+@if (isPopupVisible)
+{
+	<div>
+		<InputSelect @bind-Value="tempOrdre.MekanikerId">
+			@foreach (var mekaniker in MekanikerListe)
+			{
+				<option value="@mekaniker.MekanikerId"> @mekaniker.Navn </option>
+			}
+		</InputSelect>
+		<button @onclick="()=> UpdateMekanikerHandler(ordre)"> Skift Mekaniker</button>
+	</div>
+
 }
 
 
@@ -97,4 +104,10 @@ else
 			OrdreList = templist.Where(x => x.Status == false).ToList();
 		}
 	}
+
+	private bool isPopupVisible = false;
+	private string modalTitle = "Opret ny Ydelse";
+	private string modalButtonText = "Save";
+
+	// <td> <button class="btn btn-primary" @onclick="() => ShowPopup(ydelse, true)">Edit</button> </td></td>
 }

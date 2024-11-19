@@ -17,7 +17,7 @@
 }
 else
 {
-    <table class="table table-striped align-content-center">
+    <table class="table table-striped text-center">
 
         <thead>
             <tr>
@@ -25,6 +25,7 @@ else
                 <th>Pris </th>
                 <th>Art </th>
                 <th>Timer </th>
+                <th width="75"></th>
                 <th width="75"></th>
             </tr>
         </thead>
@@ -38,6 +39,12 @@ else
                     <td>@ydelse.Art </td>
                     <td>@ydelse.Timer </td>
                     <td> <button class="btn btn-primary" @onclick="() => ShowPopup(ydelse, true)">Edit</button> </td>
+                    <td>
+                        <button @onclick="() => ShowDeletePopup(ydelse)"
+                                class="btn btn-link p-0 m-0 border-0 text-decoration-underline text-danger">
+                            Delete
+                        </button>
+                    </td>
                 </tr>
             }
         </tbody>
@@ -88,6 +95,33 @@ else
     <div class="modal-backdrop fade show"></div>
 }
 
+@if (isDeletePopupVisible)
+{
+    <div class="modal fade show" style="display: block;" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Ydelse</h5>
+                    <button type="button" class="btn-close"
+                            @onclick="CloseDeletePopup"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this ydelse?</p>
+                    <button class="btn btn-danger"
+                            @onclick="HandleDelete">
+                        Delete
+                    </button>
+                    <button class="btn btn-secondary"
+                            @onclick="CloseDeletePopup">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
 @code {
     private List<Ydelse> YdelseList = new List<Ydelse>();
     private Ydelse selectedYdelse = new Ydelse();
@@ -103,7 +137,7 @@ else
     }
 
     private bool isPopupVisible, isDeletePopupVisible = false;
-    private string modalTitle = "Create New Weather Forecast";
+    private string modalTitle = "Opret ny Ydelse";
     private string modalButtonText = "Save";
     private bool isEditMode = false;
 
@@ -148,5 +182,29 @@ else
             }
         }
         ClosePopup();
+    }
+
+    private void ShowDeletePopup(Ydelse ydelse)
+    {
+        // Sætter den valgte ydelse
+        selectedYdelse = ydelse;
+        // Viser delete popups
+        isDeletePopupVisible = true;
+    }
+    private void CloseDeletePopup()
+    {
+        // Lukker popup
+        isDeletePopupVisible = false;
+    }
+    private async Task HandleDelete()
+    {
+        // Sletter ydelsen
+        ErrorCode = await Service.AddYdelse(selectedYdelse);
+        if (ErrorCode == (int)HttpStatusCode.OK)
+            {
+            YdelseList = (await Service.GetAllYdelser()).ToList();
+            }
+        // Lukker popup efter ydelsen er slettet
+        CloseDeletePopup();
     }
 }
