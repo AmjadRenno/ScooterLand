@@ -38,8 +38,6 @@ else
 						}
 					</td>				
 					<td>@ordre.KundeId </td>
-					<td>
-						<td> <button class="btn btn-primary" @onclick="() => ShowPopup(ydelse, true)">Edit</button> </td></td>
 				</tr>
 				
 			}
@@ -48,19 +46,7 @@ else
 	</table>
 }
 
-@if (isPopupVisible)
-{
-	<div>
-		<InputSelect @bind-Value="tempOrdre.MekanikerId">
-			@foreach (var mekaniker in MekanikerListe)
-			{
-				<option value="@mekaniker.MekanikerId"> @mekaniker.Navn </option>
-			}
-		</InputSelect>
-		<button @onclick="()=> UpdateMekanikerHandler(ordre)"> Skift Mekaniker</button>
-	</div>
 
-}
 
 
 @code {
@@ -112,4 +98,18 @@ else
 	private string modalButtonText = "Save";
 
 	// <td> <button class="btn btn-primary" @onclick="() => ShowPopup(ydelse, true)">Edit</button> </td></td>
+
+	//@if (isPopupVisible)
+   //{
+	// <div>
+	// 	<InputSelect @bind-Value="tempOrdre.MekanikerId">
+	// 		@foreach (var mekaniker in MekanikerListe)
+	// 		{
+	// 			<option value="@mekaniker.MekanikerId"> @mekaniker.Navn </option>
+	// 		}
+	// 	</InputSelect>
+	// 	<button @onclick="()=> UpdateMekanikerHandler(ordre)"> Skift Mekaniker</button>
+	// </div>
+
+	//}
 }

@@ -41,7 +41,7 @@ else
                     <td> <button class="btn btn-primary" @onclick="() => ShowPopup(ydelse, true)">Edit</button> </td>
                     <td>
                         <button @onclick="() => ShowDeletePopup(ydelse)"
-                                class="btn btn-link p-0 m-0 border-0 text-decoration-underline text-danger">
+                                class="btn btn-primary text-decoration-underline text-warning">
                             Delete
                         </button>
                     </td>
@@ -199,7 +199,7 @@ else
     private async Task HandleDelete()
     {
         // Sletter ydelsen
-        ErrorCode = await Service.AddYdelse(selectedYdelse);
+        ErrorCode = await Service.DeleteYdelse(selectedYdelse.YdelseId);
         if (ErrorCode == (int)HttpStatusCode.OK)
             {
             YdelseList = (await Service.GetAllYdelser()).ToList();
