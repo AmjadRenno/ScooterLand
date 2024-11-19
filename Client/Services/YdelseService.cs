@@ -25,7 +25,7 @@ namespace BlazorAppClientServer.Client.Services
 
 		public async Task<int> AddYdelse(Ydelse ydelse)
 		{
-			var response = await httpClient.PostAsJsonAsync("api/ydelseapi", ydelse);
+			var response = await httpClient.PostAsJsonAsync("api/ydelseapi",ydelse);
 			var responseStatusCode = response.StatusCode;
 			return (int)responseStatusCode;
 		}

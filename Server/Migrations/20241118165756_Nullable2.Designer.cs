@@ -4,6 +4,7 @@ using BlazorAppClientServer.Server.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlazorAppClientServer.Server.Migrations
 {
     [DbContext(typeof(MyDBContext))]
-    partial class MyDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241118165756_Nullable2")]
+    partial class Nullable2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -73,10 +76,10 @@ namespace BlazorAppClientServer.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("MekanikerId")
+                    b.Property<int>("MekanikerId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("MærkeId")
+                    b.Property<int>("MærkeId")
                         .HasColumnType("int");
 
                     b.Property<string>("Navn")
@@ -260,11 +263,15 @@ namespace BlazorAppClientServer.Server.Migrations
                 {
                     b.HasOne("BlazorAppClientServer.Shared.Models.Mekaniker", "Mekaniker")
                         .WithMany()
-                        .HasForeignKey("MekanikerId");
+                        .HasForeignKey("MekanikerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BlazorAppClientServer.Shared.Models.Mærke", "Mærke")
                         .WithMany()
-                        .HasForeignKey("MærkeId");
+                        .HasForeignKey("MærkeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Mekaniker");
 
