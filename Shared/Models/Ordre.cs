@@ -7,7 +7,7 @@
 		public bool Status { get; set; }
 
 		public int? YdelseListeId { get; set; }
-		public YdelseListe? YdelseListe { get; set; }
+		public List<Ydelse> YdelseListe { get; set; } = new List<Ydelse>();
 
 		public int? KundeId { get; set; }
 		public Kunde? Kunde { get; set; }
