@@ -114,7 +114,6 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadServicesAsync();
-        await LoadMechanicsAsync();
     }
 
     private async Task LoadServicesAsync()
@@ -127,19 +126,6 @@
         catch (Exception ex)
         {
             Console.WriteLine($"Fejl ved hentning af ydelser: {ex.Message}");
-        }
-    }
-
-    private async Task LoadMechanicsAsync()
-    {
-        try
-        {
-            var mekanikers = await Service.GetAllMekanikers();
-            _mekanikers = mekanikers?.ToList() ?? new List<Mekaniker>();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Fejl ved hentning af mekanikere: {ex.Message}");
         }
     }
 

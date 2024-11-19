@@ -24,5 +24,6 @@ namespace BlazorAppClientServer.Server.Models
 		public DbSet<Mekaniker> Mekanikers { get; set; }
 		public DbSet<Værkfører> Værkførers { get; set; }
 		public DbSet<KontorDame> KontorDamer { get; set; }
-	}
+        public DbSet<Ydelse> Ydelse { get; set; }        // Assuming you also have Ydelse
+    }
 }

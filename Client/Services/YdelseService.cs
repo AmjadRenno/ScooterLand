@@ -44,11 +44,5 @@ namespace BlazorAppClientServer.Client.Services
 			var responseStatusCode = response.StatusCode;
 			return (int)responseStatusCode;
 		}
-
-        public async Task<IEnumerable<Mekaniker>> GetAllMekanikers() // Implement the method
-        {
-            return await _context.Mekanikers.ToListAsync(); // Assuming Mekaniker is a DbSet in your context
-        }
-
     }
 }
