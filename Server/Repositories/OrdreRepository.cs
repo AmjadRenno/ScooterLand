@@ -66,7 +66,6 @@ namespace BlazorAppClientServer.Server.Repositories
 			{
 				foundOrdre.OrdreDate = ordre.OrdreDate;
 				foundOrdre.Status = ordre.Status;
-				foundOrdre.YdelseListeId = ordre.YdelseListeId;
 				foundOrdre.KundeId = ordre.KundeId;
 				foundOrdre.MekanikerId = ordre.MekanikerId;
 				foundOrdre.YdelseListe = ordre.YdelseListe;
