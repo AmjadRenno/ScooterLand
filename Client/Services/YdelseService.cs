@@ -13,7 +13,7 @@ namespace BlazorAppClientServer.Client.Services
 			this.httpClient = httpClient;
 		}
 
-        public async Task<Ydelse[]?> GetAllYdelser()
+		public async Task<Ydelse[]?> GetAllYdelser()
 		{
 			var result = await httpClient.GetFromJsonAsync<Ydelse[]>("api/ydelseapi");
 			return result;
@@ -44,5 +44,5 @@ namespace BlazorAppClientServer.Client.Services
 			var responseStatusCode = response.StatusCode;
 			return (int)responseStatusCode;
 		}
-    }
+	}
 }

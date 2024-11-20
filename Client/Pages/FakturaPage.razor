@@ -1,0 +1,178 @@
+﻿@page "/fakturapage"
+@using BlazorAppClientServer.Client.Services
+@using BlazorAppClientServer.Shared.Models
+@inject IFakturaService FakturaService
+
+<h3>Fakturaer</h3>
+
+<!-- رسالة للخطأ أو النجاح -->
+@if (!string.IsNullOrEmpty(Message))
+{
+    <div class="alert alert-info">@Message</div>
+}
+
+<!-- عرض قائمة الفواتير -->
+@if (FakturaList != null && FakturaList.Any())
+{
+    <ul>
+        @foreach (var faktura in FakturaList)
+        {
+            <li>
+                Faktura #: @faktura.FakturaId - Ordre: @(faktura.Ordre?.OrdreId?.ToString() ?? "Ingen ordre")
+                <button class="btn btn-info mx-2 mb-2" @onclick="() => ShowFakturaDetails(faktura)">Vis Detaljer</button>
+                <button class="btn btn-warning mx-2 mb-2" @onclick="() => EditFaktura(faktura)">Rediger</button>
+                <button class="btn btn-danger mx-2 mb-2" @onclick="() => DeleteFaktura(faktura.FakturaId)">Slet</button>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>Ingen fakturaer fundet.</p>
+}
+
+<!-- عرض تفاصيل الفاتورة -->
+@if (SelectedFaktura != null)
+{
+    <h4>Fakturadetaljer</h4>
+    <p>Faktura #: @SelectedFaktura.FakturaId</p>
+    <p>Ordre ID: @(SelectedFaktura.Ordre?.OrdreId?.ToString() ?? "Ingen ordre")</p>
+    <p>Tilføjelsesdato: @SelectedFaktura.Ordre?.OrdreDate.ToShortDateString()</p>
+    <button @onclick="ClearDetails">Luk Detaljer</button>
+}
+
+<!-- إضافة فاتورة جديدة -->
+<h4>Opret Ny Faktura</h4>
+<EditForm Model="@NewFaktura" OnValidSubmit="AddFaktura">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div>
+        <label>Ordre ID:</label>
+        <InputNumber @bind-Value="NewFaktura.OrdreId" />
+    </div>
+    <button type="submit" class="btn btn-primary">Opret Faktura</button>
+</EditForm>
+
+@if (SelectedFaktura != null)
+{
+    <h4>Rediger Faktura</h4>
+    <EditForm Model="@SelectedFaktura" OnValidSubmit="UpdateFaktura">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div>
+            <label>Ordre ID:</label>
+            <InputNumber @bind-Value="SelectedFaktura.OrdreId" />
+        </div>
+        <button type="submit" class="btn btn-primary">Gem Ændringer</button>
+        <button class="btn btn-secondary" @onclick="ClearDetails">Annuller</button>
+    </EditForm>
+}
+
+
+
+
+@code {
+    private List<Faktura> FakturaList = new();
+    private Faktura? SelectedFaktura;
+    private Faktura NewFaktura = new();
+    private string Message = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadFakturaer();
+    }
+
+    private async Task LoadFakturaer()
+    {
+        try
+        {
+            FakturaList = (await FakturaService.GetAllFakturaer()).ToList();
+        }
+        catch (Exception ex)
+        {
+            Message = $"Kunne ikke hente fakturaer: {ex.Message}";
+        }
+    }
+
+    private void ShowFakturaDetails(Faktura faktura)
+    {
+        SelectedFaktura = faktura;
+    }
+
+    private void EditFaktura(Faktura faktura)
+    {
+        SelectedFaktura = faktura;
+    }
+
+
+    private void ClearDetails()
+    {
+        SelectedFaktura = null;
+    }
+
+    private async Task AddFaktura()
+    {
+        try
+        {
+            var status = await FakturaService.AddFaktura(NewFaktura);
+            if (status == 200)
+            {
+                Message = "Faktura tilføjet succesfuldt!";
+                NewFaktura = new Faktura(); // إعادة ضبط النموذج
+                await LoadFakturaer(); // إعادة تحميل القائمة
+            }
+            else
+            {
+                Message = "Kunne ikke tilføje faktura.";
+            }
+        }
+        catch (Exception ex)
+        {
+            Message = $"Fejl under tilføjelse: {ex.Message}";
+        }
+    }
+
+    private async Task UpdateFaktura()
+    {
+        try
+        {
+            var status = await FakturaService.UpdateFaktura(SelectedFaktura);
+            if (status == 204)
+            {
+                Message = "Faktura opdateret succesfuldt!";
+                SelectedFaktura = null; // إزالة الفاتورة المحددة
+                await LoadFakturaer(); // إعادة تحميل القائمة
+            }
+            else
+            {
+                Message = "Kunne ikke opdatere faktura.";
+            }
+        }
+        catch (Exception ex)
+        {
+            Message = $"Fejl under opdatering: {ex.Message}";
+        }
+    }
+
+
+    private async Task DeleteFaktura(int id)
+    {
+        try
+        {
+            var status = await FakturaService.DeleteFaktura(id);
+            if (status == 204)
+            {
+                Message = "Faktura slettet succesfuldt!";
+                await LoadFakturaer(); // إعادة تحميل القائمة
+            }
+            else
+            {
+                Message = "Kunne ikke slette faktura.";
+            }
+        }
+        catch (Exception ex)
+        {
+            Message = $"Fejl under sletning: {ex.Message}";
+        }
+    }
+}

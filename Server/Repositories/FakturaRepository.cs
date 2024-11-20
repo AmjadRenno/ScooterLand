@@ -1,0 +1,53 @@
+﻿using BlazorAppClientServer.Server.Models;
+using BlazorAppClientServer.Shared.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace BlazorAppClientServer.Server.Repositories
+{
+    public class FakturaRepository : IFakturaRepository
+    {
+        MyDBContext db = new MyDBContext();
+        
+
+
+        public List<Faktura> GetAllFakturaer()
+        {
+            return db.Fakturaer.Include(f => f.Ordre).ToList();
+        }
+
+        public Faktura GetFaktura(int id)
+        {
+            return db.Fakturaer.Include(f => f.Ordre).FirstOrDefault(f => f.FakturaId == id);
+        }
+
+        public void AddFaktura(Faktura faktura)
+        {
+            db.Fakturaer.Add(faktura);
+            db.SaveChanges();
+        }
+
+        public bool DeleteFaktura(int id)
+        {
+            var faktura = db.Fakturaer.Find(id);
+            if (faktura != null)
+            {
+                db.Fakturaer.Remove(faktura);
+                db.SaveChanges();
+                return true;
+            }
+            return false;
+        }
+
+        public bool UpdateFaktura(Faktura faktura)
+        {
+            var existingFaktura = db.Fakturaer.Find(faktura.FakturaId);
+            if (existingFaktura != null)
+            {
+                existingFaktura.OrdreId = faktura.OrdreId;
+                db.SaveChanges();
+                return true;
+            }
+            return false;
+        }
+    }
+}

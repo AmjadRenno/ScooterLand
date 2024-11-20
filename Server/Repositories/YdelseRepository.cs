@@ -50,6 +50,7 @@ namespace BlazorAppClientServer.Server.Repositories
 				foundYdelse.Pris = ydelse.Pris;
 				foundYdelse.Art = ydelse.Art;
 				foundYdelse.Timer = ydelse.Timer;
+				foundYdelse.YdelseListId = ydelse.YdelseListId;
 				db.SaveChanges();
 				return true;
 			}

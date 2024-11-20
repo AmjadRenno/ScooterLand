@@ -36,7 +36,7 @@ namespace BlazorAppClientServer.Server.Repositories
 			ydelser.ForEach(y =>
 			{
 				if (newOrdre.YdelseListe.Any(o => o.YdelseId == y.YdelseId))
-				{
+		{
 					var untracked = newOrdre.YdelseListe.First(o => o.YdelseId == y.YdelseId);
 					newOrdre.YdelseListe.Remove(untracked);
 					newOrdre.YdelseListe.Add(y);
@@ -66,6 +66,7 @@ namespace BlazorAppClientServer.Server.Repositories
 			{
 				foundOrdre.OrdreDate = ordre.OrdreDate;
 				foundOrdre.Status = ordre.Status;
+				foundOrdre.YdelseListeId = ordre.YdelseListeId;
 				foundOrdre.KundeId = ordre.KundeId;
 				foundOrdre.MekanikerId = ordre.MekanikerId;
 				foundOrdre.YdelseListe = ordre.YdelseListe;

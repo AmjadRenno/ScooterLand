@@ -10,5 +10,5 @@ namespace BlazorAppClientServer.Client.Services
 		Task<int> DeleteYdelse(int id);
 		Task<int> UpdateYdelse(Ydelse ydelse);
 
-    }
+	}
 }

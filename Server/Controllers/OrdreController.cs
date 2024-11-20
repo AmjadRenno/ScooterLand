@@ -42,7 +42,7 @@ namespace BlazorAppClientServer.Server.Controllers
             return Repository.GetAllOrdre().Where(o => o.MekanikerId == id).ToList();
         }
 
-        [HttpPost]
+		[HttpPost]
 		public void AddOrdre(Ordre ordre)
 		{
 			Console.WriteLine("Add ordre called: " + ordre.ToString());

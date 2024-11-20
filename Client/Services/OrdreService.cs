@@ -43,7 +43,7 @@ namespace BlazorAppClientServer.Client.Services
             }
         }
 
-        public async Task<int> AddOrdre(Ordre ordre)
+		public async Task<int> AddOrdre(Ordre ordre)
 		{
 			var response = await httpClient.PostAsJsonAsync("api/ordreapi", ordre);
 			var responseStatusCode = response.StatusCode;
