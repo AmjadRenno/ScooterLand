@@ -7,7 +7,7 @@ namespace BlazorAppClientServer.Server.Models
 	{
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-			optionsBuilder.UseSqlServer("Server=(local);DataBase=ScooterlandDB;Trusted_Connection=True;Encrypt=True;TrustServerCertificate=True");
+			optionsBuilder.UseSqlServer("Server=DESKTOP-PH988NK\\SQLEXPRESS;DataBase=ScooterlandDB;Trusted_Connection=True;Encrypt=True;TrustServerCertificate=True");
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)

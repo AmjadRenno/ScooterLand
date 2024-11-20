@@ -33,7 +33,13 @@ namespace BlazorAppClientServer.Server.Controllers
 			return result;
 		}
 
-		[HttpPost]
+        [HttpGet("mekaniker/{id:int}")]
+        public List<Ordre> GetOrdersByMechanic(int id)
+        {
+            return Repository.GetAllOrdre().Where(o => o.MekanikerId == id).ToList();
+        }
+
+        [HttpPost]
 		public void AddOrdre(Ordre ordre)
 		{
 			Console.WriteLine("Add odre called: " + ordre.ToString());

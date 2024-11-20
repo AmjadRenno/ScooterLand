@@ -9,29 +9,45 @@
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-        <div class="nav-item px-3">
+        <div class="nav-item px-1">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="oi oi-home" aria-hidden="true"></span> Home
             </NavLink>
         </div>
-        <div class="nav-item px-3">
+        <div class="nav-item px-1">
             <NavLink class="nav-link" href="counter">
                 <span class="oi oi-plus" aria-hidden="true"></span> Counter
             </NavLink>
         </div>
-        <div class="nav-item px-3">
+        <div class="nav-item px-1">
             <NavLink class="nav-link" href="fetchdata">
                 <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
             </NavLink>
         </div>
-        <div class="nav-item px-3">
+        <div class="nav-item px-1">
             <NavLink class="nav-link" href="ydelsepage">
                 <span class="oi oi-arrow-down" aria-hidden="true"></span> Ydelser
             </NavLink>
         </div>
-        <div class="nav-item px-3">
+        <div class="nav-item px-1">
             <NavLink class="nav-link" href="ordrepage">
                 <span class="oi oi-arrow-down" aria-hidden="true"></span> Ordre
+            </NavLink>
+        </div>
+        <div class="nav-item px-1">
+            <NavLink class="nav-link" href="mekaniker-ordre/1">
+                @*Hardcoded mekaniker ID ind til url, fix senere*@
+                <span class="oi oi-arrow-down" aria-hidden="true"></span> Mekaniker Ordrer
+            </NavLink>
+        </div>
+        <div class="nav-item px-1">
+            <NavLink class="nav-link" href="forbind-kunde-mekaniker">
+                <span class="oi oi-arrow-down" aria-hidden="true"></span> Forbind kunde mekaniker
+            </NavLink>
+        </div>
+        <div class="nav-item px-1">
+            <NavLink class="nav-link" href="forbind-maerke-mekaniker">
+                <span class="oi oi-arrow-down" aria-hidden="true"></span> Forbind mærke mekaniker
             </NavLink>
         </div>
     </nav>

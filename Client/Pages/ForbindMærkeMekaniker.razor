@@ -1,0 +1,110 @@
+﻿@page "/forbind-maerke-mekaniker"
+
+@using BlazorAppClientServer.Client.Models
+@using BlazorAppClientServer.Client.Services
+@using BlazorAppClientServer.Shared.Models
+@using Radzen  <!-- Importer Radzen -->
+@using Radzen.Blazor
+
+@inject IMekanikerService MekanikerService
+@inject IMærkeService MærkeService
+@inject HttpClient Http
+
+<h3>Forbind Mærke til Mekaniker</h3>
+
+<div>
+    <label for="mekaniker">Vælg Mekaniker:</label>
+    <select id="mekaniker" @bind="selectedMekanikerId">
+        <option value="">-- Vælg --</option>
+        @foreach (var mekaniker in mekanikere)
+        {
+            <option value="@mekaniker.MekanikerId">@mekaniker.Navn</option>
+        }
+    </select>
+</div>
+
+<div>
+    <label for="maerke">Vælg Mærke:</label>
+    <select id="maerke" @bind="selectedMaerkeId">
+        <option value="">-- Vælg --</option>
+        @foreach (var maerke in maerker)
+        {
+            <option value="@maerke.MærkeId">@maerke.Navn</option>
+        }
+    </select>
+</div>
+
+<button @onclick="ForbindMaerkeTilMekaniker">Forbind</button>
+
+@if (errorMessage != null)
+{
+    <p style="color: red;">@errorMessage</p>
+}
+
+@if (successMessage != null)
+{
+    <p style="color: green;">@successMessage</p>
+}
+
+@code {
+    private List<Mekaniker> mekanikere = new();
+    private List<Mærke> maerker = new();
+
+    private int? selectedMekanikerId;
+    private int? selectedMaerkeId;
+
+    private string? errorMessage;
+    private string? successMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var fetchedMekanikere = await Http.GetFromJsonAsync<List<Mekaniker>>("api/mekanikerapi");
+            mekanikere = fetchedMekanikere ?? new List<Mekaniker>(); // Sikrer, at mekanikere aldrig bliver null.
+
+            var fetchedMaerker = await Http.GetFromJsonAsync<List<Mærke>>("api/mærkeapi");
+            maerker = fetchedMaerker ?? new List<Mærke>(); // Sikrer, at maerker aldrig bliver null.
+        }
+        catch (Exception ex)
+        {
+            // Log fejl (valgfrit) og håndter tomme lister
+            errorMessage = "Fejl ved indlæsning af data: " + ex.Message;
+            mekanikere = new List<Mekaniker>();
+            maerker = new List<Mærke>();
+        }
+    }
+
+    private async Task ForbindMaerkeTilMekaniker()
+    {
+        if (selectedMekanikerId == null || selectedMaerkeId == null)
+        {
+            errorMessage = "Vælg både en mekaniker og et mærke.";
+            return;
+        }
+
+        var mekaniker = mekanikere.FirstOrDefault(m => m.MekanikerId == selectedMekanikerId);
+        if (mekaniker != null)
+        {
+            var mærke = maerker.FirstOrDefault(m => m.MærkeId == selectedMaerkeId);
+            if (mærke != null)
+            {
+                mekaniker.MærkeListe ??= new List<Mærke>();
+                mekaniker.MærkeListe.Add(mærke);
+
+                var success = await MekanikerService.UpdateMekaniker(mekaniker);
+
+                if (success)
+                {
+                    successMessage = "Mærke forbundet til mekaniker.";
+                    errorMessage = null;
+                }
+                else
+                {
+                    errorMessage = "Der opstod en fejl.";
+                    successMessage = null;
+                }
+            }
+        }
+    }
+}
