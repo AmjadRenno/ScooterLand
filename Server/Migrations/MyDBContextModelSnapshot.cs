@@ -171,8 +171,6 @@ namespace BlazorAppClientServer.Server.Migrations
 
                     b.HasIndex("MekanikerId");
 
-                    b.HasIndex("YdelseListeId");
-
                     b.ToTable("Ordrer");
                 });
 
@@ -213,36 +211,20 @@ namespace BlazorAppClientServer.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("OrdreId")
+                        .HasColumnType("int");
+
                     b.Property<double>("Pris")
                         .HasColumnType("float");
 
                     b.Property<double>("Timer")
                         .HasColumnType("float");
 
-                    b.Property<int?>("YdelseListId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("YdelseListeId")
-                        .HasColumnType("int");
-
                     b.HasKey("YdelseId");
 
-                    b.HasIndex("YdelseListeId");
+                    b.HasIndex("OrdreId");
 
                     b.ToTable("Ydelse");
-                });
-
-            modelBuilder.Entity("BlazorAppClientServer.Shared.Models.YdelseListe", b =>
-                {
-                    b.Property<int>("YdelseListeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("YdelseListeId"));
-
-                    b.HasKey("YdelseListeId");
-
-                    b.ToTable("YdelseListe");
                 });
 
             modelBuilder.Entity("BlazorAppClientServer.Shared.Models.Faktura", b =>
@@ -286,22 +268,18 @@ namespace BlazorAppClientServer.Server.Migrations
                         .WithMany("OrdreListe")
                         .HasForeignKey("MekanikerId");
 
-                    b.HasOne("BlazorAppClientServer.Shared.Models.YdelseListe", "YdelseListe")
-                        .WithMany()
-                        .HasForeignKey("YdelseListeId");
-
                     b.Navigation("Kunde");
 
                     b.Navigation("Mekaniker");
-
-                    b.Navigation("YdelseListe");
                 });
 
             modelBuilder.Entity("BlazorAppClientServer.Shared.Models.Ydelse", b =>
                 {
                     b.HasOne("BlazorAppClientServer.Shared.Models.YdelseListe", "YdelseListe")
                         .WithMany("ydelseListe")
-                        .HasForeignKey("YdelseListeId");
+                        .HasForeignKey("YdelseListeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("YdelseListe");
                 });
@@ -313,9 +291,9 @@ namespace BlazorAppClientServer.Server.Migrations
                     b.Navigation("OrdreListe");
                 });
 
-            modelBuilder.Entity("BlazorAppClientServer.Shared.Models.YdelseListe", b =>
+            modelBuilder.Entity("BlazorAppClientServer.Shared.Models.Ordre", b =>
                 {
-                    b.Navigation("ydelseListe");
+                    b.Navigation("YdelseListe");
                 });
 #pragma warning restore 612, 618
         }
