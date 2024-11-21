@@ -9,15 +9,10 @@
 
 @if (OrdreList.Count == 0)
 {
-<<<<<<< HEAD
-	<p>
-		@ordre
-	</p>
-=======
-	<p><em>Loading...</em></p> // Viser en loading skærm indtil dataen er blevet hentet
->>>>>>> Rene
+	<p><em>Loading...</em></p>
+	// Viser en loading skærm indtil dataen er blevet hentet
 }
-else 
+else
 {
 	<table class="table">
 		<thead>
@@ -38,11 +33,13 @@ else
 					<td>@ordre.OrdreId </td>
 					<td>@ordre.OrdreDate </td>
 					<td>@ordre.Status </td>
-					<td>@if (@ordre.MekanikerId != null) //Viser kun mekanikernavn hvis der er en mekaniker tilknyttet 
+					<td>
+						@if (@ordre.MekanikerId != null) //Viser kun mekanikernavn hvis der er en mekaniker tilknyttet
 						{
-							@MekanikerListe.Single(x => x.MekanikerId == ordre.MekanikerId).Navn;
+							@MekanikerListe.Single(x => x.MekanikerId == ordre.MekanikerId).Navn
+							;
 						}
-					</td>				
+					</td>
 					<td>@ordre.KundeId </td>
 					<td><button class="btn btn-primary" @onclick="() => ShowPopup(ordre)">Skift Mekaniker</button> </td>
 				</tr>
