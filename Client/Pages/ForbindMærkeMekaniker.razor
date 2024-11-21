@@ -60,10 +60,10 @@
     {
         try
         {
-            var fetchedMekanikere = await Http.GetFromJsonAsync<List<Mekaniker>>("api/mekanikerapi");
+            var fetchedMekanikere = (await MekanikerService.GetAllMekaniker()).ToList();
             mekanikere = fetchedMekanikere ?? new List<Mekaniker>(); // Sikrer, at mekanikere aldrig bliver null.
 
-            var fetchedMaerker = await Http.GetFromJsonAsync<List<Mærke>>("api/mærkeapi");
+            var fetchedMaerker = (await MærkeService.GetAllMærker()).ToList();
             maerker = fetchedMaerker ?? new List<Mærke>(); // Sikrer, at maerker aldrig bliver null.
         }
         catch (Exception ex)

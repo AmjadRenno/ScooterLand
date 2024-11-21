@@ -7,6 +7,7 @@
 @using Radzen.Blazor
 
 @inject IKundeService KundeService
+@inject IMekanikerService MekanikerService
 @inject HttpClient Http
 
 <h3>Forbind Kunde til Mekaniker</h3>
@@ -59,10 +60,10 @@
     {
         try
         {
-            var fetchedKunder = await Http.GetFromJsonAsync<List<Kunde>>("api/kundeapi");
+            var fetchedKunder = (await KundeService.GetAllKunder()).ToList();
             kunder = fetchedKunder ?? new List<Kunde>();
 
-            var fetchedMekanikere = await Http.GetFromJsonAsync<List<Mekaniker>>("api/mekanikerapi");
+            var fetchedMekanikere = (await MekanikerService.GetAllMekaniker()).ToList();
             mekanikere = fetchedMekanikere ?? new List<Mekaniker>();
         }
         catch (Exception ex)
