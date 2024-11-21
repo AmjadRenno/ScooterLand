@@ -2,6 +2,7 @@
 using BlazorAppClientServer.Shared.Models;
 using BlazorAppClientServer.Server.Repositories;
 using System.Net;
+using System.Collections;
 
 namespace BlazorAppClientServer.Server.Controllers
 {
@@ -25,6 +26,7 @@ namespace BlazorAppClientServer.Server.Controllers
 		{
 			return Repository.GetAllOrdre();
 		}
+
 
 		[HttpGet("{id:int}")]
 		public Ordre GetOrdre(int id)

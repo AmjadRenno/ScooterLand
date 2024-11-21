@@ -1,4 +1,5 @@
 ﻿using BlazorAppClientServer.Shared.Models;
+using System.Collections;
 
 namespace BlazorAppClientServer.Client.Services
 {

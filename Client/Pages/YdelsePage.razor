@@ -5,94 +5,72 @@
 @using BlazorAppClientServer.Shared.Models
 @using System.Net;
 
-<h3>Book Ydelse</h3>
+<h3>Opret Ordre</h3>
 
-<EditForm Model="ordre" OnValidSubmit="@HandleFormSubmit">
-
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-
-    <RadzenCard>
-                <RadzenFieldset>
-    <legend>Booking Information</legend>
-
+<RadzenFieldset>
     <div class="form-group">
         <label for="navn">Navn:</label>
-        <InputText id="navn" @bind-Value="ydelse.Navn" class="form-control" placeholder="Indtast navn på kunden" required />
+        <InputText id="navn" @bind-Value="selectedKunde" class="form-control" placeholder="Indtast navn på kunden" required />
     </div>
 
-    <div class="form-group">
-                        <RadzenDropDown @bind-Value="selectedYdelse"
-                        Data="@YdelseList"
-                        ValueProperty="YdelseId"
-                        Multiple="true"
-                        Placeholder="Vælg en eller flere ydelser"
-                        Style="width: 100%; max-width: 400px;"
-                        Name="YdelseDropDown" />
-    </div>
+    <InputSelect @bind-Value="selectedYdelse">
+        @foreach (var ydelse in YdelseList)
+        {
+            <option value="@ydelse"> @ydelse.Navn : @ydelse.Pris.ToString("C2") </option>
+        }
+    </InputSelect>
     <div class="form-group">
         <button class="btn btn-secondary" @onclick="AddSelectedYdelse">Tilføj valgte ydelser</button>
     </div>
 
-     <li class="list-group-item d-flex flex-column">
-                                @ydelse.Navn - @ydelse.Pris.ToString("C2")
-                                <RadzenDropDown @bind-Value="ordre.MekanikerId"
-                                Data="@MekanikerList"
-                                ValueProperty="MekanikerId"
-                                Placeholder="Vælg mekaniker"
-                                Style="width: 100%; max-width: 300px;" />
-                                <button class="btn btn-sm btn-danger mt-2" @onclick="() => RemoveYdelse(ydelse)">Fjern</button>
-                            </li>
-
-    <div class="form-group">
-                        <label for="pris">Pris:</label>
-                        <RadzenNumeric id="pris"
-                        Value="ydelse.Pris"
-                        Disabled="true"
-                        Style="width: 100%;"
-                        FormatString="C2" /> <!-- Format the price with 2 decimal places -->
-                        <span class="ml-2">DKK</span> <!-- Add DKK after the price -->
-                    </div>
-
-    <div class="form-group">
-                        <label for="date">Dato:</label>
-                        <InputDate id="date" @bind-Value="ordre.OrdreDate" class="form-control" min="@DateTime.Today.ToString("yyyy-MM-dd")" required />
-                    </div>
-        </RadzenFieldset>
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary btn-block">Bekræft Booking</button>
-    </div>
-
-    </RadzenCard>
-</EditForm>
-
-<!-- Prisliste til højre -->
-<RadzenColumn Width="4">
-    <RadzenCard>
-        <RadzenFieldset>
-            <legend>Vores Ydelser</legend>
-            <ul class="list-group">
-                @foreach (var ydelse in AddedYdelser)
-                {
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        @ydelse.Navn
-                        <span class="badge badge-primary">@ydelse.Pris.ToString("C")</span>
-                    </li>
-                }
-            </ul>
-        </RadzenFieldset>
-    </RadzenCard>
-</RadzenColumn>
+    <li class="list-group-item d-flex flex-column">
+        <InputSelect @bind-Value="selectedMekaniker">
+            @foreach (var mekaniker in MekanikerList)
+            {
+                <option value="@mekaniker.MekanikerId"> @mekaniker.Navn </option>
+            }
+        </InputSelect>
+    </li>
+    <!-- Prisliste til højre -->
+    <RadzenColumn Width="4">
+        <RadzenCard>
+            <RadzenFieldset>
+                <legend>Tilføjet Ydelser</legend>
+                <ul class="list-group">
+                    @foreach (var ydelse in addedYdelser)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            @ydelse.ToString()
+                            <span class="">@ydelse.Pris.ToString("C")</span>
+                            <button class="btn btn-sm btn-danger mt-2" @onclick="() => RemoveYdelse(ydelse)">Fjern</button>
+                        </li>
+                    }
+                </ul>
+                <h4> 
+                    Pris i alt = @totalPrice dkk.
+                </h4>
+            </RadzenFieldset>
+        </RadzenCard>
+    </RadzenColumn>
+</RadzenFieldset>
+<div class="form-group">
+    <button class="btn btn-secondary" @onclick="HandleFormSubmit">Opret Ordre</button>
+</div>
 
 @code {
     private Ydelse ydelse = new();
-    private bool _isBooked = false;
-    private List<Ydelse> AddedYdelser = new();
-    private Ordre ordre = new();
+    private List<Ydelse> addedYdelser = new();
+    private Ordre currentOrdre = new();
 
     private List<Ydelse> YdelseList = new();
     private List<Mekaniker> MekanikerList = new();
-    private int selectedYdelse = new();
+    private List<Kunde> KundeList = new();
+
+    private int selectedYdelse = 1;
+    private string selectedKunde = "";
+    private int selectedMekaniker = 1;
+
+    private double totalPrice = 0;
 
     [Inject]
     private IYdelseService YdelseService { get; set; }
@@ -103,31 +81,50 @@
     [Inject]
     private IOrdreService OrdrerService { get; set;  }
 
+    [Inject]
+    private IKundeService KundeService { get; set;  }
+
     int ErrorCode { get; set; } = 0;
 
     protected override async Task OnInitializedAsync()
     {
         YdelseList = (await YdelseService.GetAllYdelser()).ToList();
+        MekanikerList = (await MekanikerService.GetAllMekaniker()).ToList();
+        KundeList = (await KundeService.GetAllKunder()).ToList();
     }
 
     private void AddSelectedYdelse()
     {
-        AddedYdelser.Add(YdelseList.Single(x => x.YdelseId == selectedYdelse));
+        Ydelse tempYdelse = YdelseList.Single(x => x.YdelseId == selectedYdelse);
+        addedYdelser.Add(tempYdelse);
+        totalPrice += tempYdelse.Pris;
+        selectedYdelse = new();
     }
 
 
     private void RemoveYdelse(Ydelse ydelse)
     {
-        AddedYdelser.Remove(ydelse);
+        addedYdelser.Remove(ydelse);
+        totalPrice -= ydelse.Pris;
     }
 
     private async void HandleFormSubmit()
     {
-        _isBooked = true;
-        ErrorCode = await OrdrerService.AddOrdre(ordre);
+        currentOrdre.KundeId = KundeList.Single(x => x.Navn == selectedKunde).KundeId; // Sætter den forbundet kunde.
+        currentOrdre.Status = false;
+        foreach (var ydelse in addedYdelser) // Sætter ydelselisten forbundet til odren til at være de valgte ydelser.
+        {
+            currentOrdre.YdelseListe.Add(ydelse);
+        }
+        currentOrdre.OrdreDate = DateTime.Now;
+        currentOrdre.MekanikerId = MekanikerList.Single(x => x.MekanikerId == selectedMekaniker).MekanikerId;
+
+        ErrorCode = await OrdrerService.AddOrdre(currentOrdre);
         if (ErrorCode == (int)HttpStatusCode.OK)
         {
-            AddedYdelser.Clear();
+            addedYdelser.Clear();
+            selectedKunde = "";
+            totalPrice = 0; // Resetter variablerne
         }
     }
 }

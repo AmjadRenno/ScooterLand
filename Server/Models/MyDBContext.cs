@@ -13,6 +13,10 @@ namespace BlazorAppClientServer.Server.Models
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
+			modelBuilder.Entity<Ordre>()
+			.HasMany(x => x.YdelseListe)
+			.WithMany(y => y.OrdreListe)
+			.UsingEntity(j => j.ToTable("OrdreYdelse"));
 		}
 
 		public DbSet<Ydelse> Ydelser { get; set; }
@@ -23,6 +27,5 @@ namespace BlazorAppClientServer.Server.Models
 		public DbSet<Mekaniker> Mekanikers { get; set; }
 		public DbSet<Værkfører> Værkførers { get; set; }
 		public DbSet<KontorDame> KontorDamer { get; set; }
-        public DbSet<Ydelse> Ydelse { get; set; }        // Assuming you also have Ydelse
     }
 }
