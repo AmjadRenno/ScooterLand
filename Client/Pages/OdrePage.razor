@@ -1,29 +1,145 @@
 ﻿@using BlazorAppClientServer.Shared.Models;
 @using BlazorAppClientServer.Client.Services;
+@using System.Net;
 @inject HttpClient Http
 
 @page "/ordrepage"
 
 <h3>OdrePage</h3>
-	
-@foreach (var ordre in OrdreList)
+
+@if (OrdreList.Count == 0)
 {
+<<<<<<< HEAD
 	<p>
 		@ordre
 	</p>
+=======
+	<p><em>Loading...</em></p> // Viser en loading skærm indtil dataen er blevet hentet
+>>>>>>> Rene
 }
+else 
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Id </th>
+				<th>Date </th>
+				<th>Status </th>
+				<th>Mekaniker </th>
+				<th>Kunde </th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var ordre in OrdreList)
+			{
+
+				<tr>
+					<td>@ordre.OrdreId </td>
+					<td>@ordre.OrdreDate </td>
+					<td>@ordre.Status </td>
+					<td>@if (@ordre.MekanikerId != null) //Viser kun mekanikernavn hvis der er en mekaniker tilknyttet 
+						{
+							@MekanikerListe.Single(x => x.MekanikerId == ordre.MekanikerId).Navn;
+						}
+					</td>				
+					<td>@ordre.KundeId </td>
+					<td><button class="btn btn-primary" @onclick="() => ShowPopup(ordre)">Skift Mekaniker</button> </td>
+				</tr>
+
+			}
+
+		</tbody>
+	</table>
+}
+
+@if (isPopupVisible)
+{
+	<div class="modal fade show" style="display: block;" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">@modalTitle</h5>
+					<button type="button" class="btn-close" @onclick="ClosePopup"></button>
+				</div>
+				<div class="modal-body">
+					<p> Vælg den nye mekaniker </p>
+					<InputSelect @bind-Value="tempId">
+						@foreach (var mekaniker in MekanikerListe)
+						{
+							<option value="@mekaniker.MekanikerId"> @mekaniker.Navn </option>
+						}
+					</InputSelect>
+					<button @onclick="()=> UpdateMekanikerHandler(selectedOrdre, tempId)"> Skift Mekaniker</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal-backdrop fade show"></div>
+
+}
+
+
 
 @code {
 	private List<Ordre> OrdreList = new List<Ordre>();
+	private List<Mekaniker> MekanikerListe = new List<Mekaniker>();
+
+	private Ordre selectedOrdre = new Ordre();
+	private int tempId;
 
 	[Inject]
+	private IOrdreService OrdreService { get; set; }
 
-	public IOrdreService Service { get; set; }
+	[Inject]
+	private IMekanikerService MekanikerService { get; set; }
 
 	private int ErrorCode { get; set; } = 0;
 
 	protected override async Task OnInitializedAsync()
 	{
-		OrdreList = (await Service.GetAllOrdre()).ToList();
+		List<Ordre> templist = (await OrdreService.GetAllOrdre()).ToList(); // Henter alle odrer fra databasen
+		OrdreList = templist.Where(x => x.Status == false).ToList(); // Sørger for at der kun viser ordre der ikke er fuldført
+		MekanikerListe = (await MekanikerService.GetAllMekaniker()).ToList();
+		tempId = MekanikerListe[0].MekanikerId;
+	}
+
+	private async Task UpdateMekanikerHandler(Ordre ordre, int tempId)
+	{
+		ordre.MekanikerId = tempId;
+		ErrorCode = await OrdreService.UpdateOrdre(ordre);
+		Console.WriteLine($"Odre updated: {ordre.OrdreId}, return code" + ErrorCode);
+		if (ErrorCode == (int)HttpStatusCode.OK)
+		{
+			List<Ordre> templist = (await OrdreService.GetAllOrdre()).ToList();
+			OrdreList = templist.Where(x => x.Status == false).ToList();
+			ClosePopup();
+		}
+	}
+
+	private async Task DeleteItemHandler(Ordre ordre)
+	{
+		ErrorCode = await OrdreService.DeleteOrdre(ordre.OrdreId);
+		Console.WriteLine($"Shopping item deleted: {ordre.OrdreId}, return code" + ErrorCode);
+		if (ErrorCode == (int)HttpStatusCode.OK)
+		{
+			List<Ordre> templist = (await OrdreService.GetAllOrdre()).ToList();
+			OrdreList = templist.Where(x => x.Status == false).ToList();
+		}
+	}
+
+	private bool isPopupVisible = false;
+	private string modalTitle = "Skift Mekaniker";
+	private string modalButtonText = "Save";
+
+	private void ShowPopup(Ordre odre)
+	{
+		selectedOrdre = odre;
+		isPopupVisible = true;
+	}
+
+	private void ClosePopup()
+	{
+		isPopupVisible = false;
 	}
 }
