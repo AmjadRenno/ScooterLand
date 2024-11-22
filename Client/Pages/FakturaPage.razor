@@ -5,13 +5,13 @@
 
 <h3>Fakturaer</h3>
 
-<!-- رسالة للخطأ أو النجاح -->
+<!-- Besked om fejl eller succes -->
 @if (!string.IsNullOrEmpty(Message))
 {
     <div class="alert alert-info">@Message</div>
 }
 
-<!-- عرض قائمة الفواتير -->
+<!-- Se liste over fakturaer -->
 @if (FakturaList != null && FakturaList.Any())
 {
     <ul>
@@ -31,7 +31,7 @@ else
     <p>Ingen fakturaer fundet.</p>
 }
 
-<!-- عرض تفاصيل الفاتورة -->
+<!-- Se fakturaoplysninger -->
 @if (SelectedFaktura != null)
 {
     <h4>Fakturadetaljer</h4>
@@ -41,7 +41,7 @@ else
     <button @onclick="ClearDetails">Luk Detaljer</button>
 }
 
-<!-- إضافة فاتورة جديدة -->
+<!-- Add ny Faktura -->
 <h4>Opret Ny Faktura</h4>
 <EditForm Model="@NewFaktura" OnValidSubmit="AddFaktura">
     <DataAnnotationsValidator />
@@ -118,8 +118,8 @@ else
             if (status == 200)
             {
                 Message = "Faktura tilføjet succesfuldt!";
-                NewFaktura = new Faktura(); // إعادة ضبط النموذج
-                await LoadFakturaer(); // إعادة تحميل القائمة
+                NewFaktura = new Faktura(); 
+                await LoadFakturaer(); 
             }
             else
             {
@@ -140,8 +140,8 @@ else
             if (status == 204)
             {
                 Message = "Faktura opdateret succesfuldt!";
-                SelectedFaktura = null; // إزالة الفاتورة المحددة
-                await LoadFakturaer(); // إعادة تحميل القائمة
+                SelectedFaktura = null; // Slet SelectedFaktura
+                await LoadFakturaer(); // ReLoad Faktura page
             }
             else
             {
@@ -163,7 +163,7 @@ else
             if (status == 204)
             {
                 Message = "Faktura slettet succesfuldt!";
-                await LoadFakturaer(); // إعادة تحميل القائمة
+                await LoadFakturaer(); 
             }
             else
             {
