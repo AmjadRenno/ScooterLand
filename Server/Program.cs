@@ -12,7 +12,8 @@ builder.Services.AddScoped<IYdelseRepository, YdelseRepository>();
 builder.Services.AddScoped<IKundeRepository, KundeRepository>();
 builder.Services.AddScoped<IMekanikerRepository, MekanikerRepository>();
 builder.Services.AddScoped<IOrdreRepository, OrdreRepository>();
-
+builder.Services.AddControllers().AddJsonOptions(x =>
+   x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 var app = builder.Build();
 
