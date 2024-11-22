@@ -1,0 +1,72 @@
+﻿@page "/mekaniker-ordre/{mekanikerId:int}"
+@using BlazorAppClientServer.Client.Models
+@using BlazorAppClientServer.Client.Services
+@using BlazorAppClientServer.Shared.Models
+@using Radzen  <!-- Importer Radzen -->
+@using Radzen.Blazor
+
+@inject IOrdreService OrdreService
+
+<h3>Ordrer for Mekaniker @MekanikerId</h3>
+
+@if (isLoading)
+{
+    <p>Indlæser ordrer...</p>
+}
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <p class="text-danger">@errorMessage</p>
+}
+else if (ordrer == null || !ordrer.Any())
+{
+    <p>Ingen ordrer fundet for denne mekaniker.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Ordre ID</th>
+                <th>Dato</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ordre in ordrer)
+            {
+                <tr>
+                    <td>@ordre.OrdreId</td>
+                    <td>@ordre.OrdreDate.ToShortDateString()</td>
+                    <td>@(ordre.Status ? "Afsluttet" : "I gang")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter]
+    public int MekanikerId { get; set; }
+
+    private List<Ordre>? ordrer; // Liste til at holde ordrer
+    private bool isLoading = true; // Indikator for indlæsning
+    private string errorMessage = string.Empty; // Fejlmeddelelse
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Hent ordrer baseret på mekaniker id
+            ordrer = await OrdreService.GetOrdersByMechanicAsync(MekanikerId);
+        }
+        catch (Exception ex)
+        {
+            // Håndter fejl
+            errorMessage = $"En fejl opstod under hentning af ordrer: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false; // Indlæsning er færdig
+        }
+    }
+}

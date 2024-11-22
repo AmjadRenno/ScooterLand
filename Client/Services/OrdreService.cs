@@ -25,7 +25,25 @@ namespace BlazorAppClientServer.Client.Services
 			return result;
 		}
 
-		public async Task<int> AddOrdre(Ordre ordre)
+        public async Task<List<Ordre>> GetOrdersByMechanicAsync(int id)
+        {
+            try
+            {
+                var result = await httpClient.GetFromJsonAsync<Ordre[]>($"api/ordreapi/mekaniker/{id}");
+
+                // Hvis resultatet er null, returneres en tom liste
+                return result?.ToList() ?? new List<Ordre>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while fetching orders for mekanikerId: {id}. Exception: {ex.Message}");
+
+                // I tilfælde af en fejl returneres også en tom liste
+                return new List<Ordre>();
+            }
+        }
+
+        public async Task<int> AddOrdre(Ordre ordre)
 		{
 			var response = await httpClient.PostAsJsonAsync("api/ordreapi", ordre);
 			var responseStatusCode = response.StatusCode;

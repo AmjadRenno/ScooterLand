@@ -10,5 +10,6 @@ namespace BlazorAppClientServer.Client.Services
 		Task<int> AddOrdre(Ordre odre);
 		Task<int> DeleteOrdre(int id);
 		Task<int> UpdateOrdre(Ordre odre);
-	}
+        Task<List<Ordre>> GetOrdersByMechanicAsync(int mechanicId);
+    }
 }

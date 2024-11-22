@@ -8,6 +8,6 @@ namespace BlazorAppClientServer.Client.Services
 		Task<Mekaniker?> GetMekaniker(int id);
 		Task<int> AddMekaniker(Mekaniker mekaniker);
 		Task<int> DeleteMekaniker(int id);
-		Task<int> UpdateMekaniker(Mekaniker mekaniker);
+		Task<bool> UpdateMekaniker(Mekaniker mekaniker);
 	}
 }
