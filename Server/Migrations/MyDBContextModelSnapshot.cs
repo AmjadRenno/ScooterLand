@@ -37,7 +37,7 @@ namespace BlazorAppClientServer.Server.Migrations
 
                     b.HasIndex("OrdreId");
 
-                    b.ToTable("Fakturaer");
+                    b.ToTable("Fakturaer", (string)null);
                 });
 
             modelBuilder.Entity("BlazorAppClientServer.Shared.Models.KontorDame", b =>
@@ -58,7 +58,7 @@ namespace BlazorAppClientServer.Server.Migrations
 
                     b.HasKey("KontorDameId");
 
-                    b.ToTable("KontorDamer");
+                    b.ToTable("KontorDamer", (string)null);
                 });
 
             modelBuilder.Entity("BlazorAppClientServer.Shared.Models.Kunde", b =>
@@ -92,7 +92,7 @@ namespace BlazorAppClientServer.Server.Migrations
 
                     b.HasIndex("MærkeId");
 
-                    b.ToTable("Kunder");
+                    b.ToTable("Kunder", (string)null);
                 });
 
             modelBuilder.Entity("BlazorAppClientServer.Shared.Models.Mekaniker", b =>
@@ -117,7 +117,7 @@ namespace BlazorAppClientServer.Server.Migrations
 
                     b.HasKey("MekanikerId");
 
-                    b.ToTable("Mekanikers");
+                    b.ToTable("Mekanikers", (string)null);
                 });
 
             modelBuilder.Entity("BlazorAppClientServer.Shared.Models.Mærke", b =>
@@ -139,7 +139,7 @@ namespace BlazorAppClientServer.Server.Migrations
 
                     b.HasIndex("MekanikerId");
 
-                    b.ToTable("Mærker");
+                    b.ToTable("Mærker", (string)null);
                 });
 
             modelBuilder.Entity("BlazorAppClientServer.Shared.Models.Ordre", b =>
@@ -168,7 +168,7 @@ namespace BlazorAppClientServer.Server.Migrations
 
                     b.HasIndex("MekanikerId");
 
-                    b.ToTable("Ordrer");
+                    b.ToTable("Ordrer", (string)null);
                 });
 
             modelBuilder.Entity("BlazorAppClientServer.Shared.Models.Værkfører", b =>
@@ -189,7 +189,7 @@ namespace BlazorAppClientServer.Server.Migrations
 
                     b.HasKey("VærkførerId");
 
-                    b.ToTable("Værkførers");
+                    b.ToTable("Værkførers", (string)null);
                 });
 
             modelBuilder.Entity("BlazorAppClientServer.Shared.Models.Ydelse", b =>
@@ -216,7 +216,7 @@ namespace BlazorAppClientServer.Server.Migrations
 
                     b.HasKey("YdelseId");
 
-                    b.ToTable("Ydelser");
+                    b.ToTable("Ydelser", (string)null);
                 });
 
             modelBuilder.Entity("OrdreYdelse", b =>

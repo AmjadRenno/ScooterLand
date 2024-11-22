@@ -2,7 +2,6 @@
 using BlazorAppClientServer.Server.Models;
 using BlazorAppClientServer.Shared.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections;
 
 namespace BlazorAppClientServer.Server.Repositories
 {
@@ -17,8 +16,9 @@ namespace BlazorAppClientServer.Server.Repositories
 
 		public List<Ordre> GetAllOrdre()
 		{
-			return db.Ordrer.ToList();
+			return db.Ordrer.Include(o => o.YdelseListe).ToList();
 		}
+
 		public Ordre GetOrdre(int id)
 		{
 			Ordre foundOrdre = db.Ordrer.Single(i => i.OrdreId == id);
@@ -29,20 +29,20 @@ namespace BlazorAppClientServer.Server.Repositories
 			else return null;
 		}
 
-		public async void AddOrdre(Ordre ordre) // ???? :(
+		public async void AddOrdre(Ordre newOrdre) // ???? :(
 		{
 			var ydelser = await db.Ydelser.ToListAsync();
 
-			foreach (var ydelse in ydelser)
+			ydelser.ForEach(y =>
 			{
-				if(ordre.YdelseListe.Any(o => o.YdelseId == ydelse.YdelseId))
+				if (newOrdre.YdelseListe.Any(o => o.YdelseId == y.YdelseId))
 				{
-					var untracked = ordre.YdelseListe.First(o => o.YdelseId == ydelse.YdelseId);
-					ordre.YdelseListe.Remove(untracked);
-					ordre.YdelseListe.Add(ydelse);
+					var untracked = newOrdre.YdelseListe.First(o => o.YdelseId == y.YdelseId);
+					newOrdre.YdelseListe.Remove(untracked);
+					newOrdre.YdelseListe.Add(y);
 				}
-			}
-			db.Ordrer.Add(ordre);
+			});
+			db.Ordrer.Add(newOrdre);
 			db.SaveChanges();
 		}
 

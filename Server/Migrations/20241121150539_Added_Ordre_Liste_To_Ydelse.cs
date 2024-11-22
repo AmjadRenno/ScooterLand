@@ -26,30 +26,30 @@ namespace BlazorAppClientServer.Server.Migrations
                 name: "OrdreYdelse",
                 columns: table => new
                 {
-                    OrdreListeOrdreId = table.Column<int>(type: "int", nullable: false),
-                    YdelseListeYdelseId = table.Column<int>(type: "int", nullable: false)
+                    OrdreId = table.Column<int>(type: "int", nullable: false),
+                    YdelseId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OrdreYdelse", x => new { x.OrdreListeOrdreId, x.YdelseListeYdelseId });
+                    table.PrimaryKey("PK_OrdreYdelse", x => new { x.OrdreId, x.YdelseId });
                     table.ForeignKey(
-                        name: "FK_OrdreYdelse_Ordrer_OrdreListeOrdreId",
-                        column: x => x.OrdreListeOrdreId,
+                        name: "FK_OrdreYdelse_Ordrer_OrdreId",
+                        column: x => x.OrdreId,
                         principalTable: "Ordrer",
                         principalColumn: "OrdreId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_OrdreYdelse_Ydelser_YdelseListeYdelseId",
-                        column: x => x.YdelseListeYdelseId,
+                        name: "FK_OrdreYdelse_Ydelser_YdelseId",
+                        column: x => x.YdelseId,
                         principalTable: "Ydelser",
                         principalColumn: "YdelseId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrdreYdelse_YdelseListeYdelseId",
+                name: "IX_OrdreYdelse_YdelseId",
                 table: "OrdreYdelse",
-                column: "YdelseListeYdelseId");
+                column: "YdelseId");
         }
 
         /// <inheritdoc />

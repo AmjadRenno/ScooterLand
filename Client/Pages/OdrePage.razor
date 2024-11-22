@@ -28,7 +28,6 @@ else
 		<tbody>
 			@foreach (var ordre in OrdreList)
 			{
-
 				<tr>
 					<td>@ordre.OrdreId </td>
 					<td>@ordre.OrdreDate </td>
@@ -41,11 +40,23 @@ else
 					</td>
 					<td>@ordre.KundeId </td>
 					<td><button class="btn btn-primary" @onclick="() => ShowPopup(ordre)">Skift Mekaniker</button> </td>
-				</tr>
+				</tr>		
 			}
 
 		</tbody>
 	</table>
+	@foreach (var ordrer in OrdreList) 
+	{
+		@ordrer.YdelseListe.Count();
+		<ul>
+			@foreach(var ydelse in ordrer.YdelseListe)
+			{
+				<li>
+					@ydelse
+				</li>
+			}
+		</ul>
+	}
 }
 
 @if (isPopupVisible)
@@ -78,7 +89,18 @@ else
 
 @code {
 	private List<Ordre> OrdreList = new List<Ordre>();
+
 	private List<Mekaniker> MekanikerList = new List<Mekaniker>();
+	private List<Ydelse> YdelseList = new List<Ydelse>();
+
+	private int tempYId;
+
+	private List<Ydelse> test;
+
+	void TEST()
+	{
+
+	}
 
 	private Ordre selectedOrdre = new Ordre();
 	private int tempId;
@@ -89,13 +111,23 @@ else
 	[Inject]
 	private IMekanikerService MekanikerService { get; set; }
 
+	[Inject]
+	private IYdelseService YdelseService { get; set; }
+
 	private int ErrorCode { get; set; } = 0;
 
 	protected override async Task OnInitializedAsync()
 	{
-		var templist = (await OrdreService.GetAllOrdre()).ToList(); // Henter alle odrer fra databasen
-		OrdreList = templist.Where(x => x.Status == false).ToList(); // Sørger for at der kun viser ordre der ikke er fuldført
+		try {
+			OrdreList = (await OrdreService.GetAllOrdre()).ToList(); // Henter alle odrer fra databasen
+
+		}
+		catch (Exception e)
+		{
+			Console.WriteLine(e.Message);
+		}													// OrdreList = templist.Where(x => x.Status == false).ToList(); // Sørger for at der kun viser ordre der ikke er fuldført
 		MekanikerList = (await MekanikerService.GetAllMekaniker()).ToList();
+		YdelseList = (await YdelseService.GetAllYdelser()).ToList();
 		tempId = MekanikerList[0].MekanikerId;
 	}
 
@@ -137,5 +169,4 @@ else
 	{
 		isPopupVisible = false;
 	}
-	
 }

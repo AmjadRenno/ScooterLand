@@ -10,15 +10,6 @@ namespace BlazorAppClientServer.Server.Models
 			optionsBuilder.UseSqlServer("Server=(local);DataBase=ScooterlandDB;Trusted_Connection=True;Encrypt=True;TrustServerCertificate=True");
 		}
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
-		{
-			base.OnModelCreating(modelBuilder);
-			modelBuilder.Entity<Ordre>()
-			.HasMany(x => x.YdelseListe)
-			.WithMany(y => y.OrdreListe)
-			.UsingEntity(j => j.ToTable("OrdreYdelse"));
-		}
-
 		public DbSet<Ydelse> Ydelser { get; set; }
 		public DbSet<Ordre> Ordrer { get; set; }
 		public DbSet<Faktura> Fakturaer { get; set; }

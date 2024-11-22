@@ -2,7 +2,6 @@
 using BlazorAppClientServer.Shared.Models;
 using BlazorAppClientServer.Server.Repositories;
 using System.Net;
-using System.Collections;
 
 namespace BlazorAppClientServer.Server.Controllers
 {
@@ -21,11 +20,13 @@ namespace BlazorAppClientServer.Server.Controllers
 				Console.WriteLine("Repository initialized");
 			}
 		}
+		
 		[HttpGet]
 		public List<Ordre> GetAllOrdre()
 		{
 			return Repository.GetAllOrdre();
 		}
+
 
 
 		[HttpGet("{id:int}")]
@@ -83,4 +84,6 @@ namespace BlazorAppClientServer.Server.Controllers
 		}
 
 	}
+
 }
+
