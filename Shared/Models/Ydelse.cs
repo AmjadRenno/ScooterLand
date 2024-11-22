@@ -1,4 +1,7 @@
-﻿namespace BlazorAppClientServer.Shared.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace BlazorAppClientServer.Shared.Models
 {
 	public class Ydelse
 	{
@@ -7,9 +10,13 @@
 		public double Pris {  get; set; }
 		public string Art {  get; set; }
 		public double Timer { get; set; }
+		public List<Ordre> OrdreListe { get; set; } = new List<Ordre>();
 
-		public int YdelseListId { get; set; }
-		public YdelseListe YdelseListe { get; set; }
+		public override string ToString()
+		{
+			return $"{Navn}";
+		}
+
 
 	}
 }

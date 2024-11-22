@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlazorAppClientServer.Server.Migrations
 {
     [DbContext(typeof(MyDBContext))]
-    [Migration("20241113082234_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20241121144608_test")]
+    partial class test
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,7 +33,7 @@ namespace BlazorAppClientServer.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FakturaId"));
 
-                    b.Property<int>("OrdreId")
+                    b.Property<int?>("OrdreId")
                         .HasColumnType("int");
 
                     b.HasKey("FakturaId");
@@ -76,10 +76,10 @@ namespace BlazorAppClientServer.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("MekanikerId")
+                    b.Property<int?>("MekanikerId")
                         .HasColumnType("int");
 
-                    b.Property<int>("MærkeId")
+                    b.Property<int?>("MærkeId")
                         .HasColumnType("int");
 
                     b.Property<string>("Navn")
@@ -107,6 +107,10 @@ namespace BlazorAppClientServer.Server.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MekanikerId"));
 
                     b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Navn")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -149,28 +153,23 @@ namespace BlazorAppClientServer.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrdreId"));
 
-                    b.Property<int>("KundeId")
+                    b.Property<int?>("KundeId")
                         .HasColumnType("int");
 
-                    b.Property<int>("MekanikerId")
+                    b.Property<int?>("MekanikerId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("OdreDate")
+                    b.Property<DateTime>("OrdreDate")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
-
-                    b.Property<int>("YdelseListeId")
-                        .HasColumnType("int");
 
                     b.HasKey("OrdreId");
 
                     b.HasIndex("KundeId");
 
                     b.HasIndex("MekanikerId");
-
-                    b.HasIndex("YdelseListeId");
 
                     b.ToTable("Ordrer");
                 });
@@ -212,45 +211,27 @@ namespace BlazorAppClientServer.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("OrdreId")
+                        .HasColumnType("int");
+
                     b.Property<double>("Pris")
                         .HasColumnType("float");
 
                     b.Property<double>("Timer")
                         .HasColumnType("float");
 
-                    b.Property<int>("YdelseListId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("YdelseListeId")
-                        .HasColumnType("int");
-
                     b.HasKey("YdelseId");
 
-                    b.HasIndex("YdelseListeId");
+                    b.HasIndex("OrdreId");
 
                     b.ToTable("Ydelser");
-                });
-
-            modelBuilder.Entity("BlazorAppClientServer.Shared.Models.YdelseListe", b =>
-                {
-                    b.Property<int>("YdelseListeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("YdelseListeId"));
-
-                    b.HasKey("YdelseListeId");
-
-                    b.ToTable("YdelseListe");
                 });
 
             modelBuilder.Entity("BlazorAppClientServer.Shared.Models.Faktura", b =>
                 {
                     b.HasOne("BlazorAppClientServer.Shared.Models.Ordre", "Ordre")
                         .WithMany()
-                        .HasForeignKey("OrdreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("OrdreId");
 
                     b.Navigation("Ordre");
                 });
@@ -259,15 +240,11 @@ namespace BlazorAppClientServer.Server.Migrations
                 {
                     b.HasOne("BlazorAppClientServer.Shared.Models.Mekaniker", "Mekaniker")
                         .WithMany()
-                        .HasForeignKey("MekanikerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MekanikerId");
 
                     b.HasOne("BlazorAppClientServer.Shared.Models.Mærke", "Mærke")
                         .WithMany()
-                        .HasForeignKey("MærkeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MærkeId");
 
                     b.Navigation("Mekaniker");
 
@@ -285,38 +262,22 @@ namespace BlazorAppClientServer.Server.Migrations
                 {
                     b.HasOne("BlazorAppClientServer.Shared.Models.Kunde", "Kunde")
                         .WithMany()
-                        .HasForeignKey("KundeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("KundeId");
 
                     b.HasOne("BlazorAppClientServer.Shared.Models.Mekaniker", "Mekaniker")
                         .WithMany("OrdreListe")
-                        .HasForeignKey("MekanikerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BlazorAppClientServer.Shared.Models.YdelseListe", "YdelseListe")
-                        .WithMany()
-                        .HasForeignKey("YdelseListeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MekanikerId");
 
                     b.Navigation("Kunde");
 
                     b.Navigation("Mekaniker");
-
-                    b.Navigation("YdelseListe");
                 });
 
             modelBuilder.Entity("BlazorAppClientServer.Shared.Models.Ydelse", b =>
                 {
-                    b.HasOne("BlazorAppClientServer.Shared.Models.YdelseListe", "YdelseListe")
-                        .WithMany("ydelseListe")
-                        .HasForeignKey("YdelseListeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("YdelseListe");
+                    b.HasOne("BlazorAppClientServer.Shared.Models.Ordre", null)
+                        .WithMany("YdelseListe")
+                        .HasForeignKey("OrdreId");
                 });
 
             modelBuilder.Entity("BlazorAppClientServer.Shared.Models.Mekaniker", b =>
@@ -326,9 +287,9 @@ namespace BlazorAppClientServer.Server.Migrations
                     b.Navigation("OrdreListe");
                 });
 
-            modelBuilder.Entity("BlazorAppClientServer.Shared.Models.YdelseListe", b =>
+            modelBuilder.Entity("BlazorAppClientServer.Shared.Models.Ordre", b =>
                 {
-                    b.Navigation("ydelseListe");
+                    b.Navigation("YdelseListe");
                 });
 #pragma warning restore 612, 618
         }

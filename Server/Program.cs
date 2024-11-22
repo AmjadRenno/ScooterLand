@@ -1,5 +1,6 @@
 using BlazorAppClientServer.Server.Repositories;
 using Microsoft.AspNetCore.ResponseCompression;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<IYdelseRepository, YdelseRepository>();
+builder.Services.AddScoped<IKundeRepository, KundeRepository>();
+builder.Services.AddScoped<IMekanikerRepository, MekanikerRepository>();
+builder.Services.AddScoped<IOrdreRepository, OrdreRepository>();
+
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    options.JsonSerializerOptions.WriteIndented = true;
+}
+);
+
 
 var app = builder.Build();
 

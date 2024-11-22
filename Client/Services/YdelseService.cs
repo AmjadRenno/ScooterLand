@@ -1,4 +1,5 @@
 ﻿using BlazorAppClientServer.Shared.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Json;
 
 namespace BlazorAppClientServer.Client.Services
@@ -12,7 +13,7 @@ namespace BlazorAppClientServer.Client.Services
 			this.httpClient = httpClient;
 		}
 
-		public async Task<Ydelse[]?> GetAllYdelser()
+        public async Task<Ydelse[]?> GetAllYdelser()
 		{
 			var result = await httpClient.GetFromJsonAsync<Ydelse[]>("api/ydelseapi");
 			return result;
@@ -25,7 +26,7 @@ namespace BlazorAppClientServer.Client.Services
 
 		public async Task<int> AddYdelse(Ydelse ydelse)
 		{
-			var response = await httpClient.PostAsJsonAsync("api/ydelseapi", ydelse);
+			var response = await httpClient.PostAsJsonAsync("api/ydelseapi",ydelse);
 			var responseStatusCode = response.StatusCode;
 			return (int)responseStatusCode;
 		}
@@ -43,5 +44,5 @@ namespace BlazorAppClientServer.Client.Services
 			var responseStatusCode = response.StatusCode;
 			return (int)responseStatusCode;
 		}
-	}
+    }
 }

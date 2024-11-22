@@ -1,0 +1,172 @@
+﻿@using BlazorAppClientServer.Shared.Models;
+@using BlazorAppClientServer.Client.Services;
+@using System.Net;
+@inject HttpClient Http
+
+@page "/ordrepage"
+
+<h3>OdrePage</h3>
+
+@if (OrdreList.Count == 0)
+{
+	<p><em>Loading...</em></p>
+	// Viser en loading skærm indtil dataen er blevet hentet
+}
+else
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Id </th>
+				<th>Date </th>
+				<th>Status </th>
+				<th>Mekaniker </th>
+				<th>Kunde </th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var ordre in OrdreList)
+			{
+				<tr>
+					<td>@ordre.OrdreId </td>
+					<td>@ordre.OrdreDate </td>
+					<td>@ordre.Status </td>
+					<td>
+						@if (@ordre.MekanikerId != null) //Viser kun mekanikernavn hvis der er en mekaniker tilknyttet
+						{
+							@MekanikerList.Single(x => x.MekanikerId == ordre.MekanikerId).Navn;
+						}
+					</td>
+					<td>@ordre.KundeId </td>
+					<td><button class="btn btn-primary" @onclick="() => ShowPopup(ordre)">Skift Mekaniker</button> </td>
+				</tr>		
+			}
+
+		</tbody>
+	</table>
+	@foreach (var ordrer in OrdreList) 
+	{
+		@ordrer.YdelseListe.Count();
+		<ul>
+			@foreach(var ydelse in ordrer.YdelseListe)
+			{
+				<li>
+					@ydelse
+				</li>
+			}
+		</ul>
+	}
+}
+
+@if (isPopupVisible)
+{
+	<div class="modal fade show" style="display: block;" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">@modalTitle</h5>
+					<button type="button" class="btn-close" @onclick="ClosePopup"></button>
+				</div>
+				<div class="modal-body">
+					<p> Vælg den nye mekaniker </p>
+					<InputSelect @bind-Value="tempId">
+						@foreach (var mekaniker in MekanikerList)
+						{
+							<option value="@mekaniker.MekanikerId"> @mekaniker.Navn </option>
+						}
+					</InputSelect>
+					<button @onclick="()=> UpdateMekanikerHandler(selectedOrdre, tempId)"> Skift Mekaniker</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal-backdrop fade show"></div>
+
+}
+
+
+
+@code {
+	private List<Ordre> OrdreList = new List<Ordre>();
+
+	private List<Mekaniker> MekanikerList = new List<Mekaniker>();
+	private List<Ydelse> YdelseList = new List<Ydelse>();
+
+	private int tempYId;
+
+	private List<Ydelse> test;
+
+	void TEST()
+	{
+
+	}
+
+	private Ordre selectedOrdre = new Ordre();
+	private int tempId;
+
+	[Inject]
+	private IOrdreService OrdreService { get; set; }
+
+	[Inject]
+	private IMekanikerService MekanikerService { get; set; }
+
+	[Inject]
+	private IYdelseService YdelseService { get; set; }
+
+	private int ErrorCode { get; set; } = 0;
+
+	protected override async Task OnInitializedAsync()
+	{
+		try {
+			OrdreList = (await OrdreService.GetAllOrdre()).ToList(); // Henter alle odrer fra databasen
+
+		}
+		catch (Exception e)
+		{
+			Console.WriteLine(e.Message);
+		}													// OrdreList = templist.Where(x => x.Status == false).ToList(); // Sørger for at der kun viser ordre der ikke er fuldført
+		MekanikerList = (await MekanikerService.GetAllMekaniker()).ToList();
+		YdelseList = (await YdelseService.GetAllYdelser()).ToList();
+		tempId = MekanikerList[0].MekanikerId;
+	}
+
+	private async Task UpdateMekanikerHandler(Ordre ordre, int tempId)
+	{
+		ordre.MekanikerId = tempId;
+		ErrorCode = await OrdreService.UpdateOrdre(ordre);
+		Console.WriteLine($"Odre updated: {ordre.OrdreId}, return code" + ErrorCode);
+		if (ErrorCode == (int)HttpStatusCode.OK)
+		{
+			List<Ordre> templist = (await OrdreService.GetAllOrdre()).ToList();
+			OrdreList = templist.Where(x => x.Status == false).ToList();
+			ClosePopup();
+		}
+	}
+
+	private async Task DeleteItemHandler(Ordre ordre)
+	{
+		ErrorCode = await OrdreService.DeleteOrdre(ordre.OrdreId);
+		Console.WriteLine($"Shopping item deleted: {ordre.OrdreId}, return code" + ErrorCode);
+		if (ErrorCode == (int)HttpStatusCode.OK)
+		{
+			List<Ordre> templist = (await OrdreService.GetAllOrdre()).ToList();
+			OrdreList = templist.Where(x => x.Status == false).ToList();
+		}
+	}
+
+	private bool isPopupVisible = false;
+	private string modalTitle = "Skift Mekaniker";
+	private string modalButtonText = "Save";
+
+	private void ShowPopup(Ordre odre)
+	{
+		selectedOrdre = odre;
+		isPopupVisible = true;
+	}
+
+	private void ClosePopup()
+	{
+		isPopupVisible = false;
+	}
+}

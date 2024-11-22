@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BlazorAppClientServer.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class test : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -31,6 +31,7 @@ namespace BlazorAppClientServer.Server.Migrations
                 {
                     MekanikerId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Navn = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
@@ -54,18 +55,6 @@ namespace BlazorAppClientServer.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "YdelseListe",
-                columns: table => new
-                {
-                    YdelseListeId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_YdelseListe", x => x.YdelseListeId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Mærker",
                 columns: table => new
                 {
@@ -85,6 +74,77 @@ namespace BlazorAppClientServer.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Kunder",
+                columns: table => new
+                {
+                    KundeId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Navn = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Adresse = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TelefonNummer = table.Column<int>(type: "int", nullable: false),
+                    MekanikerId = table.Column<int>(type: "int", nullable: true),
+                    MærkeId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Kunder", x => x.KundeId);
+                    table.ForeignKey(
+                        name: "FK_Kunder_Mekanikers_MekanikerId",
+                        column: x => x.MekanikerId,
+                        principalTable: "Mekanikers",
+                        principalColumn: "MekanikerId");
+                    table.ForeignKey(
+                        name: "FK_Kunder_Mærker_MærkeId",
+                        column: x => x.MærkeId,
+                        principalTable: "Mærker",
+                        principalColumn: "MærkeId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Ordrer",
+                columns: table => new
+                {
+                    OrdreId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrdreDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: false),
+                    KundeId = table.Column<int>(type: "int", nullable: true),
+                    MekanikerId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ordrer", x => x.OrdreId);
+                    table.ForeignKey(
+                        name: "FK_Ordrer_Kunder_KundeId",
+                        column: x => x.KundeId,
+                        principalTable: "Kunder",
+                        principalColumn: "KundeId");
+                    table.ForeignKey(
+                        name: "FK_Ordrer_Mekanikers_MekanikerId",
+                        column: x => x.MekanikerId,
+                        principalTable: "Mekanikers",
+                        principalColumn: "MekanikerId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Fakturaer",
+                columns: table => new
+                {
+                    FakturaId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrdreId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Fakturaer", x => x.FakturaId);
+                    table.ForeignKey(
+                        name: "FK_Fakturaer_Ordrer_OrdreId",
+                        column: x => x.OrdreId,
+                        principalTable: "Ordrer",
+                        principalColumn: "OrdreId");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Ydelser",
                 columns: table => new
                 {
@@ -94,101 +154,16 @@ namespace BlazorAppClientServer.Server.Migrations
                     Pris = table.Column<double>(type: "float", nullable: false),
                     Art = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Timer = table.Column<double>(type: "float", nullable: false),
-                    YdelseListId = table.Column<int>(type: "int", nullable: false),
-                    YdelseListeId = table.Column<int>(type: "int", nullable: false)
+                    OrdreId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Ydelser", x => x.YdelseId);
                     table.ForeignKey(
-                        name: "FK_Ydelser_YdelseListe_YdelseListeId",
-                        column: x => x.YdelseListeId,
-                        principalTable: "YdelseListe",
-                        principalColumn: "YdelseListeId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Kunder",
-                columns: table => new
-                {
-                    KundeId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Navn = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Adresse = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TelefonNummer = table.Column<int>(type: "int", nullable: false),
-                    MekanikerId = table.Column<int>(type: "int", nullable: false),
-                    MærkeId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Kunder", x => x.KundeId);
-                    table.ForeignKey(
-                        name: "FK_Kunder_Mekanikers_MekanikerId",
-                        column: x => x.MekanikerId,
-                        principalTable: "Mekanikers",
-                        principalColumn: "MekanikerId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Kunder_Mærker_MærkeId",
-                        column: x => x.MærkeId,
-                        principalTable: "Mærker",
-                        principalColumn: "MærkeId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Ordrer",
-                columns: table => new
-                {
-                    OrdreId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    OdreDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<bool>(type: "bit", nullable: false),
-                    YdelseListeId = table.Column<int>(type: "int", nullable: false),
-                    KundeId = table.Column<int>(type: "int", nullable: false),
-                    MekanikerId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Ordrer", x => x.OrdreId);
-                    table.ForeignKey(
-                        name: "FK_Ordrer_Kunder_KundeId",
-                        column: x => x.KundeId,
-                        principalTable: "Kunder",
-                        principalColumn: "KundeId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Ordrer_Mekanikers_MekanikerId",
-                        column: x => x.MekanikerId,
-                        principalTable: "Mekanikers",
-                        principalColumn: "MekanikerId",
-                        onDelete: ReferentialAction.NoAction);
-                    table.ForeignKey(
-                        name: "FK_Ordrer_YdelseListe_YdelseListeId",
-                        column: x => x.YdelseListeId,
-                        principalTable: "YdelseListe",
-                        principalColumn: "YdelseListeId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Fakturaer",
-                columns: table => new
-                {
-                    FakturaId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    OrdreId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Fakturaer", x => x.FakturaId);
-                    table.ForeignKey(
-                        name: "FK_Fakturaer_Ordrer_OrdreId",
+                        name: "FK_Ydelser_Ordrer_OrdreId",
                         column: x => x.OrdreId,
                         principalTable: "Ordrer",
-                        principalColumn: "OrdreId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "OrdreId");
                 });
 
             migrationBuilder.CreateIndex(
@@ -222,14 +197,9 @@ namespace BlazorAppClientServer.Server.Migrations
                 column: "MekanikerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Ordrer_YdelseListeId",
-                table: "Ordrer",
-                column: "YdelseListeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Ydelser_YdelseListeId",
+                name: "IX_Ydelser_OrdreId",
                 table: "Ydelser",
-                column: "YdelseListeId");
+                column: "OrdreId");
         }
 
         /// <inheritdoc />
@@ -252,9 +222,6 @@ namespace BlazorAppClientServer.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "Kunder");
-
-            migrationBuilder.DropTable(
-                name: "YdelseListe");
 
             migrationBuilder.DropTable(
                 name: "Mærker");
