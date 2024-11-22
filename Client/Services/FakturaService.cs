@@ -22,7 +22,6 @@ namespace BlazorAppClientServer.Client.Services
             return await _httpClient.GetFromJsonAsync<Faktura>($"api/faktura/{id}");
         }
 
-
         public async Task<int> AddFaktura(Faktura faktura)
         {
             var response = await _httpClient.PostAsJsonAsync("api/faktura", faktura);
