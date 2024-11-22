@@ -39,7 +39,7 @@ builder.Services.AddHttpClient<IMærkeService, MærkeService>(client =>
 {
 
     client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
-});
+})); 
 
 
 

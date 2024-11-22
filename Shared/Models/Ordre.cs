@@ -6,12 +6,7 @@
 		public DateTime OrdreDate { get; set; }
 		public bool Status { get; set; }
 
-		public int? YdelseListeId { get; set; }
-<<<<<<<<< Temporary merge branch 1
-		public YdelseListe? YdelseListe { get; set; }
-=========
 		public List<Ydelse> YdelseListe { get; set; } = new List<Ydelse>();
->>>>>>>>> Temporary merge branch 2
 
 		public int? KundeId { get; set; }
 		public Kunde? Kunde { get; set; }

@@ -18,7 +18,7 @@
         @foreach (var faktura in FakturaList)
         {
             <li>
-                Faktura #: @faktura.FakturaId - Ordre: @(faktura.Ordre?.OrdreId?.ToString() ?? "Ingen ordre")
+                Faktura #: @faktura.FakturaId - Ordre: @(faktura.Ordre?.OrdreId.ToString() ?? "Ingen ordre")
                 <button class="btn btn-info mx-2 mb-2" @onclick="() => ShowFakturaDetails(faktura)">Vis Detaljer</button>
                 <button class="btn btn-warning mx-2 mb-2" @onclick="() => EditFaktura(faktura)">Rediger</button>
                 <button class="btn btn-danger mx-2 mb-2" @onclick="() => DeleteFaktura(faktura.FakturaId)">Slet</button>
@@ -36,7 +36,7 @@ else
 {
     <h4>Fakturadetaljer</h4>
     <p>Faktura #: @SelectedFaktura.FakturaId</p>
-    <p>Ordre ID: @(SelectedFaktura.Ordre?.OrdreId?.ToString() ?? "Ingen ordre")</p>
+    <p>Ordre ID: @(SelectedFaktura.Ordre?.OrdreId.ToString() ?? "Ingen ordre")</p>
     <p>Tilføjelsesdato: @SelectedFaktura.Ordre?.OrdreDate.ToShortDateString()</p>
     <button @onclick="ClearDetails">Luk Detaljer</button>
 }
