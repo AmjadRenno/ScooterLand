@@ -16,7 +16,7 @@
     <InputSelect @bind-Value="selectedYdelse">
         @foreach (var ydelse in YdelseList)
         {
-            <option value="@ydelse"> @ydelse.Navn : @ydelse.Pris.ToString("C2") </option>
+            <option value="@ydelse.YdelseId"> @ydelse.Navn : @ydelse.Pris.ToString("C2") </option>
         }
     </InputSelect>
     <div class="form-group">

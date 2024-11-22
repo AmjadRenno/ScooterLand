@@ -19,7 +19,7 @@ namespace BlazorAppClientServer.Server.Repositories
 			return db.Ordrer.Include(o => o.YdelseListe).ToList();
 		}
 
-		public Ordre GetOrdre(int id)
+        public Ordre GetOrdre(int id)
 		{
 			Ordre foundOrdre = db.Ordrer.Single(i => i.OrdreId == id);
 			if (foundOrdre != null)
