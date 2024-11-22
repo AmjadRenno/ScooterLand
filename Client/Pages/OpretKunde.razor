@@ -1,0 +1,72 @@
+﻿@using BlazorAppClientServer.Client.Services;
+@using BlazorAppClientServer.Shared.Models;
+
+@page "/OpretKunde"
+
+<h3>Indtast Kunde</h3>
+
+<EditForm Model="@newKunde" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label for="KundeId">ID:</label>
+        <InputText id="KundeId" @bind-Value="newKunde.ID" class="form-control" />
+    </div>
+    <div>
+        <label for="KundeName">Navn:</label>
+        <InputText id="KundeName" @bind-Value="newKunde.Name" class="form-control" />
+    </div>
+    <div>
+        <label for="KundeAddress">Adresse:</label>
+        <InputText id="KundeAddress" @bind-Value="newKunde.Address" class="form-control" />
+    </div>
+    <div>
+        <label for="KundePhone">Telefonnummer:</label>
+        <InputText id="KundePhone" @bind-Value="newKunde.PhoneNumber" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-2">Gem Kunde</button>
+</EditForm>
+
+@if (kunder.Any())
+{
+    <h4>Gemte Kunder:</h4>
+    <ul>
+        @foreach (var kunde in kunder)
+        {
+            <li>@kunde.ID - @kunde.Name - @kunde.Address - @kunde.PhoneNumber</li>
+        }
+    </ul>
+}
+
+@code {
+    private Kunde newKunde = new Kunde();
+    private List<Kunde> kunder = new List<Kunde>();
+
+    [Inject]
+    private IKundeService KundeService { get; set; }
+
+    int ErrorCode { get; set; } = 0;
+
+    private async void HandleValidSubmit()
+    {
+        kunder.Add(new Kunde
+            {
+                ID = newKunde.ID,
+                Name = newKunde.Name,
+                Address = newKunde.Address,
+                PhoneNumber = newKunde.PhoneNumber
+            });
+
+        newKunde = new Kunde();
+    }
+
+    public class Kunde
+    {
+        public string ID { get; set; }
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public string PhoneNumber { get; set; }
+    }
+}
