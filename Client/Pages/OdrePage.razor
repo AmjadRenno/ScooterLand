@@ -9,9 +9,10 @@
 
 @if (OrdreList.Count == 0)
 {
-	<p><em>Loading...</em></p> // Viser en loading skærm indtil dataen er blevet hentet
+	<p><em>Loading...</em></p>
+	// Viser en loading skærm indtil dataen er blevet hentet
 }
-else 
+else
 {
 	<table class="table">
 		<thead>
@@ -27,24 +28,35 @@ else
 		<tbody>
 			@foreach (var ordre in OrdreList)
 			{
-
 				<tr>
 					<td>@ordre.OrdreId </td>
 					<td>@ordre.OrdreDate </td>
-					<td>@ordre.Status </td>
-					<td>@if (@ordre.MekanikerId != null) //Viser kun mekanikernavn hvis der er en mekaniker tilknyttet 
+					<td>@(ordre.Status ? "Afsluttet" : "I gang")</td>
+					<td>
+						@if (@ordre.MekanikerId != null) //Viser kun mekanikernavn hvis der er en mekaniker tilknyttet
 						{
-							@MekanikerListe.Single(x => x.MekanikerId == ordre.MekanikerId).Navn;
+							@MekanikerList.Single(x => x.MekanikerId == ordre.MekanikerId).Navn;
 						}
-					</td>				
+					</td>
 					<td>@ordre.KundeId </td>
 					<td><button class="btn btn-primary" @onclick="() => ShowPopup(ordre)">Skift Mekaniker</button> </td>
-				</tr>
-
+				</tr>		
 			}
 
 		</tbody>
 	</table>
+	@foreach (var ordrer in OrdreList) 
+	{
+		@ordrer.YdelseListe.Count();
+		<ul>
+			@foreach(var ydelse in ordrer.YdelseListe)
+			{
+				<li>
+					@ydelse
+				</li>
+			}
+		</ul>
+	}
 }
 
 @if (isPopupVisible)
@@ -59,7 +71,7 @@ else
 				<div class="modal-body">
 					<p> Vælg den nye mekaniker </p>
 					<InputSelect @bind-Value="tempId">
-						@foreach (var mekaniker in MekanikerListe)
+						@foreach (var mekaniker in MekanikerList)
 						{
 							<option value="@mekaniker.MekanikerId"> @mekaniker.Navn </option>
 						}
@@ -77,7 +89,18 @@ else
 
 @code {
 	private List<Ordre> OrdreList = new List<Ordre>();
-	private List<Mekaniker> MekanikerListe = new List<Mekaniker>();
+
+	private List<Mekaniker> MekanikerList = new List<Mekaniker>();
+	private List<Ydelse> YdelseList = new List<Ydelse>();
+
+	private int tempYId;
+
+	private List<Ydelse> test;
+
+	void TEST()
+	{
+
+	}
 
 	private Ordre selectedOrdre = new Ordre();
 	private int tempId;
@@ -88,14 +111,17 @@ else
 	[Inject]
 	private IMekanikerService MekanikerService { get; set; }
 
+	[Inject]
+	private IYdelseService YdelseService { get; set; }
+
 	private int ErrorCode { get; set; } = 0;
 
 	protected override async Task OnInitializedAsync()
 	{
-		List<Ordre> templist = (await OrdreService.GetAllOrdre()).ToList(); // Henter alle odrer fra databasen
-		OrdreList = templist.Where(x => x.Status == false).ToList(); // Sørger for at der kun viser ordre der ikke er fuldført
-		MekanikerListe = (await MekanikerService.GetAllMekaniker()).ToList();
-		tempId = MekanikerListe[0].MekanikerId;
+		OrdreList = (await OrdreService.GetAllOrdre()).ToList(); // Henter alle odrer fra databasen	
+		MekanikerList = (await MekanikerService.GetAllMekaniker()).ToList();
+		YdelseList = (await YdelseService.GetAllYdelser()).ToList();
+		tempId = MekanikerList[0].MekanikerId;
 	}
 
 	private async Task UpdateMekanikerHandler(Ordre ordre, int tempId)
