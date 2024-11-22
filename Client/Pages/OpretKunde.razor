@@ -1,0 +1,63 @@
+﻿@using BlazorAppClientServer.Client.Services;
+@using BlazorAppClientServer.Shared.Models;
+@using System.Net;
+@inject HttpClient Http
+
+@page "/opretkunde"
+
+<h3>Indtast Kunde</h3>
+
+<EditForm Model="newKunde" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div>
+        <label for="KundeName">Navn:</label>
+        <InputText id="KundeName" @bind-Value="newKunde.Navn" class="form-control" />
+    </div>
+    <div>
+        <label for="KundeAddress">Adresse:</label>
+        <InputText id="KundeAddress" @bind-Value="newKunde.Adresse" class="form-control" />
+    </div>
+    <div>
+        <label for="KundePhone">Telefonnummer:</label>
+        <InputNumber id="KundePhone" @bind-Value="newKunde.TelefonNummer" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-2">Gem Kunde</button>
+</EditForm>
+
+@if (kunder.Any())
+{
+    <h4>Gemte Kunder:</h4>
+    <ul>
+        @foreach (var kunde in kunder)
+        {
+            <li>@kunde.KundeId - @kunde.Navn - @kunde.Adresse - @kunde.TelefonNummer</li>
+        }
+    </ul>
+}
+
+@code {
+    private Kunde newKunde = new Kunde();
+    private List<Kunde> kunder = new List<Kunde>();
+
+    [Inject]
+    private IKundeService KundeService { get; set; }
+
+    int ErrorCode { get; set; } = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        kunder = (await KundeService.GetAllKunder()).ToList();
+    }
+
+    private async void HandleValidSubmit()
+    {
+        ErrorCode = await KundeService.AddKunde(newKunde);
+        if (ErrorCode == (int)HttpStatusCode.OK)
+        {
+            kunder = (await KundeService.GetAllKunder()).ToList();
+        }
+        newKunde = new Kunde();
+    }
+}
