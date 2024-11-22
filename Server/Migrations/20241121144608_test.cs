@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BlazorAppClientServer.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class test : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -108,7 +108,6 @@ namespace BlazorAppClientServer.Server.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     OrdreDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<bool>(type: "bit", nullable: false),
-                    YdelseListeId = table.Column<int>(type: "int", nullable: true),
                     KundeId = table.Column<int>(type: "int", nullable: true),
                     MekanikerId = table.Column<int>(type: "int", nullable: true)
                 },
@@ -133,7 +132,7 @@ namespace BlazorAppClientServer.Server.Migrations
                 {
                     FakturaId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    OrdreId = table.Column<int>(type: "int", nullable: false)
+                    OrdreId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -142,8 +141,7 @@ namespace BlazorAppClientServer.Server.Migrations
                         name: "FK_Fakturaer_Ordrer_OrdreId",
                         column: x => x.OrdreId,
                         principalTable: "Ordrer",
-                        principalColumn: "OrdreId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "OrdreId");
                 });
 
             migrationBuilder.CreateTable(

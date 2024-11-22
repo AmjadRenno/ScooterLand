@@ -1,5 +1,7 @@
-﻿using BlazorAppClientServer.Server.Models;
+﻿using Azure.Core.GeoJson;
+using BlazorAppClientServer.Server.Models;
 using BlazorAppClientServer.Shared.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazorAppClientServer.Server.Repositories
 {
@@ -14,7 +16,7 @@ namespace BlazorAppClientServer.Server.Repositories
 
 		public List<Ordre> GetAllOrdre()
 		{
-			return db.Ordrer.ToList();
+			return db.Ordrer.Include(o => o.YdelseListe).ToList();
 		}
 
 		public Ordre GetOrdre(int id)
@@ -27,9 +29,20 @@ namespace BlazorAppClientServer.Server.Repositories
 			else return null;
 		}
 
-		public void AddOrdre(Ordre ordre)
+		public async void AddOrdre(Ordre newOrdre) // ???? :(
 		{
-			db.Ordrer.Add(ordre);
+			var ydelser = await db.Ydelser.ToListAsync();
+
+			ydelser.ForEach(y =>
+			{
+				if (newOrdre.YdelseListe.Any(o => o.YdelseId == y.YdelseId))
+				{
+					var untracked = newOrdre.YdelseListe.First(o => o.YdelseId == y.YdelseId);
+					newOrdre.YdelseListe.Remove(untracked);
+					newOrdre.YdelseListe.Add(y);
+				}
+			});
+			db.Ordrer.Add(newOrdre);
 			db.SaveChanges();
 		}
 
@@ -53,9 +66,9 @@ namespace BlazorAppClientServer.Server.Repositories
 			{
 				foundOrdre.OrdreDate = ordre.OrdreDate;
 				foundOrdre.Status = ordre.Status;
-				foundOrdre.YdelseListeId = ordre.YdelseListeId;
 				foundOrdre.KundeId = ordre.KundeId;
 				foundOrdre.MekanikerId = ordre.MekanikerId;
+				foundOrdre.YdelseListe = ordre.YdelseListe;
 				db.SaveChanges();
 				return true;
 			}

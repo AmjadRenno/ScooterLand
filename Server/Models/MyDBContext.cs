@@ -10,11 +10,6 @@ namespace BlazorAppClientServer.Server.Models
 			optionsBuilder.UseSqlServer("Server=(local);DataBase=ScooterlandDB;Trusted_Connection=True;Encrypt=True;TrustServerCertificate=True");
 		}
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
-		{
-			base.OnModelCreating(modelBuilder);
-		}
-
 		public DbSet<Ydelse> Ydelser { get; set; }
 		public DbSet<Ordre> Ordrer { get; set; }
 		public DbSet<Faktura> Fakturaer { get; set; }
@@ -23,5 +18,5 @@ namespace BlazorAppClientServer.Server.Models
 		public DbSet<Mekaniker> Mekanikers { get; set; }
 		public DbSet<Værkfører> Værkførers { get; set; }
 		public DbSet<KontorDame> KontorDamer { get; set; }
-	}
+    }
 }

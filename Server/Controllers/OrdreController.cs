@@ -20,11 +20,14 @@ namespace BlazorAppClientServer.Server.Controllers
 				Console.WriteLine("Repository initialized");
 			}
 		}
+		
 		[HttpGet]
 		public List<Ordre> GetAllOrdre()
 		{
 			return Repository.GetAllOrdre();
 		}
+
+
 
 		[HttpGet("{id:int}")]
 		public Ordre GetOrdre(int id)
@@ -81,4 +84,6 @@ namespace BlazorAppClientServer.Server.Controllers
 		}
 
 	}
+
 }
+

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlazorAppClientServer.Server.Migrations
 {
     [DbContext(typeof(MyDBContext))]
-    [Migration("20241119183641_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20241121144608_test")]
+    partial class test
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,7 +33,7 @@ namespace BlazorAppClientServer.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FakturaId"));
 
-                    b.Property<int>("OrdreId")
+                    b.Property<int?>("OrdreId")
                         .HasColumnType("int");
 
                     b.HasKey("FakturaId");
@@ -165,9 +165,6 @@ namespace BlazorAppClientServer.Server.Migrations
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("YdelseListeId")
-                        .HasColumnType("int");
-
                     b.HasKey("OrdreId");
 
                     b.HasIndex("KundeId");
@@ -234,9 +231,7 @@ namespace BlazorAppClientServer.Server.Migrations
                 {
                     b.HasOne("BlazorAppClientServer.Shared.Models.Ordre", "Ordre")
                         .WithMany()
-                        .HasForeignKey("OrdreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("OrdreId");
 
                     b.Navigation("Ordre");
                 });

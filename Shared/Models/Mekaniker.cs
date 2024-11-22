@@ -1,4 +1,7 @@
-﻿namespace BlazorAppClientServer.Shared.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace BlazorAppClientServer.Shared.Models
 {
 	public class Mekaniker
 	{

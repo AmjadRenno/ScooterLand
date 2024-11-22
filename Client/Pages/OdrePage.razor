@@ -1,4 +1,4 @@
-﻿﻿@using BlazorAppClientServer.Shared.Models;
+﻿@using BlazorAppClientServer.Shared.Models;
 @using BlazorAppClientServer.Client.Services;
 @using System.Net;
 @inject HttpClient Http
@@ -35,23 +35,21 @@ else
 					<td>
 						@if (@ordre.MekanikerId != null) //Viser kun mekanikernavn hvis der er en mekaniker tilknyttet
 						{
-							@MekanikerList.Single(x => x.MekanikerId == ordre.MekanikerId).Navn
-							;
+							@MekanikerList.Single(x => x.MekanikerId == ordre.MekanikerId).Navn;
 						}
 					</td>
 					<td>@ordre.KundeId </td>
 					<td><button class="btn btn-primary" @onclick="() => ShowPopup(ordre)">Skift Mekaniker</button> </td>
-				</tr>
+				</tr>		
 			}
 
 		</tbody>
 	</table>
-	@foreach (var ordrer in OrdreList)
+	@foreach (var ordrer in OrdreList) 
 	{
-		@ordrer.YdelseListe.Count()
-		;
+		@ordrer.YdelseListe.Count();
 		<ul>
-			@foreach (var ydelse in ordrer.YdelseListe)
+			@foreach(var ydelse in ordrer.YdelseListe)
 			{
 				<li>
 					@ydelse
@@ -120,15 +118,14 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		try
-		{
+		try {
 			OrdreList = (await OrdreService.GetAllOrdre()).ToList(); // Henter alle odrer fra databasen
 
 		}
 		catch (Exception e)
 		{
 			Console.WriteLine(e.Message);
-		}                                                   // OrdreList = templist.Where(x => x.Status == false).ToList(); // Sørger for at der kun viser ordre der ikke er fuldført
+		}													// OrdreList = templist.Where(x => x.Status == false).ToList(); // Sørger for at der kun viser ordre der ikke er fuldført
 		MekanikerList = (await MekanikerService.GetAllMekaniker()).ToList();
 		YdelseList = (await YdelseService.GetAllYdelser()).ToList();
 		tempId = MekanikerList[0].MekanikerId;
