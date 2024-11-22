@@ -1,29 +1,26 @@
 ﻿@using BlazorAppClientServer.Client.Services;
 @using BlazorAppClientServer.Shared.Models;
+@using System.Net;
+@inject HttpClient Http
 
-@page "/OpretKunde"
+@page "/opretkunde"
 
 <h3>Indtast Kunde</h3>
 
-<EditForm Model="@newKunde" OnValidSubmit="HandleValidSubmit">
+<EditForm Model="newKunde" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
-
-    <div>
-        <label for="KundeId">ID:</label>
-        <InputText id="KundeId" @bind-Value="newKunde.ID" class="form-control" />
-    </div>
     <div>
         <label for="KundeName">Navn:</label>
-        <InputText id="KundeName" @bind-Value="newKunde.Name" class="form-control" />
+        <InputText id="KundeName" @bind-Value="newKunde.Navn" class="form-control" />
     </div>
     <div>
         <label for="KundeAddress">Adresse:</label>
-        <InputText id="KundeAddress" @bind-Value="newKunde.Address" class="form-control" />
+        <InputText id="KundeAddress" @bind-Value="newKunde.Adresse" class="form-control" />
     </div>
     <div>
         <label for="KundePhone">Telefonnummer:</label>
-        <InputText id="KundePhone" @bind-Value="newKunde.PhoneNumber" class="form-control" />
+        <InputNumber id="KundePhone" @bind-Value="newKunde.TelefonNummer" class="form-control" />
     </div>
 
     <button type="submit" class="btn btn-primary mt-2">Gem Kunde</button>
@@ -35,7 +32,7 @@
     <ul>
         @foreach (var kunde in kunder)
         {
-            <li>@kunde.ID - @kunde.Name - @kunde.Address - @kunde.PhoneNumber</li>
+            <li>@kunde.KundeId - @kunde.Navn - @kunde.Adresse - @kunde.TelefonNummer</li>
         }
     </ul>
 }
@@ -49,24 +46,18 @@
 
     int ErrorCode { get; set; } = 0;
 
-    private async void HandleValidSubmit()
+    protected override async Task OnInitializedAsync()
     {
-        kunder.Add(new Kunde
-            {
-                ID = newKunde.ID,
-                Name = newKunde.Name,
-                Address = newKunde.Address,
-                PhoneNumber = newKunde.PhoneNumber
-            });
-
-        newKunde = new Kunde();
+        kunder = (await KundeService.GetAllKunder()).ToList();
     }
 
-    public class Kunde
+    private async void HandleValidSubmit()
     {
-        public string ID { get; set; }
-        public string Name { get; set; }
-        public string Address { get; set; }
-        public string PhoneNumber { get; set; }
+        ErrorCode = await KundeService.AddKunde(newKunde);
+        if (ErrorCode == (int)HttpStatusCode.OK)
+        {
+            kunder = (await KundeService.GetAllKunder()).ToList();
+        }
+        newKunde = new Kunde();
     }
 }
