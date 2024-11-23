@@ -6,14 +6,11 @@ using System.Threading.Tasks;
 
 namespace BlazorAppClientServer.Shared.Models
 {
-	public class OrdreYdelse
+	public class YdelseMængde
 	{
-		public int OrdrerYdelseId { get; set; }
-		public Ordre? Ordre {get ; set; }
-
-		public int YdelseOrdrerId {  get; set; }
-		public Ydelse? Ydelse {get; set; }
-
+		public int YdelseMængdeId {  get; set; }
+		public int YdelseId { get; set; }
+		public Ydelse? Ydelse { get; set; }
 		public int Mængde { get; set; }
 	}
 }

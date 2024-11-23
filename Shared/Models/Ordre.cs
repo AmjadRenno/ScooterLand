@@ -6,9 +6,7 @@
 		public DateTime OrdreDate { get; set; }
 		public bool Status { get; set; }
 
-		public List<YdelseItem> YdelseItems {get; set;}
-
-		public List<OrdreYdelse> OrdreYdelser { get; set; } = [];
+		public List<YdelseMængde>? YdelseMængder {get; set;}
 
 		public int? KundeId { get; set; }
 		public Kunde? Kunde { get; set; }

@@ -68,7 +68,6 @@ namespace BlazorAppClientServer.Server.Repositories
 				foundOrdre.Status = ordre.Status;
 				foundOrdre.KundeId = ordre.KundeId;
 				foundOrdre.MekanikerId = ordre.MekanikerId;
-				foundOrdre.OrdreYdelser = ordre.OrdreYdelser;
 				db.SaveChanges();
 				return true;
 			}

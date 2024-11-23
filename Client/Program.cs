@@ -46,11 +46,6 @@ builder.Services.AddHttpClient<IMærkeService, MærkeService>(client =>
 	client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
 });
 
-builder.Services.AddHttpClient<IOrdreYdelseService, OrdreYdelseService>(client =>
-{
-
-	client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
-});
 
 
 
