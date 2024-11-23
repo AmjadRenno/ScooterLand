@@ -54,19 +54,5 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            // Hent ordrer baseret på mekaniker id
-            ordrer = await OrdreService.GetOrdersByMechanicAsync(MekanikerId);
-        }
-        catch (Exception ex)
-        {
-            // Håndter fejl
-            errorMessage = $"En fejl opstod under hentning af ordrer: {ex.Message}";
-        }
-        finally
-        {
-            isLoading = false; // Indlæsning er færdig
-        }
     }
 }

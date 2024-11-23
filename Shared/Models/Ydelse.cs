@@ -10,7 +10,8 @@ namespace BlazorAppClientServer.Shared.Models
 		public double Pris {  get; set; }
 		public string Art {  get; set; }
 		public double Timer { get; set; }
-		public List<Ordre> OrdreListe { get; set; } = new List<Ordre>();
+
+		public List<OrdreYdelse> OrdreYdelser { get; set; } = [];
 
 		public override string ToString()
 		{

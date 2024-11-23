@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlazorAppClientServer.Server.Migrations
 {
     [DbContext(typeof(MyDBContext))]
-    [Migration("20241122092145_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20241122223650_MadeNullable")]
+    partial class MadeNullable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -174,6 +174,24 @@ namespace BlazorAppClientServer.Server.Migrations
                     b.ToTable("Ordrer");
                 });
 
+            modelBuilder.Entity("BlazorAppClientServer.Shared.Models.OrdreYdelse", b =>
+                {
+                    b.Property<int>("OrdrerYdelseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("YdelseOrdrerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Mængde")
+                        .HasColumnType("int");
+
+                    b.HasKey("OrdrerYdelseId", "YdelseOrdrerId");
+
+                    b.HasIndex("YdelseOrdrerId");
+
+                    b.ToTable("OrdreYdelser");
+                });
+
             modelBuilder.Entity("BlazorAppClientServer.Shared.Models.Værkfører", b =>
                 {
                     b.Property<int>("VærkførerId")
@@ -220,21 +238,6 @@ namespace BlazorAppClientServer.Server.Migrations
                     b.HasKey("YdelseId");
 
                     b.ToTable("Ydelser");
-                });
-
-            modelBuilder.Entity("OrdreYdelse", b =>
-                {
-                    b.Property<int>("OrdreListeOrdreId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("YdelseListeYdelseId")
-                        .HasColumnType("int");
-
-                    b.HasKey("OrdreListeOrdreId", "YdelseListeYdelseId");
-
-                    b.HasIndex("YdelseListeYdelseId");
-
-                    b.ToTable("OrdreYdelse");
                 });
 
             modelBuilder.Entity("BlazorAppClientServer.Shared.Models.Faktura", b =>
@@ -285,19 +288,23 @@ namespace BlazorAppClientServer.Server.Migrations
                     b.Navigation("Mekaniker");
                 });
 
-            modelBuilder.Entity("OrdreYdelse", b =>
+            modelBuilder.Entity("BlazorAppClientServer.Shared.Models.OrdreYdelse", b =>
                 {
-                    b.HasOne("BlazorAppClientServer.Shared.Models.Ordre", null)
-                        .WithMany()
-                        .HasForeignKey("OrdreListeOrdreId")
+                    b.HasOne("BlazorAppClientServer.Shared.Models.Ordre", "Ordre")
+                        .WithMany("OrdreYdelser")
+                        .HasForeignKey("OrdrerYdelseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BlazorAppClientServer.Shared.Models.Ydelse", null)
-                        .WithMany()
-                        .HasForeignKey("YdelseListeYdelseId")
+                    b.HasOne("BlazorAppClientServer.Shared.Models.Ydelse", "Ydelse")
+                        .WithMany("OrdreYdelser")
+                        .HasForeignKey("YdelseOrdrerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Ordre");
+
+                    b.Navigation("Ydelse");
                 });
 
             modelBuilder.Entity("BlazorAppClientServer.Shared.Models.Mekaniker", b =>
@@ -305,6 +312,16 @@ namespace BlazorAppClientServer.Server.Migrations
                     b.Navigation("MærkeListe");
 
                     b.Navigation("OrdreListe");
+                });
+
+            modelBuilder.Entity("BlazorAppClientServer.Shared.Models.Ordre", b =>
+                {
+                    b.Navigation("OrdreYdelser");
+                });
+
+            modelBuilder.Entity("BlazorAppClientServer.Shared.Models.Ydelse", b =>
+                {
+                    b.Navigation("OrdreYdelser");
                 });
 #pragma warning restore 612, 618
         }

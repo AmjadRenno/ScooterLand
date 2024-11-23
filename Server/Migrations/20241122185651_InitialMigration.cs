@@ -161,24 +161,25 @@ namespace BlazorAppClientServer.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OrdreYdelse",
+                name: "OrdreYdelser",
                 columns: table => new
                 {
-                    OrdreListeOrdreId = table.Column<int>(type: "int", nullable: false),
-                    YdelseListeYdelseId = table.Column<int>(type: "int", nullable: false)
+                    OrdrerYdelseId = table.Column<int>(type: "int", nullable: false),
+                    YdelseOrdrerId = table.Column<int>(type: "int", nullable: false),
+                    Mængde = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OrdreYdelse", x => new { x.OrdreListeOrdreId, x.YdelseListeYdelseId });
+                    table.PrimaryKey("PK_OrdreYdelser", x => new { x.OrdrerYdelseId, x.YdelseOrdrerId });
                     table.ForeignKey(
-                        name: "FK_OrdreYdelse_Ordrer_OrdreListeOrdreId",
-                        column: x => x.OrdreListeOrdreId,
+                        name: "FK_OrdreYdelser_Ordrer_OrdrerYdelseId",
+                        column: x => x.OrdrerYdelseId,
                         principalTable: "Ordrer",
                         principalColumn: "OrdreId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_OrdreYdelse_Ydelser_YdelseListeYdelseId",
-                        column: x => x.YdelseListeYdelseId,
+                        name: "FK_OrdreYdelser_Ydelser_YdelseOrdrerId",
+                        column: x => x.YdelseOrdrerId,
                         principalTable: "Ydelser",
                         principalColumn: "YdelseId",
                         onDelete: ReferentialAction.Cascade);
@@ -215,9 +216,9 @@ namespace BlazorAppClientServer.Server.Migrations
                 column: "MekanikerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrdreYdelse_YdelseListeYdelseId",
-                table: "OrdreYdelse",
-                column: "YdelseListeYdelseId");
+                name: "IX_OrdreYdelser_YdelseOrdrerId",
+                table: "OrdreYdelser",
+                column: "YdelseOrdrerId");
         }
 
         /// <inheritdoc />
@@ -230,7 +231,7 @@ namespace BlazorAppClientServer.Server.Migrations
                 name: "KontorDamer");
 
             migrationBuilder.DropTable(
-                name: "OrdreYdelse");
+                name: "OrdreYdelser");
 
             migrationBuilder.DropTable(
                 name: "Værkførers");

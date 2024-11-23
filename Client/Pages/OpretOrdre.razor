@@ -1,0 +1,269 @@
+﻿@page "/opretordre1"
+@using Radzen  <!-- Importer Radzen -->
+@using Radzen.Blazor
+@using BlazorAppClientServer.Client.Services
+@using BlazorAppClientServer.Shared.Models
+@using System.Net;
+@inject HttpClient HttpClient
+
+
+<h3>Create a New Order</h3>
+<div class="form-group"> 
+<div>
+    <label for="navn">Navn:</label>
+        <InputText id="navn" @bind-Value="selectedKunde" class="form-control" placeholder="Indtast navn på kunden" required />
+
+    <div class="list-group-item d-flex flex-column">
+        <InputSelect @bind-Value="selectedMekaniker">
+            @foreach (var mekaniker in MekanikerList)
+            {
+                <option value="@mekaniker.MekanikerId"> @mekaniker.Navn </option>
+            }
+        </InputSelect>
+    </div>
+    <label>Select Ydelse og Mængde:</label>
+    <table>
+        <thead>
+            <tr>
+                <th>Ydelse</th>
+                <th>Pris</th>
+                <th>Mængde</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (YdelseList != null)
+            {
+                foreach (var ydelse in YdelseList)
+                {
+                    <tr>
+                        <td>@ydelse.Navn</td>
+                        <td>@ydelse.Pris.ToString("C")</td>
+                        <td>
+                            <input type="number" min="0" @bind="SelectedYdelser[ydelse.YdelseId]" />
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="3">Loading ydelser...</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<button @onclick="AddOrdrer">Submit Order</button>
+
+</div>
+
+@* <RadzenFieldset>
+    <div class="form-group">
+        <label for="navn">Navn:</label>
+        <InputText id="navn" @bind-Value="selectedKunde" class="form-control" placeholder="Indtast navn på kunden" required />
+    </div>
+
+    @if (YdelseList != null)
+    {
+        foreach (var ydelse in YdelseList)
+        {
+            <div>
+                <input type="number" min="0" @bind="SelectedYdelser[ydelse.YdelseId]" placeholder="Quantity" />
+                <label>@ydelse.Navn (@ydelse.Pris.ToString("C"))</label>
+            </div>
+        }
+    }
+    else
+    {
+        <p>Loading products...</p>
+    }
+    <button @onclick="AddOrdrer">Submit Order</button> *@
+
+@* <InputSelect @bind-Value="selectedYdelse">
+        @foreach (var ydelse in YdelseList)
+        {
+            <option value="@ydelse.YdelseId"> @ydelse.Navn : @ydelse.Pris.ToString() dkk. </option>
+        }
+    </InputSelect> *@
+@*  <div class="form-group">
+        <button class="btn btn-secondary" @onclick="AddSelectedYdelse">Tilføj valgte ydelser</button>
+    </div> *@
+
+@*     <li class="list-group-item d-flex flex-column">
+        <InputSelect @bind-Value="selectedMekaniker">
+            @foreach (var mekaniker in MekanikerList)
+            {
+                <option value="@mekaniker.MekanikerId"> @mekaniker.Navn </option>
+            }
+        </InputSelect>
+    </li>
+    <!-- Prisliste til højre -->
+    <RadzenColumn Width="4">
+        <RadzenCard>
+            <RadzenFieldset>
+                <legend>Tilføjet Ydelser</legend>
+                <ul class="list-group">
+                    @foreach (var ydelse in addedYdelser)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            @ydelse.ToString()
+                            <span class="">@ydelse.Pris.ToString("C")</span>
+                            <button class="btn btn-sm btn-danger mt-2" @onclick="() => RemoveYdelse(ydelse)">Fjern</button>
+                        </li>
+                    }
+                </ul>
+                <h4> 
+                    Pris i alt = @totalPrice dkk.
+                </h4>
+            </RadzenFieldset>
+        </RadzenCard>
+    </RadzenColumn>
+</RadzenFieldset> *@
+@* <div class="form-group">
+    <button class="btn btn-secondary" @onclick="HandleFormSubmit">Opret Ordre</button>
+</div> *@
+
+<p> @ErrorCode </p>
+
+@code {
+    private Ydelse ydelse = new();
+    private List<Ydelse> addedYdelser = new();
+    private Ordre currentOrdre = new();
+
+    private List<Ydelse> YdelseList = new();
+    private List<Mekaniker> MekanikerList = new();
+    private List<Kunde> KundeList = new();
+
+    private Dictionary<int, int> SelectedYdelser = new(); // ProductId -> Quantity
+
+    private string selectedKunde = "";
+    private int selectedMekaniker = 1;
+
+    private double totalPrice = 0;
+
+    [Inject]
+    private IOrdreService OrdrerService { get; set;  }
+
+    [Inject]
+    private IYdelseService YdelseService { get; set; }
+
+    [Inject]
+    private IOrdreYdelseService OrdreYdelseService { get; set; }
+
+    [Inject]
+    private IMekanikerService MekanikerService { get; set; }
+
+    [Inject]
+    private IKundeService KundeService { get; set;  }
+
+    int ErrorCode { get; set; } = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        YdelseList = (await YdelseService.GetAllYdelser()).ToList();
+
+        foreach(var ydelse in YdelseList)
+        {
+            SelectedYdelser[ydelse.YdelseId] = 0;
+        }
+
+        MekanikerList = (await MekanikerService.GetAllMekaniker()).ToList();
+        KundeList = (await KundeService.GetAllKunder()).ToList();
+    }
+
+    // private void AddSelectedYdelse()
+    // {
+    //     Ydelse tempYdelse = YdelseList.Single(x => x.YdelseId == selectedYdelse);
+    //     addedYdelser.Add(tempYdelse);
+    //     totalPrice += tempYdelse.Pris;
+
+    //     selectedYdelse = 1;
+    // }
+
+
+    private void RemoveYdelse(Ydelse ydelse)
+    {
+        addedYdelser.Remove(ydelse);
+        totalPrice -= ydelse.Pris;
+    }
+
+    // private async void HandleFormSubmit()
+    // {
+    //     currentOrdre.Status = false;
+    //     foreach (var ydelse in addedYdelser) // Sætter ydelselisten forbundet til odren til at være de valgte ydelser.
+    //     {
+
+    //     }
+    //     currentOrdre.OrdreDate = DateTime.Now;
+    //     currentOrdre.MekanikerId = MekanikerList.Single(x => x.MekanikerId == selectedMekaniker).MekanikerId;
+
+    //     ErrorCode = await OrdrerService.AddOrdre(currentOrdre);
+    //     if (ErrorCode == (int)HttpStatusCode.OK)
+    //     {
+    //         addedYdelser.Clear();
+    //         selectedKunde = "";
+    //         totalPrice = 0; // Resetter variablerne
+    //     }
+    // }
+
+    // private async Task AddOrdrer()
+    // {
+    //     try
+    //     {
+    //         currentOrdre.KundeId = KundeList.Single(x => x.Navn == selectedKunde).KundeId; // Sætter den forbundet kunde.
+    //         var orderYdelser = SelectedYdelser
+    //             .Where(y => y.Value > 0) // Only include products with a quantity > 0
+    //             .Select(p => new OrdreYdelse
+    //                 {
+    //                     OrdrerYdelseId = p.Key,
+    //                     Mængde = p.Value
+    //                 })
+    //             .ToList();
+
+    //         await OrdrerService.AddOrdre(currentOrdre, orderYdelser);
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //     }
+    // }
+    private async Task AddOrdrer()
+    {
+        try
+        {
+            // Laver ordreren
+            currentOrdre.KundeId = KundeList.Single(x => x.Navn == selectedKunde).KundeId;
+            currentOrdre.OrdreDate = DateTime.Now;
+            currentOrdre.MekanikerId = MekanikerList.Single(x => x.MekanikerId == selectedMekaniker).MekanikerId;
+
+            var response = await HttpClient.PostAsJsonAsync("api/ordreapi", currentOrdre);
+
+            var createdOrdre = await response.Content.ReadFromJsonAsync<Ordre>();
+
+            // Filter out products with a quantity of 0 and create OrderProduct entries
+            var orderYdelser = SelectedYdelser
+                .Where(p => p.Value > 0) // Only include products with a positive quantity
+                .Select(p => new OrdreYdelse
+                    {
+                        OrdrerYdelseId = createdOrdre.OrdreId,
+                        YdelseOrdrerId = p.Key,
+                        Mængde = p.Value
+                    })
+                .ToList();
+
+            // Sørger for at der er mindst en ydelse i ordren.
+            if (!orderYdelser.Any())
+            {
+
+            }
+            foreach(var ydelse in orderYdelser) // Laver en OrdreYdelse i databasen for hvert ydelse i ordren
+            {
+                var productResponse = OrdreYdelseService.AddOrdreYdelse(ydelse);
+            }
+
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+}

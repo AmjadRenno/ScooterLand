@@ -12,15 +12,15 @@ namespace BlazorAppClientServer.Server.Controllers
 	{
 		private readonly IOrdreRepository Repository = new OrdreRepository();
 
-		public OdreController(IOrdreRepository ordreRepository) 
-		{ 
+		public OdreController(IOrdreRepository ordreRepository)
+		{
 			if (Repository == null && ordreRepository != null)
 			{
 				Repository = ordreRepository;
 				Console.WriteLine("Repository initialized");
 			}
 		}
-		
+
 		[HttpGet]
 		public List<Ordre> GetAllOrdre()
 		{
@@ -36,18 +36,15 @@ namespace BlazorAppClientServer.Server.Controllers
 			return result;
 		}
 
-        [HttpGet("mekaniker/{id:int}")]
-        public List<Ordre> GetOrdersByMechanic(int id)
-        {
-            return Repository.GetAllOrdre().Where(o => o.MekanikerId == id).ToList();
-        }
-
 		[HttpPost]
-		public void AddOrdre(Ordre ordre)
+		public async Task<IActionResult> AddOrdre([FromBody]Ordre ordre)
 		{
 			Console.WriteLine("Add ordre called: " + ordre.ToString());
 			Repository.AddOrdre(ordre);
+
+			return Ok(ordre);
 		}
+
 
 		[HttpDelete("{id:int}")]
 		public StatusCodeResult DeleteOrdre(int id)

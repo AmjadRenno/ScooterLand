@@ -16,10 +16,10 @@ namespace BlazorAppClientServer.Server.Repositories
 
 		public List<Ordre> GetAllOrdre()
 		{
-			return db.Ordrer.Include(o => o.YdelseListe).ToList();
+			return db.Ordrer.ToList();
 		}
 
-        public Ordre GetOrdre(int id)
+		public Ordre GetOrdre(int id)
 		{
 			Ordre foundOrdre = db.Ordrer.Single(i => i.OrdreId == id);
 			if (foundOrdre != null)
@@ -29,19 +29,19 @@ namespace BlazorAppClientServer.Server.Repositories
 			else return null;
 		}
 
-		public async void AddOrdre(Ordre newOrdre) // ???? :(
+		public async void AddOrdre(Ordre newOrdre)
 		{
-			var ydelser = await db.Ydelser.ToListAsync();
+			//var ydelser = await db.Ydelser.ToListAsync();
 
-			ydelser.ForEach(y =>
-			{
-				if (newOrdre.YdelseListe.Any(o => o.YdelseId == y.YdelseId))
-		{
-					var untracked = newOrdre.YdelseListe.First(o => o.YdelseId == y.YdelseId);
-					newOrdre.YdelseListe.Remove(untracked);
-					newOrdre.YdelseListe.Add(y);
-				}
-			});
+			//ydelser.ForEach(y =>
+			//{
+			//	if (newOrdre.OrdreYdelser.Any(o => o.YdelseOrdrerId == y.YdelseId))
+			//	{
+			//		var untracked = newOrdre.OrdreYdelser.First(o => o.YdelseOrdrerId == y.YdelseId);
+			//		newOrdre.OrdreYdelser.Remove(untracked);
+			//		newOrdre.OrdreYdelser.Add();
+			//	}
+			//});
 			db.Ordrer.Add(newOrdre);
 			db.SaveChanges();
 		}
@@ -68,7 +68,7 @@ namespace BlazorAppClientServer.Server.Repositories
 				foundOrdre.Status = ordre.Status;
 				foundOrdre.KundeId = ordre.KundeId;
 				foundOrdre.MekanikerId = ordre.MekanikerId;
-				foundOrdre.YdelseListe = ordre.YdelseListe;
+				foundOrdre.OrdreYdelser = ordre.OrdreYdelser;
 				db.SaveChanges();
 				return true;
 			}
