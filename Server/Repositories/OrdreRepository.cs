@@ -16,7 +16,7 @@ namespace BlazorAppClientServer.Server.Repositories
 
 		public List<Ordre> GetAllOrdre()
 		{
-			return db.Ordrer.ToList();
+			return db.Ordrer.Include(o => o.YdelseTilOrdre).ThenInclude(y => y.Ydelse).ToList();
 		}
 
 		public Ordre GetOrdre(int id)
