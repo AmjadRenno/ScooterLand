@@ -17,11 +17,13 @@ else
 	<table class="table">
 		<thead>
 			<tr>
-				<th>Id </th>
-				<th>Date </th>
-				<th>Status </th>
-				<th>Mekaniker </th>
-				<th>Kunde </th>
+				<th>Ordre Id</th>
+				<th>Dato</th>
+				<th>Status</th>
+				<th>Mekaniker</th>
+				<th>Kunde</th>
+				<th>Ydelser</th>
+				<th>Samlet Pris</th>
 				<th></th>
 			</tr>
 		</thead>
@@ -38,7 +40,7 @@ else
 							@MekanikerList.Single(x => x.MekanikerId == ordre.MekanikerId).Navn;
 						}
 					</td>
-					<td>@ordre.KundeId </td>
+					<td>@ordre.KundeNavn</td>
 					<td><button class="btn btn-primary" @onclick="() => ShowPopup(ordre)">Skift Mekaniker</button> </td>
 				</tr>		
 			}
@@ -112,12 +114,29 @@ else
 	private IMekanikerService MekanikerService { get; set; }
 
 	[Inject]
+	private IKundeService KundeService { get; set; }
+
+	[Inject]
 	private IYdelseService YdelseService { get; set; }
 
 	private int ErrorCode { get; set; } = 0;
 
 	protected override async Task OnInitializedAsync()
 	{
+		// Hent kundeoplysninger for hver ordre
+		foreach (var ordre in OrdreList)
+		{
+			if (ordre.KundeId != null)
+			{
+				// Hent kunde-navn og tilføj det til ordren
+				var kunde = await KundeService.GetKunde(ordre.KundeId.Value);
+				ordre.KundeNavn = kunde?.Navn ?? "Ukendt";
+			}
+			else
+			{
+				ordre.KundeNavn = "Ukendt";
+			}
+		}
 		try {
 			OrdreList = (await OrdreService.GetAllOrdre()).ToList(); // Henter alle odrer fra databasen
 
