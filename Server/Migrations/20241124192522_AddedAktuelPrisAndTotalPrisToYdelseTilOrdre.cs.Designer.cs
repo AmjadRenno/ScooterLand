@@ -4,6 +4,7 @@ using BlazorAppClientServer.Server.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlazorAppClientServer.Server.Migrations
 {
     [DbContext(typeof(MyDBContext))]
-    partial class MyDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241124192522_AddedAktuelPrisAndTotalPrisToYdelseTilOrdre.cs")]
+    partial class AddedAktuelPrisAndTotalPrisToYdelseTilOrdrecs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -211,7 +214,7 @@ namespace BlazorAppClientServer.Server.Migrations
                     b.Property<double>("Pris")
                         .HasColumnType("float");
 
-                    b.Property<double?>("Timer")
+                    b.Property<double>("Timer")
                         .HasColumnType("float");
 
                     b.HasKey("YdelseId");
@@ -302,7 +305,7 @@ namespace BlazorAppClientServer.Server.Migrations
             modelBuilder.Entity("BlazorAppClientServer.Shared.Models.YdelseTilOrdre", b =>
                 {
                     b.HasOne("BlazorAppClientServer.Shared.Models.Ordre", null)
-                        .WithMany("YdelseTilOrdre")
+                        .WithMany("YdelseMængder")
                         .HasForeignKey("OrdreId");
 
                     b.HasOne("BlazorAppClientServer.Shared.Models.Ydelse", "Ydelse")
@@ -323,7 +326,7 @@ namespace BlazorAppClientServer.Server.Migrations
 
             modelBuilder.Entity("BlazorAppClientServer.Shared.Models.Ordre", b =>
                 {
-                    b.Navigation("YdelseTilOrdre");
+                    b.Navigation("YdelseMængder");
                 });
 #pragma warning restore 612, 618
         }
