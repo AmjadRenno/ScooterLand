@@ -9,9 +9,7 @@ namespace BlazorAppClientServer.Shared.Models
 		public string Navn { get; set; }
 		public double Pris {  get; set; }
 		public string Art {  get; set; }
-		public double Timer { get; set; }
-		public List<Ordre> OrdreListe { get; set; } = new List<Ordre>();
-
+		public double? Timer { get; set; }
 		public override string ToString()
 		{
 			return $"{Navn}";

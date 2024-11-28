@@ -49,12 +49,11 @@ else
 	</table>
 	@foreach (var ordrer in OrdreList) 
 	{
-		@ordrer.YdelseListe.Count();
 		<ul>
-			@foreach(var ydelse in ordrer.YdelseListe)
+			@foreach (var ydelse in ordrer.YdelseTilOrdre)
 			{
 				<li>
-					@ydelse
+					@ydelse.Ydelse.Navn : @ydelse.Ydelse.Art : @ydelse.AktuelPris :  @ydelse.Mængde
 				</li>
 			}
 		</ul>

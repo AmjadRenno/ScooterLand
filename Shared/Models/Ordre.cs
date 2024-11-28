@@ -6,7 +6,7 @@
 		public DateTime OrdreDate { get; set; }
 		public bool Status { get; set; }
 
-		public List<Ydelse> YdelseListe { get; set; } = new List<Ydelse>();
+		public List<YdelseTilOrdre>? YdelseTilOrdre { get; set;}
 
 		public int? KundeId { get; set; }
 		public Kunde? Kunde { get; set; }

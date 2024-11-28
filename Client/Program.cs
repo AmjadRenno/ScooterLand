@@ -35,11 +35,17 @@ builder.Services.AddHttpClient<IOrdreService, OrdreService>(client =>
 });
 
 builder.Services.AddHttpClient<IFakturaService, FakturaService>(client =>
+{
+
+	client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+});
+
 builder.Services.AddHttpClient<IMærkeService, MærkeService>(client =>
 {
 
-    client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
-})); 
+	client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+});
+
 
 
 
