@@ -41,13 +41,9 @@ else
 						}
 					</td>
 					<td>
-						@if (ordre.KundeId != null)
+						@if (@ordre.MekanikerId != null) //Viser kun kunden hvis der er en kunde tilknyttet
 						{
-							<span>@(await GetKundeNavnAsync(ordre.KundeId))</span>
-						}
-						else
-						{
-							<span>Ukendt Kunde</span>
+							@KundeList.Single(k => k.KundeId == ordre.KundeId).Navn
 						}
 					</td>
 					<td><button class="btn btn-primary" @onclick="() => ShowPopup(ordre)">Skift Mekaniker</button> </td>
@@ -102,15 +98,7 @@ else
 
 	private List<Mekaniker> MekanikerList = new List<Mekaniker>();
 	private List<Ydelse> YdelseList = new List<Ydelse>();
-
-	private int tempYId;
-
-	private List<Ydelse> test;
-
-	void TEST()
-	{
-
-	}
+	private List<Kunde> KundeList = new List<Kunde>();
 
 	private Ordre selectedOrdre = new Ordre();
 	private int tempId;
@@ -134,6 +122,7 @@ else
 		try
 		{
 			OrdreList = (await OrdreService.GetAllOrdre()).ToList(); // Henter alle odrer fra databasen
+			KundeList = (await KundeService.GetAllKunder()).ToList();
 
 		}
 		catch (Exception e)
@@ -143,15 +132,6 @@ else
 		MekanikerList = (await MekanikerService.GetAllMekaniker()).ToList();
 		YdelseList = (await YdelseService.GetAllYdelser()).ToList();
 		tempId = MekanikerList[0].MekanikerId;
-	}
-
-	private async Task<string> GetKundeNavnAsync(int? kundeId)
-	{
-		if (kundeId == null)
-			return "Ukendt";
-
-		var kunde = await KundeService.GetKunde(kundeId.Value);
-		return kunde?.Navn ?? "Ukendt";
 	}
 
 	private async Task UpdateMekanikerHandler(Ordre ordre, int tempId)
