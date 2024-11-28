@@ -17,7 +17,7 @@ namespace BlazorAppClientServer.Server.Models
 
 		public DbSet<Ydelse> Ydelser { get; set; }
 		public DbSet<Ordre> Ordrer { get; set; }
-		public DbSet<YdelseTilOrdre> YdelseMængder {  get; set; }
+		public DbSet<YdelseTilOrdre> YdelseTilOrdrer {  get; set; }
 		public DbSet<Faktura> Fakturaer { get; set; }
 		public DbSet<Kunde> Kunder { get; set; }
 		public DbSet<Mærke> Mærker { get; set; }
