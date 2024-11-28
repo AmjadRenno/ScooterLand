@@ -10,8 +10,6 @@
 
 		public int? KundeId { get; set; }
 		public Kunde? Kunde { get; set; }
-		public string KundeNavn { get; set; }
-
 		public int? MekanikerId { get; set; }
 		public Mekaniker? Mekaniker { get; set; }
 

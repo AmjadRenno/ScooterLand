@@ -40,7 +40,16 @@ else
 							@MekanikerList.Single(x => x.MekanikerId == ordre.MekanikerId).Navn;
 						}
 					</td>
-					<td>@ordre.KundeNavn</td>
+					<td>
+						@if (ordre.KundeId != null)
+						{
+							<span>@(await GetKundeNavnAsync(ordre.KundeId))</span>
+						}
+						else
+						{
+							<span>Ukendt Kunde</span>
+						}
+					</td>
 					<td><button class="btn btn-primary" @onclick="() => ShowPopup(ordre)">Skift Mekaniker</button> </td>
 				</tr>		
 			}
@@ -122,31 +131,27 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		// Hent kundeoplysninger for hver ordre
-		foreach (var ordre in OrdreList)
+		try
 		{
-			if (ordre.KundeId != null)
-			{
-				// Hent kunde-navn og tilføj det til ordren
-				var kunde = await KundeService.GetKunde(ordre.KundeId.Value);
-				ordre.KundeNavn = kunde?.Navn ?? "Ukendt";
-			}
-			else
-			{
-				ordre.KundeNavn = "Ukendt";
-			}
-		}
-		try {
 			OrdreList = (await OrdreService.GetAllOrdre()).ToList(); // Henter alle odrer fra databasen
 
 		}
 		catch (Exception e)
 		{
 			Console.WriteLine(e.Message);
-		}													// OrdreList = templist.Where(x => x.Status == false).ToList(); // Sørger for at der kun viser ordre der ikke er fuldført
+		}                                                   // OrdreList = templist.Where(x => x.Status == false).ToList(); // Sørger for at der kun viser ordre der ikke er fuldført
 		MekanikerList = (await MekanikerService.GetAllMekaniker()).ToList();
 		YdelseList = (await YdelseService.GetAllYdelser()).ToList();
 		tempId = MekanikerList[0].MekanikerId;
+	}
+
+	private async Task<string> GetKundeNavnAsync(int? kundeId)
+	{
+		if (kundeId == null)
+			return "Ukendt";
+
+		var kunde = await KundeService.GetKunde(kundeId.Value);
+		return kunde?.Navn ?? "Ukendt";
 	}
 
 	private async Task UpdateMekanikerHandler(Ordre ordre, int tempId)
