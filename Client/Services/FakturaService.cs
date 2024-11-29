@@ -39,5 +39,12 @@ namespace BlazorAppClientServer.Client.Services
             var response = await _httpClient.PutAsJsonAsync("api/faktura", faktura);
             return (int)response.StatusCode;
         }
+        public async Task<int> MarkOrderAsCompleted(int fakturaId)
+        {
+           var response = await _httpClient.PostAsync($"api/faktura/mark-completed/{fakturaId}", null);
+           return (int)response.StatusCode;
+        }
+
+     
     }
 }
