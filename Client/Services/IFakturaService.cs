@@ -9,5 +9,6 @@ namespace BlazorAppClientServer.Client.Services
         Task<int> AddFaktura(Faktura faktura);
         Task<int> DeleteFaktura(int id);
         Task<int> UpdateFaktura(Faktura faktura);
+        Task<int> MarkOrderAsCompleted(int fakturaId);
     }
 }
