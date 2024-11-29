@@ -36,6 +36,11 @@ else
         </div>
 
         <div class="list-group-item d-flex flex-column">
+            <label class="form-label">Dato for Ordre:</label>
+            <input type="date" class="form-control" @bind="selectedDato" min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+        </div>
+
+        <div class="list-group-item d-flex flex-column">
             <label class="form-label">Vælg en Ydelse:</label>
             <select class="form-control" name="ydelse" id="ydelse" @bind-value="selectedYdelseId" @bind-value:event="onchange" @bind-value:after=" () => ShowPopup(false)" placeholder="Vælg en Ydelse" required>
                 @foreach (var ydelse in ydelseList)
@@ -267,6 +272,7 @@ else
 
     private bool isKundePopupVisible, isOpretKundeVisible = false;
     private Kunde newKunde = new Kunde();
+    private DateTime selectedDato = DateTime.Now;
 
 
 
@@ -345,6 +351,7 @@ else
                     {
                         KundeId = valgteKundeId,
                         MekanikerId = mekanikerList.Single(m => m.MekanikerId == selectedMekaniker).MekanikerId,
+                        OrdreDate = DateTime.Now,
                         YdelseTilOrdre = ordrerYdelser.Select(p => new YdelseTilOrdre
                         {
                             YdelseId = p.YdelseId,
