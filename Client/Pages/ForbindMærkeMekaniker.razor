@@ -5,10 +5,13 @@
 @using BlazorAppClientServer.Shared.Models
 @using Radzen  <!-- Importer Radzen -->
 @using Radzen.Blazor
+@using BlazorAppClientServer.Client.Shared
 
 @inject IMekanikerService MekanikerService
 @inject IMærkeService MærkeService
 @inject HttpClient Http
+
+<SharedHeader />
 
 <h3>Forbind Mærke til Mekaniker</h3>
 
