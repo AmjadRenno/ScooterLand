@@ -6,9 +6,9 @@ namespace BlazorAppClientServer.Shared.Models
 	public class Mekaniker
 	{
 		public int MekanikerId { get; set; }
-		public string Navn { get; set; }
-		public string Email { get; set; }
-		public string Password { get; set; }
+		public required string Navn { get; set; }
+		public required string Email { get; set; }
+		public required string Password { get; set; }
 
 		public List<Ordre> OrdreListe { get; set; } = new List<Ordre>();
 

@@ -31,7 +31,7 @@ namespace BlazorAppClientServer.Server.Controllers
         [HttpGet("{id:int}")]
         public Mærke GetMærkeById(int id)
         {
-            Mærke result = Repository.GetMærkeById(id);
+            Mærke result = Repository.GetMærke(id);
             return result;
         }
 

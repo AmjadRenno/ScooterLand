@@ -6,7 +6,7 @@ namespace BlazorAppClientServer.Server.Repositories
     public interface IMærkeRepository
     {
         List<Mærke> GetAllMærker();
-        Mærke GetMærkeById(int id);
+        Mærke GetMærke(int id);
         bool AddMærke(Mærke mærke);
         bool UpdateMærke(Mærke mærke);
         bool DeleteMærke(int id);

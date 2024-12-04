@@ -14,7 +14,7 @@ namespace BlazorAppClientServer.Server.Repositories
             return db.Mærker.ToList();
         }
 
-        public Mærke GetMærkeById(int id)
+        public Mærke GetMærke(int id)
         {
             Mærke foundMærke = db.Mærker.Single(m => m.MærkeId == id);
             if (foundMærke != null)

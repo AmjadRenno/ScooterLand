@@ -4,8 +4,6 @@
 @using BlazorAppClientServer.Client.Shared;
 @inject HttpClient Http
 
-<SharedHeader />
-
 @page "/opretkunde"
 
 <h3>Indtast Kunde</h3>
@@ -25,15 +23,24 @@
         <label for="KundePhone">Telefonnummer:</label>
         <InputNumber id="KundePhone" @bind-Value="newKunde.TelefonNummer" class="form-control" />
     </div>
+    <div>
+        <label for="KundeMærke">Mærke:</label>
+        <InputSelect @bind-Value ="newKunde.MærkeId"> 
+            @foreach (var mærke in mærkeList)
+            {
+                <option value="@mærke.MærkeId"> @mærke.Navn </option>
+            }
+        </InputSelect>
+    </div>
 
     <button type="submit" class="btn btn-primary mt-2">Gem Kunde</button>
 </EditForm>
 
-@if (kunder.Any())
+@if (kundeList.Any())
 {
     <h4>Gemte Kunder:</h4>
     <ul>
-        @foreach (var kunde in kunder)
+        @foreach (var kunde in kundeList)
         {
             <li>@kunde.KundeId - @kunde.Navn - @kunde.Adresse - @kunde.TelefonNummer</li>
         }
@@ -42,16 +49,20 @@
 
 @code {
     private Kunde newKunde = new Kunde();
-    private List<Kunde> kunder = new List<Kunde>();
+    private List<Kunde> kundeList = new List<Kunde>();
+    private List<Mærke> mærkeList = new List<Mærke>();
 
     [Inject]
     private IKundeService KundeService { get; set; }
+    [Inject]
+    private IMærkeService MærkeService { get; set; }
 
     int ErrorCode { get; set; } = 0;
 
     protected override async Task OnInitializedAsync()
     {
-        kunder = (await KundeService.GetAllKunder()).ToList();
+        kundeList = (await KundeService.GetAllKunder()).ToList();
+        mærkeList = (await MærkeService.GetAllMærker()).ToList();
     }
 
     private async void HandleValidSubmit()
@@ -59,7 +70,7 @@
         ErrorCode = await KundeService.AddKunde(newKunde);
         if (ErrorCode == (int)HttpStatusCode.OK)
         {
-            kunder = (await KundeService.GetAllKunder()).ToList();
+            kundeList = (await KundeService.GetAllKunder()).ToList();
         }
         newKunde = new Kunde();
     }

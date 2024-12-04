@@ -7,8 +7,6 @@ namespace BlazorAppClientServer.Server.Repositories
     public class FakturaRepository : IFakturaRepository
     {
         MyDBContext db = new MyDBContext();
-        
-
 
         public List<Faktura> GetAllFakturaer()
         {

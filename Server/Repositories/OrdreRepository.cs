@@ -9,11 +9,6 @@ namespace BlazorAppClientServer.Server.Repositories
 	{
 		MyDBContext db = new MyDBContext();
 
-		static OrdreRepository()
-		{
-
-		}
-
 		public List<Ordre> GetAllOrdre()
 		{
 			return db.Ordrer.Include(o => o.YdelseTilOrdre).ThenInclude(y => y.Ydelse).ToList();
@@ -31,17 +26,6 @@ namespace BlazorAppClientServer.Server.Repositories
 
 		public async void AddOrdre(Ordre newOrdre)
 		{
-			//var ydelser = await db.Ydelser.ToListAsync();
-
-			//ydelser.ForEach(y =>
-			//{
-			//	if (newOrdre.OrdreYdelser.Any(o => o.YdelseOrdrerId == y.YdelseId))
-			//	{
-			//		var untracked = newOrdre.OrdreYdelser.First(o => o.YdelseOrdrerId == y.YdelseId);
-			//		newOrdre.OrdreYdelser.Remove(untracked);
-			//		newOrdre.OrdreYdelser.Add();
-			//	}
-			//});
 			db.Ordrer.Add(newOrdre);
 			db.SaveChanges();
 		}
