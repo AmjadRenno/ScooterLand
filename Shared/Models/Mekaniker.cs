@@ -7,7 +7,11 @@ namespace BlazorAppClientServer.Shared.Models
 	{
 		public int MekanikerId { get; set; }
 		public required string Navn { get; set; }
+		[Required(ErrorMessage = "Email er påkrævet")]
+		[EmailAddress(ErrorMessage = "Ikke en gyldig Email adresse")]
 		public required string Email { get; set; }
+		[Required(ErrorMessage = "Password er påkrævet")]
+		[DataType(DataType.Password)]
 		public required string Password { get; set; }
 
 		public List<Ordre> OrdreListe { get; set; } = new List<Ordre>();
