@@ -8,6 +8,7 @@
 
 @inject IKundeService KundeService
 @inject IMekanikerService MekanikerService
+@inject IMærkeService MærkeService
 @inject HttpClient Http
 
 <h3>Forbind Kunde til Mekaniker</h3>
@@ -34,6 +35,17 @@
     </select>
 </div>
 
+<div>
+    <label for="maerke">Vælg Mærke:</label>
+    <select id="maerke" @bind="selectedMaerkeId">
+        <option value="">-- Vælg --</option>
+        @foreach (var maerke in maerker)
+        {
+            <option value="@maerke.MærkeId">@maerke.Navn</option>
+        }
+    </select>
+</div>
+
 <button @onclick="ForbindKundeTilMekaniker">Forbind</button>
 
 @if (errorMessage != null)
@@ -49,9 +61,11 @@
 @code {
     private List<Kunde> kunder = new();
     private List<Mekaniker> mekanikere = new();
+    private List<Mærke> maerker = new();
 
     private int? selectedKundeId;
     private int? selectedMekanikerId;
+    private int? selectedMaerkeId;
 
     private string? errorMessage;
     private string? successMessage;
@@ -65,21 +79,25 @@
 
             var fetchedMekanikere = (await MekanikerService.GetAllMekaniker()).ToList();
             mekanikere = fetchedMekanikere ?? new List<Mekaniker>();
+
+            var fetchedMaerker = (await MærkeService.GetAllMærker()).ToList();
+            maerker = fetchedMaerker ?? new List<Mærke>();
         }
         catch (Exception ex)
         {
             errorMessage = "Fejl ved indlæsning af data: " + ex.Message;
             kunder = new List<Kunde>();
             mekanikere = new List<Mekaniker>();
+            maerker = new List<Mærke>();
         }
     }
 
 
     private async Task ForbindKundeTilMekaniker()
     {
-        if (selectedKundeId == null || selectedMekanikerId == null)
+        if (selectedKundeId == null || selectedMekanikerId == null || selectedMaerkeId == null)
         {
-            errorMessage = "Vælg både en kunde og en mekaniker.";
+            errorMessage = "Vælg både en kunde og en mekaniker og et mærke.";
             return;
         }
 
@@ -87,11 +105,12 @@
         if (kunde != null)
         {
             kunde.MekanikerId = selectedMekanikerId;
+            kunde.MærkeId = selectedMaerkeId; // Forbind mærke til kunden
             var success = await KundeService.UpdateKunde(kunde);
 
             if (success)
             {
-                successMessage = "Kunde forbundet til mekaniker.";
+                successMessage = "Kunde forbundet til mekaniker og mærke.";
                 errorMessage = null;
             }
             else

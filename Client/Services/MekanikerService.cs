@@ -39,7 +39,7 @@ namespace BlazorAppClientServer.Client.Services
 		}
         public async Task<bool> UpdateMekaniker(Mekaniker mekaniker)
 		{
-			var response = await httpClient.PutAsJsonAsync("api/mekanikerapi", mekaniker);
+			var response = await httpClient.PutAsJsonAsync("api/mekanikerapi" + mekaniker.MekanikerId, mekaniker);
             return response.IsSuccessStatusCode;
 		}
 	}

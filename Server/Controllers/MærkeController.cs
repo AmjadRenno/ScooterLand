@@ -7,7 +7,7 @@ using System.Net;
 namespace BlazorAppClientServer.Server.Controllers
 {
     [ApiController]
-    [Route("api/mærkeapi")]
+    [Route("api/maerkeapi")]
     public class MærkeController : ControllerBase
     {
 
