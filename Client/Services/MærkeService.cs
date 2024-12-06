@@ -17,7 +17,7 @@ namespace BlazorAppClientServer.Client.Services
 
         public async Task<Mærke[]?> GetAllMærker()
         {
-			var result = await httpClient.GetFromJsonAsync<Mærke[]>("api/mekanikerapi");
+			var result = await httpClient.GetFromJsonAsync<Mærke[]>("api/mærkeapi");
 			return result;
         }
 
