@@ -44,15 +44,36 @@ else
 						}
 					</td>
 					<td>
-						@if (@ordre.MekanikerId != null) //Viser kun kunden hvis der er en kunde tilknyttet
+						@if (@ordre.KundeId != null) //Viser kun kunden hvis der er en kunde tilknyttet
 						{
 							@KundeList.Single(k => k.KundeId == ordre.KundeId).Navn
 						}
 					</td>
 					<td><button class="btn btn-primary" @onclick="() => ShowPopup(ordre)">Skift Mekaniker</button> </td>
+					<td>@ordre.YdelseTilOrdre.Sum(y => y.AktuelPris * y.Mængde):C</td> <!-- Samlet pris -->
 				</tr>		
+				<tr>
+					<td colspan="8">
+						<ul>
+							@foreach (var ydelse in ordre.YdelseTilOrdre)
+							{
+								<li>
+									Ydelse: @ydelse.Ydelse.Navn<br />
+									Art: @ydelse.Ydelse.Art<br />
+									Pris pr. enhed: @ydelse.AktuelPris:C<br />
+									Timer: @ydelse.Ydelse.Timer<br />
+									Mængde: @ydelse.Mængde<br />
+									Subtotal: @(ydelse.AktuelPris * ydelse.Mængde):C
+								</li>
+							}
+						</ul>
+					</td>
+				</tr>
 			}
-
+		</tbody>
+	</table>
+	<table>
+	<tbody>
 		</tbody>
 	</table>
 	@foreach (var ordrer in OrdreList) 
