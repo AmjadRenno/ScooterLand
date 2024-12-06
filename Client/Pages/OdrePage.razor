@@ -50,7 +50,7 @@ else
 						}
 					</td>
 					<td><button class="btn btn-primary" @onclick="() => ShowPopup(ordre)">Skift Mekaniker</button> </td>
-					<td>@ordre.YdelseTilOrdre.Sum(y => y.AktuelPris * y.Mængde):C</td> <!-- Samlet pris -->
+					<td>@ordre.YdelseTilOrdre.Sum(y => y.AktuelPris * y.Mængde)DKK</td> <!-- Samlet pris -->
 				</tr>		
 				<tr>
 					<td colspan="8">
