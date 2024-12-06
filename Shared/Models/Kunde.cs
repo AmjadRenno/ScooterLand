@@ -2,7 +2,7 @@
 {
 	public class Kunde
 	{
-		public int KundeId { get; set; }
+        public int KundeId { get; set; }
 		public string Navn { get; set; }
 		public string Adresse {  get; set; }
 		public int TelefonNummer { get; set; }
