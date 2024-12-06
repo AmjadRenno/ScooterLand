@@ -1,4 +1,4 @@
-﻿using BlazorAppClientServer.Server.Repositories;
+using BlazorAppClientServer.Server.Repositories;
 using BlazorAppClientServer.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,31 +16,41 @@ namespace BlazorAppClientServer.Server.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<Faktura>> GetFakturaer()
+        public IActionResult GetAllFakturaer()
         {
-            return _repository.GetAllFakturaer();
+            return Ok(_repository.GetAllFakturaer());
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Faktura> GetFaktura(int id)
+        public IActionResult GetFaktura(int id)
         {
             var faktura = _repository.GetFaktura(id);
-            if (faktura == null)
+            if (faktura != null)
             {
-                return NotFound();
+                return Ok(faktura);
             }
-            return faktura;
+            return NotFound();
         }
 
         [HttpPost]
-        public ActionResult AddFaktura(Faktura faktura)
+        public IActionResult AddFaktura([FromBody] Faktura faktura)
         {
             _repository.AddFaktura(faktura);
-            return Ok();
+            return StatusCode(201);
         }
 
-        [HttpPut]
-        public ActionResult UpdateFaktura(Faktura faktura)
+        [HttpDelete("{id}")]
+        public IActionResult DeleteFaktura(int id)
+        {
+            if (_repository.DeleteFaktura(id))
+            {
+                return NoContent();
+            }
+            return NotFound();
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateFaktura(int id, [FromBody] Faktura faktura)
         {
             if (_repository.UpdateFaktura(faktura))
             {
@@ -49,10 +59,10 @@ namespace BlazorAppClientServer.Server.Controllers
             return NotFound();
         }
 
-        [HttpDelete("{id}")]
-        public ActionResult DeleteFaktura(int id)
+        [HttpPost("mark-completed/{id}")]
+        public IActionResult MarkOrderAsCompleted(int id)
         {
-            if (_repository.DeleteFaktura(id))
+            if (_repository.MarkOrderAsCompleted(id))
             {
                 return NoContent();
             }

@@ -1,18 +1,34 @@
-﻿@page "/fakturapage"
+@page "/fakturapage"
 @using BlazorAppClientServer.Client.Services
 @using BlazorAppClientServer.Shared.Models
 @inject IFakturaService FakturaService
 
-<h3>Fakturaer</h3>
+<h2>Fakturaer</h2>
 
-<!-- Besked om fejl eller succes -->
 @if (!string.IsNullOrEmpty(Message))
 {
     <div class="alert alert-info">@Message</div>
 }
 
-<!-- Se liste over fakturaer -->
-@if (FakturaList != null && FakturaList.Any())
+<h4>Opret Ny Faktura</h4>
+<EditForm Model="@NewFaktura" OnValidSubmit="AddFaktura">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div>
+        <label>Ordre ID:</label>
+        <InputNumber @bind-Value="NewFaktura.OrdreId" />
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Opret Faktura</button>
+</EditForm>
+
+<br />
+
+@if (IsLoading)
+{
+    <p><em>🔄 Loading...</em></p>
+}
+
+else if (FakturaList != null && FakturaList.Any())
 {
     <ul>
         @foreach (var faktura in FakturaList)
@@ -20,8 +36,11 @@
             <li>
                 Faktura #: @faktura.FakturaId - Ordre: @(faktura.Ordre?.OrdreId.ToString() ?? "Ingen ordre")
                 <button class="btn btn-info mx-2 mb-2" @onclick="() => ShowFakturaDetails(faktura)">Vis Detaljer</button>
-                <button class="btn btn-warning mx-2 mb-2" @onclick="() => EditFaktura(faktura)">Rediger</button>
                 <button class="btn btn-danger mx-2 mb-2" @onclick="() => DeleteFaktura(faktura.FakturaId)">Slet</button>
+                @if (faktura.Ordre != null && !faktura.Ordre.Status)
+                {
+                    <button class="btn btn-success mx-2 mb-2" @onclick="() => MarkOrderAsCompleted(faktura.FakturaId)">Markér som Fuldført</button>
+                }
             </li>
         }
     </ul>
@@ -31,59 +50,107 @@ else
     <p>Ingen fakturaer fundet.</p>
 }
 
-<!-- Se fakturaoplysninger -->
 @if (SelectedFaktura != null)
 {
-    <h4>Fakturadetaljer</h4>
-    <p>Faktura #: @SelectedFaktura.FakturaId</p>
-    <p>Ordre ID: @(SelectedFaktura.Ordre?.OrdreId.ToString() ?? "Ingen ordre")</p>
-    <p>Tilføjelsesdato: @SelectedFaktura.Ordre?.OrdreDate.ToShortDateString()</p>
-    <button @onclick="ClearDetails">Luk Detaljer</button>
-}
-
-<!-- Add ny Faktura -->
-<h4>Opret Ny Faktura</h4>
-<EditForm Model="@NewFaktura" OnValidSubmit="AddFaktura">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-    <div>
-        <label>Ordre ID:</label>
-        <InputNumber @bind-Value="NewFaktura.OrdreId" />
-    </div>
-    <button type="submit" class="btn btn-primary">Opret Faktura</button>
-</EditForm>
-
-@if (SelectedFaktura != null)
-{
-    <h4>Rediger Faktura</h4>
-    <EditForm Model="@SelectedFaktura" OnValidSubmit="UpdateFaktura">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-        <div>
-            <label>Ordre ID:</label>
-            <InputNumber @bind-Value="SelectedFaktura.OrdreId" />
+    <div class="card mt-4">
+        <div class="card-header bg-primary text-white text-center">
+            <h4>Faktura #: @SelectedFaktura.FakturaId</h4>
         </div>
-        <button type="submit" class="btn btn-primary">Gem Ændringer</button>
-        <button class="btn btn-secondary" @onclick="ClearDetails">Annuller</button>
-    </EditForm>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead class="thead-light">
+                    <tr>
+                        <th colspan="2" class="text-center">Faktura Detaljer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Faktura ID:</strong></td>
+                        <td>@SelectedFaktura.FakturaId</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ordre ID:</strong></td>
+                        <td>@(SelectedFaktura.Ordre?.OrdreId.ToString() ?? "Ingen ordre")</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Kunde Navn:</strong></td>
+                        <td>@(SelectedFaktura.Ordre?.Kunde?.Navn ?? "Ukendt")</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mekaniker:</strong></td>
+                        <td>@(SelectedFaktura.Ordre?.Mekaniker?.Navn ?? "Ukendt")</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tilføjelsesdato:</strong></td>
+                        <td>@SelectedFaktura.Ordre?.OrdreDate.ToShortDateString()</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Status:</strong></td>
+                        <td style="color: @(SelectedFaktura.Ordre?.Status == true ? "green" : "red")">
+                            @(SelectedFaktura.Ordre?.Status == true ? "Fuldført" : "Ikke fuldført")
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h5 class="mt-4">Ydelser i Ordren</h5>
+            @if (SelectedFaktura.Ordre?.YdelseTilOrdre != null && SelectedFaktura.Ordre.YdelseTilOrdre.Any())
+            {
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Navn</th>
+                            <th>Pris (dkk)</th>
+                            <th>Mængde</th>
+                            <th>Total Pris (dkk)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ydelseTilOrdre in SelectedFaktura.Ordre.YdelseTilOrdre)
+                        {
+                            <tr>
+                                <td>@ydelseTilOrdre.Ydelse?.Navn</td>
+                                <td>@ydelseTilOrdre.AktuelPris</td>
+                                <td>@ydelseTilOrdre.Mængde</td>
+                                <td>@ydelseTilOrdre.TotalPris</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="text-muted">Ingen ydelser tilføjet.</p>
+            }
+        </div>
+        <div class="card-footer text-center">
+            <button class="btn btn-secondary" @onclick="ClearDetails">Luk Detaljer</button>
+        </div>
+    </div>
 }
-
-
-
 
 @code {
     private List<Faktura> FakturaList = new();
+
     private Faktura? SelectedFaktura;
+
     private Faktura NewFaktura = new();
+
     private string Message = string.Empty;
+
+    private bool IsLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadFakturaer();
+
+      await LoadFakturaer();
+
     }
 
     private async Task LoadFakturaer()
+
     {
+        IsLoading = true;
         try
         {
             FakturaList = (await FakturaService.GetAllFakturaer()).ToList();
@@ -92,66 +159,46 @@ else
         {
             Message = $"Kunne ikke hente fakturaer: {ex.Message}";
         }
-    }
+        finally
+        {
+            IsLoading = false;
+        }
 
-    private void ShowFakturaDetails(Faktura faktura)
-    {
-        SelectedFaktura = faktura;
-    }
-
-    private void EditFaktura(Faktura faktura)
-    {
-        SelectedFaktura = faktura;
     }
 
 
-    private void ClearDetails()
-    {
-        SelectedFaktura = null;
-    }
+    private void ShowFakturaDetails(Faktura faktura) => SelectedFaktura = faktura;
+
+    private void ClearDetails() => SelectedFaktura = null;
+
 
     private async Task AddFaktura()
     {
         try
         {
             var status = await FakturaService.AddFaktura(NewFaktura);
+
             if (status == 200)
+
             {
                 Message = "Faktura tilføjet succesfuldt!";
-                NewFaktura = new Faktura(); 
-                await LoadFakturaer(); 
+
+                NewFaktura = new Faktura();
+
+                await LoadFakturaer();
+
             }
             else
             {
                 Message = "Kunne ikke tilføje faktura.";
+
             }
         }
         catch (Exception ex)
         {
             Message = $"Fejl under tilføjelse: {ex.Message}";
         }
-    }
 
-    private async Task UpdateFaktura()
-    {
-        try
-        {
-            var status = await FakturaService.UpdateFaktura(SelectedFaktura);
-            if (status == 204)
-            {
-                Message = "Faktura opdateret succesfuldt!";
-                SelectedFaktura = null; // Slet SelectedFaktura
-                await LoadFakturaer(); // ReLoad Faktura page
-            }
-            else
-            {
-                Message = "Kunne ikke opdatere faktura.";
-            }
-        }
-        catch (Exception ex)
-        {
-            Message = $"Fejl under opdatering: {ex.Message}";
-        }
     }
 
 
@@ -160,10 +207,12 @@ else
         try
         {
             var status = await FakturaService.DeleteFaktura(id);
+
             if (status == 204)
             {
                 Message = "Faktura slettet succesfuldt!";
-                await LoadFakturaer(); 
+
+                await LoadFakturaer();
             }
             else
             {
@@ -174,5 +223,32 @@ else
         {
             Message = $"Fejl under sletning: {ex.Message}";
         }
+
+    }
+
+
+    private async Task MarkOrderAsCompleted(int fakturaId)
+    {
+        try
+        {
+            var status = await FakturaService.MarkOrderAsCompleted(fakturaId);
+
+            if (status == 204)
+
+            {
+                Message = "Ordre markeret som fuldført!";
+                await LoadFakturaer();
+            }
+            else
+            {
+                Message = "Kunne ikke markere ordre som fuldført.";
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Message = $"Fejl under opdatering: {ex.Message}";
+        }
+
     }
 }
