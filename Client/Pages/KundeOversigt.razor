@@ -1,0 +1,64 @@
+﻿@using BlazorAppClientServer.Client.Services
+@using BlazorAppClientServer.Shared.Models
+@inject NavigationManager NavigationManager
+@inject IKundeService KundeService
+
+@page "/KundeOversigt"
+
+<h3>liste over Kunder</h3>
+
+@if (kunder == null)
+{
+    <p>Indlæser kunder...</p>
+}
+else if (!kunder.Any())
+{
+    <p>Ingen kunder fundet.</p>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var kunde in kunder)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>@kunde.Navn (@kunde.KundeId)</span>
+                <button class="btn btn-primary btn-sm" @onclick="() => VisDetaljer(kunde.KundeId)">Se detaljer</button>
+            </li>
+        }
+    </ul>
+}
+
+@if (valgtKunde != null)
+{
+    <div class="card mt-3">
+        <div class="card-header">
+            Kunde Detaljer
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">@valgtKunde.Navn</h5>
+            <p class="card-text">Adresse: @valgtKunde.Adresse</p>
+            <p class="card-text">Telefon: @valgtKunde.TelefonNummer</p>
+            <button class="btn btn-secondary" @onclick="LukDetaljer">Luk</button>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Kunde>? kunder;
+    private Kunde? valgtKunde;
+
+    protected override async Task OnInitializedAsync()
+    {
+        kunder = (await KundeService.GetAllKunder())?.ToList();
+    }
+
+    private async Task VisDetaljer(int kundeId)
+    {
+        valgtKunde = await KundeService.GetKunde(kundeId);
+    }
+
+    private void LukDetaljer()
+    {
+        valgtKunde = null;
+    }
+}
