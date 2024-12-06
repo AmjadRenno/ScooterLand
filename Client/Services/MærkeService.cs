@@ -15,10 +15,10 @@ namespace BlazorAppClientServer.Client.Services
             this.httpClient = httpClient;
         }
 
-        public async Task<List<Mærke>> GetAllMærker()
+        public async Task<Mærke[]?> GetAllMærker()
         {
-            var result = await httpClient.GetFromJsonAsync<List<Mærke>>("api/mærkeapi");
-            return result;
+			var result = await httpClient.GetFromJsonAsync<Mærke[]>("api/mekanikerapi");
+			return result;
         }
 
         public async Task<Mærke> GetMærkeById(int id)
