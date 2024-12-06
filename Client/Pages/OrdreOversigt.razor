@@ -4,11 +4,7 @@
 @using BlazorAppClientServer.Client.Shared;
 @inject HttpClient Http
 
-<SharedHeader />
-
-@page "/ordrepage"
-
-<h3>OdrePage</h3>
+@page "/ordreoversigt"
 
 @if (OrdreList.Count == 0)
 {
@@ -17,6 +13,22 @@
 }
 else
 {
+	<p>
+		@if (ordreListStatus)
+		{
+			<button class="btn btn-primary" @onclick="ChangeOrdreListe">
+				Skjul fuldførte ordre
+			</button>
+		}
+		else 
+		{
+			<button class="btn btn-primary" @onclick="ChangeOrdreListe">
+				Vis fuldførte ordre
+			</button>
+		}
+		
+	</p>
+
 	<table class="table">
 		<thead>
 			<tr>
@@ -31,27 +43,56 @@ else
 			</tr>
 		</thead>
 		<tbody>
-			@foreach (var ordre in OrdreList)
+			@if (ordreListStatus)
 			{
-				<tr>
-					<td>@ordre.OrdreId </td>
-					<td>@ordre.OrdreDate </td>
-					<td>@ordre.Status </td>
-					<td>
-						@if (@ordre.MekanikerId != null) //Viser kun mekanikernavn hvis der er en mekaniker tilknyttet
-						{
-							@MekanikerList.Single(x => x.MekanikerId == ordre.MekanikerId).Navn;
-						}
-					</td>
-					<td>
-						@if (@ordre.MekanikerId != null) //Viser kun kunden hvis der er en kunde tilknyttet
-						{
-							@KundeList.Single(k => k.KundeId == ordre.KundeId).Navn
-						}
-					</td>
-					<td><button class="btn btn-primary" @onclick="() => ShowPopup(ordre)">Skift Mekaniker</button> </td>
-				</tr>		
+				@foreach (var ordre in OrdreList)
+				{
+					<tr>
+						<td>@ordre.OrdreId </td>
+						<td>@ordre.OrdreDate </td>
+						<td>@ordre.Status </td>
+						<td>
+							@if (@ordre.MekanikerId != null) //Viser kun mekanikernavn hvis der er en mekaniker tilknyttet
+							{
+								@MekanikerList.Single(x => x.MekanikerId == ordre.MekanikerId).Navn
+								;
+							}
+						</td>
+						<td>
+							@if (@ordre.MekanikerId != null) //Viser kun kunden hvis der er en kunde tilknyttet
+							{
+								@KundeList.Single(k => k.KundeId == ordre.KundeId).Navn
+							}
+						</td>
+						<td><button class="btn btn-primary" @onclick="() => ShowPopup(ordre)">Skift Mekaniker</button> </td>
+					</tr>
+				}
 			}
+			else
+			{
+				@foreach (var ordre in falseOrdreList)
+				{
+					<tr>
+						<td>@ordre.OrdreId </td>
+						<td>@ordre.OrdreDate </td>
+						<td>@ordre.Status </td>
+						<td>
+							@if (@ordre.MekanikerId != null) //Viser kun mekanikernavn hvis der er en mekaniker tilknyttet
+							{
+								@MekanikerList.Single(x => x.MekanikerId == ordre.MekanikerId).Navn
+								;
+							}
+						</td>
+						<td>
+							@if (@ordre.MekanikerId != null) //Viser kun kunden hvis der er en kunde tilknyttet
+							{
+								@KundeList.Single(k => k.KundeId == ordre.KundeId).Navn
+							}
+						</td>
+					</tr>
+				}
+			}
+			
 
 		</tbody>
 	</table>
@@ -98,6 +139,8 @@ else
 
 @code {
 	private List<Ordre> OrdreList = new List<Ordre>();
+	private List<Ordre> falseOrdreList = new List<Ordre>();
+	private bool ordreListStatus = false;
 
 	private List<Mekaniker> MekanikerList = new List<Mekaniker>();
 	private List<Ydelse> YdelseList = new List<Ydelse>();
@@ -125,16 +168,22 @@ else
 		try
 		{
 			OrdreList = (await OrdreService.GetAllOrdre()).ToList(); // Henter alle odrer fra databasen
+			falseOrdreList = OrdreList.Where(x => x.Status == false).ToList(); // Sørger for at der kun viser ordre der ikke er fuldført
 			KundeList = (await KundeService.GetAllKunder()).ToList();
 
 		}
 		catch (Exception e)
 		{
 			Console.WriteLine(e.Message);
-		}                                                   // OrdreList = templist.Where(x => x.Status == false).ToList(); // Sørger for at der kun viser ordre der ikke er fuldført
+		}                                                   
 		MekanikerList = (await MekanikerService.GetAllMekaniker()).ToList();
 		YdelseList = (await YdelseService.GetAllYdelser()).ToList();
 		tempId = MekanikerList[0].MekanikerId;
+	}
+
+	private void ChangeOrdreListe()
+	{
+		ordreListStatus = !ordreListStatus;
 	}
 
 	private async Task UpdateMekanikerHandler(Ordre ordre, int tempId)

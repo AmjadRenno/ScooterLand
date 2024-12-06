@@ -4,17 +4,17 @@
 @using BlazorAppClientServer.Client.Shared
 @inject HttpClient Http
 
-@page "/værkførerydelser"
+@page "/ydelseoversigt"
 
 <p>
-    <button class="btn btn-primary" @onclick="() => CreateNew()">Add Ydelse</button>
+    <button class="btn btn-primary" @onclick="CreateNew">Tilføj en Ydelse</button>
 </p>
 
 <h3>VærkførerYdelser</h3>
 
-@if (YdelseList.Count == 0)
+@if (ydelseList.Count == 0)
 {
-	<p><em>Loading...</em></p> // Viser en loading skærm indtil dataen er blevet hentet
+    <p><em>Loading...</em></p> // Viser en loading skærm indtil dataen er blevet hentet
 }
 else
 {
@@ -22,7 +22,7 @@ else
 
         <thead>
             <tr>
-                <th>Id </th>
+                <th>Navn </th>
                 <th>Pris </th>
                 <th>Art </th>
                 <th>Timer </th>
@@ -31,19 +31,19 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var ydelse in YdelseList)
+            @foreach (var ydelse in ydelseList)
             {
 
                 <tr>
-                    <td>@ydelse.YdelseId </td>
+                    <td>@ydelse.Navn </td>
                     <td>@ydelse.Pris </td>
                     <td>@ydelse.Art </td>
                     <td>@ydelse.Timer </td>
-                    <td> <button class="btn btn-primary" @onclick="() => ShowPopup(ydelse, true)">Edit</button> </td>
+                    <td> <button class="btn btn-primary" @onclick="() => ShowPopup(ydelse, true)">Redigere</button> </td>
                     <td>
                         <button @onclick="() => ShowDeletePopup(ydelse)"
-                                class="btn btn-primary text-decoration-underline text-warning">
-                            Delete
+                        class="btn btn-primary text-decoration-underline text-warning">
+                            Slet
                         </button>
                     </td>
                 </tr>
@@ -52,8 +52,8 @@ else
     </table>
 }
 
-@if (isPopupVisible){
-
+@if (isPopupVisible)
+{
     <div class="modal fade show" style="display: block;" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -102,18 +102,18 @@ else
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Delete Ydelse</h5>
+                    <h5 class="modal-title">Slet Ydelse</h5>
                     <button type="button" class="btn-close"
-                            @onclick="CloseDeletePopup"></button>
+                    @onclick="CloseDeletePopup"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to delete this ydelse?</p>
+                    <p>Er du sikker på at du vil slette denne ydelse?</p>
                     <button class="btn btn-danger"
-                            @onclick="HandleDelete">
+                    @onclick="HandleDelete">
                         Delete
                     </button>
                     <button class="btn btn-secondary"
-                            @onclick="CloseDeletePopup">
+                    @onclick="CloseDeletePopup">
                         Cancel
                     </button>
                 </div>
@@ -124,7 +124,7 @@ else
 }
 
 @code {
-    private List<Ydelse> YdelseList = new List<Ydelse>();
+    private List<Ydelse> ydelseList = new List<Ydelse>();
     private Ydelse selectedYdelse = new Ydelse();
 
     private int ErrorCode { get; set; } = 0;
@@ -134,7 +134,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        YdelseList = (await Service.GetAllYdelser()).ToList();
+        ydelseList = (await Service.GetAllYdelser()).ToList();
     }
 
     private bool isPopupVisible, isDeletePopupVisible = false;
@@ -148,12 +148,17 @@ else
         ShowPopup(selectedYdelse, isEdit: false);
     }
 
+    private void ShowFuldførtOrdre()
+    {
+
+    }
+
     private void ShowPopup(Ydelse ydelse, bool isEdit)
     {
         selectedYdelse = ydelse;
         isEditMode = isEdit;
-        modalTitle = isEdit ? "Edit Ydelse" : "Add Ydelse";
-        modalButtonText = isEdit ? "Save Changes" : "Save";
+        modalTitle = isEdit ? "Redigere Ydelse" : "Tilføj Ydelse";
+        modalButtonText = isEdit ? "Gem Ændringer" : "Gem";
         isPopupVisible = true;
     }
 
@@ -170,7 +175,7 @@ else
             ErrorCode = await Service.UpdateYdelse(selectedYdelse);
             if (ErrorCode == (int)HttpStatusCode.OK)
             {
-                YdelseList = (await Service.GetAllYdelser()).ToList();
+                ydelseList = (await Service.GetAllYdelser()).ToList();
             }
         }
         else
@@ -179,7 +184,7 @@ else
             ErrorCode = await Service.AddYdelse(selectedYdelse);
             if (ErrorCode == (int)HttpStatusCode.OK)
             {
-                YdelseList = (await Service.GetAllYdelser()).ToList();
+                ydelseList = (await Service.GetAllYdelser()).ToList();
             }
         }
         ClosePopup();
@@ -203,7 +208,7 @@ else
         ErrorCode = await Service.DeleteYdelse(selectedYdelse.YdelseId);
         if (ErrorCode == (int)HttpStatusCode.OK)
             {
-            YdelseList = (await Service.GetAllYdelser()).ToList();
+            ydelseList = (await Service.GetAllYdelser()).ToList();
             }
         // Lukker popup efter ydelsen er slettet
         CloseDeletePopup();
