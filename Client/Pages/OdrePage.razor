@@ -50,7 +50,7 @@ else
 						}
 					</td>
 					<td><button class="btn btn-primary" @onclick="() => ShowPopup(ordre)">Skift Mekaniker</button> </td>
-					<td>@ordre.YdelseTilOrdre.Sum(y => y.AktuelPris * y.Mængde)DKK</td> <!-- Samlet pris -->
+					<td>@ordre.YdelseTilOrdre.Sum(y => y.AktuelPris * y.Mængde) DKK</td> <!-- Samlet pris -->
 				</tr>		
 				<tr>
 					<td colspan="8">
@@ -63,7 +63,7 @@ else
 									Pris pr. enhed: @ydelse.AktuelPris DKK<br />
 									Timer: @ydelse.Ydelse.Timer<br />
 									Mængde: @ydelse.Mængde<br />
-									Subtotal: @(ydelse.AktuelPris * ydelse.Mængde)DKK
+									Subtotal: @(ydelse.AktuelPris * ydelse.Mængde) DKK
 								</li>
 							}
 						</ul>
@@ -76,17 +76,6 @@ else
 	<tbody>
 		</tbody>
 	</table>
-	@foreach (var ordrer in OrdreList) 
-	{
-		<ul>
-			@foreach (var ydelse in ordrer.YdelseTilOrdre)
-			{
-				<li>
-					@ydelse.Ydelse.Navn : @ydelse.Ydelse.Art : @ydelse.AktuelPris :  @ydelse.Mængde
-				</li>
-			}
-		</ul>
-	}
 }
 
 @if (isPopupVisible)
