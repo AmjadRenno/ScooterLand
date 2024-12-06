@@ -89,6 +89,9 @@
         var mekaniker = mekanikere.FirstOrDefault(m => m.MekanikerId == selectedMekanikerId);
         if (mekaniker != null)
         {
+            // Fjern eksisterende mærker, hvis mekaniker skal have ét nyt mærke
+            mekaniker.MærkeListe?.Clear();
+
             var mærke = maerker.FirstOrDefault(m => m.MærkeId == selectedMaerkeId);
             if (mærke != null)
             {

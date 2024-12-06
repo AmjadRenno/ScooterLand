@@ -39,7 +39,7 @@ namespace BlazorAppClientServer.Client.Services
 		}
         public async Task<bool> UpdateKunde(Kunde kunde)
 		{
-			var response = await httpClient.PutAsJsonAsync("api/kundeapi", kunde);
+			var response = await httpClient.PutAsJsonAsync("api/kundeapi" + kunde.KundeId, kunde);
             return response.IsSuccessStatusCode;
 		}
 	}
