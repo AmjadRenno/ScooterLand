@@ -6,6 +6,8 @@
 
 @page "/ydelseoversigt"
 
+<Header />
+
 <p>
     <button class="btn btn-primary" @onclick="CreateNew">Tilføj en Ydelse</button>
 </p>
@@ -33,7 +35,6 @@ else
         <tbody>
             @foreach (var ydelse in ydelseList)
             {
-
                 <tr>
                     <td>@ydelse.Navn </td>
                     <td>@ydelse.Pris </td>

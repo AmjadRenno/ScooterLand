@@ -1,66 +1,288 @@
 ﻿@using BlazorAppClientServer.Client.Services
 @using BlazorAppClientServer.Shared.Models
-@inject NavigationManager NavigationManager
-@inject IKundeService KundeService
 
-@page "/KundeOversigt"
+@page "/kundeoversigt"
 
-//Noter kig på OdrePage hvor den bruger en temp lambda 
+<h3>Kunde Oversigt</h3>
 
-<h3>liste over Kunder</h3>
+@if (errorMessage != null)
+{
+    <p style="color: red;">@errorMessage</p>
+}
 
-@if (kunder == null)
+@if (successMessage != null)
+{
+    <p style="color: green;">@successMessage</p>
+}
+
+@if (kundeList.Count == 0)
 {
     <p>Indlæser kunder...</p>
 }
-else if (!kunder.Any())
-{
-    <p>Ingen kunder fundet.</p>
-}
 else
 {
-    <ul class="list-group">
-        @foreach (var kunde in kunder)
-        {
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <span>@kunde.Navn (@kunde.KundeId)</span>
-                <button class="btn btn-primary btn-sm" @onclick="() => VisDetaljer(kunde.KundeId)">Se detaljer</button>
-            </li>
-        }
-    </ul>
+    <table class="table table-striped text-center">
+
+        <thead>
+            <tr>
+                <th>Navn </th>
+                <th>Telefon </th>
+                <th>Adresse </th>
+                <th>Mærke </th>
+                <th>Mekaniker </th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var kunde in kundeList)
+            {
+                <tr>
+                    <td>@kunde.Navn </td>
+                    <td>@kunde.TelefonNummer </td>
+                    <td>@kunde.Adresse </td>
+                    @if (kunde.MærkeId != null)
+                    {
+                        <td>@mærkeList.Single(m => m.MærkeId == kunde.MærkeId).Navn </td>
+                    }
+                    else
+                    {
+                        <td>Ingen </td>
+                    }
+                    @if (kunde.MekanikerId != null)
+                    {
+                        <td>@mekanikerList.Single(m => m.MekanikerId == kunde.MekanikerId).Navn </td>
+                    }
+                    else
+                    {
+                        <td>Ingen </td>
+                    }
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => ShowMærke(kunde.KundeId)">Skift Mærke</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => ShowMekaniker(kunde.KundeId)">Skift Mekaniker</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => ShowOrdreHistorik(kunde.KundeId)">Se OrdreHistorik</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }
 
-@if (valgtKunde != null)
+@if (showPopupOrdrer)
 {
-    <div class="card mt-3">
-        <div class="card-header">
-            Kunde Detaljer
-        </div>
-        <div class="card-body">
-            <h5 class="card-title">@valgtKunde.Navn</h5>
-            <p class="card-text">Adresse: @valgtKunde.Adresse</p>
-            <p class="card-text">Telefon: @valgtKunde.TelefonNummer</p>
-            <button class="btn btn-secondary" @onclick="LukDetaljer">Luk</button>
+    <div class="modal fade show" style="display: block;" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ordre Historik</h5>
+                    <button type="button" class="btn-close"
+                    @onclick="ClosePopup"></button>
+                </div>
+                <div class="modal-body">
+                    <ul>
+                        @foreach (var ordre in valgtOrdreList)
+                        {
+                            <h4> @ordre.OrdreDate.ToShortDateString() </h4>
+                            <p><b>Ydelser i odreren: </b> </p>
+                            @foreach (var ydelse in ordre.YdelseTilOrdre)
+                            {
+                                <li><b>@ydelse.Ydelse.Navn</b><br/></li>
+                            }
+                            <br>
+                            <p>Total Pris for ordre: <b> @CalculatePrice(ordre)</b> dkk</p>
+                            <p>Total Timer for ordre: <b> @CalculateHours(ordre)</b> timer</p>
+                        }
+                    </ul>
+
+                </div>
+            </div>
         </div>
     </div>
+    <div class="modal-backdrop fade show"></div>
 }
 
+@if (showPopupMærke)
+{
+    <div class="modal fade show" style="display: block;" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Skift Mærke</h5>
+                    <button type="button" class="btn-close"
+                    @onclick="ClosePopup"></button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <p>Vælg ny mærke for <b>@valgtKunde.Navn</b></p>
+                    </div>
+                    <select class="form-control" @bind="selectedMærke">
+                        @foreach (var mærke in mærkeList)
+                        {
+                            <option value="@mærke.MærkeId"> @mærke.Navn </option>
+                        }
+                    </select>
+                    <div>
+                        <br />
+                        <button class="btn btn-primary" @onclick="ChangeMærke">Skift Mærke </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+@if (showPopupMærke)
+{
+    <div class="modal fade show" style="display: block;" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Skift Mekaniker</h5>
+                    <button type="button" class="btn-close"
+                    @onclick="ClosePopup"></button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <p>Vælg ny mekaniker for <b>@valgtKunde.Navn</b></p>
+                    </div>
+                    <select class="form-control" @bind="selectedMekaniker">
+                        @foreach (var mekaniker in mekanikerList)
+                        {
+                            <option value="@mekaniker.MekanikerId"> @mekaniker.Navn </option>
+                        }
+                    </select>
+                    <div>
+                        <br />
+                        <button class="btn btn-primary" @onclick="ChangeMekaniker">Skift Mekaniker </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+
 @code {
-    private List<Kunde>? kunder;
-    private Kunde? valgtKunde;
+    [Inject]
+    IKundeService KundeService { get; set; }
+    [Inject]
+    IMærkeService MærkeService { get; set; }
+    [Inject]
+    IMekanikerService MekanikerService { get; set; }
+    [Inject]
+    IOrdreService OrdreService { get; set; }
+
+    private List<Kunde> kundeList = new List<Kunde>();
+    private Kunde valgtKunde = new Kunde();
+    private List<Ordre> valgtOrdreList = new List<Ordre>();
+
+    private List<Mærke> mærkeList = new List<Mærke>();
+    private List<Mekaniker> mekanikerList = new List<Mekaniker>();
+    private List<Ordre> ordreList = new List<Ordre>();
+
+    private int selectedMærke = 1;
+    private int selectedMekaniker = 1;
+
+    private bool showPopupOrdrer;
+    private bool showPopupMærke;
+    private bool showPopupMekaniker;
+
+    private string? errorMessage;
+    private string? successMessage;
 
     protected override async Task OnInitializedAsync()
     {
-        kunder = (await KundeService.GetAllKunder())?.ToList();
+        kundeList = (await KundeService.GetAllKunder()).ToList();
+        mærkeList = (await MærkeService.GetAllMærker()).ToList();
+        mekanikerList = (await MekanikerService.GetAllMekaniker()).ToList();
+        ordreList = (await OrdreService.GetAllOrdre()).ToList();
     }
 
-    private async Task VisDetaljer(int kundeId)
+    private void ShowOrdreHistorik(int kundeId)
     {
-        valgtKunde = await KundeService.GetKunde(kundeId);
+        valgtKunde = kundeList.Single(k => k.KundeId == kundeId);
+        valgtOrdreList = ordreList.Where(o => o.KundeId == valgtKunde.KundeId).ToList();
+        showPopupOrdrer = true;
     }
 
-    private void LukDetaljer()
+    private void ShowMærke(int kundeId)
     {
-        valgtKunde = null;
+        valgtKunde = kundeList.Single(k => k.KundeId == kundeId);
+        showPopupMærke = true;
+    }
+
+    private void ShowMekaniker(int kundeId)
+    {
+        valgtKunde = kundeList.Single(k => k.KundeId == kundeId);
+        showPopupMekaniker = true;
+    }
+
+    private void ClosePopup()
+    {
+        valgtOrdreList = new List<Ordre>();
+
+        showPopupOrdrer = false;
+        showPopupMærke = false;
+        showPopupMekaniker = false;
+        selectedMærke = 1;
+        selectedMekaniker = 1;
+    }
+
+    private double CalculatePrice(Ordre ordre)
+    {
+        double tempPrice = 0;
+        foreach(var ydelse in ordre.YdelseTilOrdre)
+        {
+            tempPrice += ydelse.TotalPris;
+        }
+        return tempPrice;
+    }
+
+    private double? CalculateHours(Ordre ordre)
+    {
+        double? tempHours = 0;
+        foreach (var ydelse in ordre.YdelseTilOrdre)
+        {
+            tempHours += ydelse.GetTimer();
+        }
+        return tempHours;
+    }
+
+    private async Task ChangeMærke()
+    {
+        valgtKunde.MærkeId = selectedMærke;
+        var success = await KundeService.UpdateKunde(valgtKunde);
+        CheckSuccess(success);
+        ClosePopup();
+    }
+
+    private async Task ChangeMekaniker()
+    {
+        valgtKunde.MekanikerId = selectedMekaniker;
+        var success = await KundeService.UpdateKunde(valgtKunde);
+        CheckSuccess(success);
+        ClosePopup();
+    }
+
+    private void CheckSuccess(bool success)
+    {
+        if (success)
+        {
+            successMessage = "Mekaniker Ændret!";
+            errorMessage = null;
+        }
+        else
+        {
+            errorMessage = "Der opstod en fejl.";
+            successMessage = null;
+        }
     }
 }
+

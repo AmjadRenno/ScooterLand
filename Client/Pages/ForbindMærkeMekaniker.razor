@@ -1,13 +1,13 @@
 ﻿@page "/forbind-maerke-mekaniker"
 @using BlazorAppClientServer.Client.Services
 @using BlazorAppClientServer.Shared.Models
-@using Radzen  <!-- Importer Radzen -->
-@using Radzen.Blazor
 @using BlazorAppClientServer.Client.Shared
 
 @inject IMekanikerService MekanikerService
 @inject IMærkeService MærkeService
 @inject HttpClient Http
+
+<Header />
 
 <h3>Forbind Mærke til Mekaniker</h3>
 

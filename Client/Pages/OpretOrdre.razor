@@ -6,10 +6,8 @@
 @using BlazorAppClientServer.Client.Shared
 @inject HttpClient HttpClient
 
-<SharedHeader />
-
 @page "/opretordre"
-
+<Header/>
 <h3>Create a New Order</h3>
 
 @if (ydelseList.Count == 0)

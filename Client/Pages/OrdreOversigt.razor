@@ -6,6 +6,8 @@
 
 @page "/ordreoversigt"
 
+<Header />
+
 @if (OrdreList.Count == 0)
 {
 	<p><em>Loading...</em></p>
@@ -54,13 +56,13 @@ else
 						<td>
 							@if (@ordre.KundeId != null) //Viser kun kunden hvis der er en kunde tilknyttet
 							{
-								@KundeList.Single(k => k.KundeId == ordre.KundeId).Navn
+								@kundeList.Single(k => k.KundeId == ordre.KundeId).Navn
 							}
 						</td>
 						<td>
 							@if (@ordre.MekanikerId != null) //Viser kun mekanikernavn hvis der er en mekaniker tilknyttet
 							{
-								@MekanikerList.Single(x => x.MekanikerId == ordre.MekanikerId).Navn
+								@mekanikerList.Single(x => x.MekanikerId == ordre.MekanikerId).Navn
 								;
 							}
 						</td>
@@ -124,13 +126,13 @@ else
 						<td>
 							@if (@ordre.KundeId != null) //Viser kun kunden hvis der er en kunde tilknyttet
 							{
-								@KundeList.Single(k => k.KundeId == ordre.KundeId).Navn
+								@kundeList.Single(k => k.KundeId == ordre.KundeId).Navn
 							}
 						</td>
 						<td>
 							@if (@ordre.MekanikerId != null) //Viser kun mekanikernavn hvis der er en mekaniker tilknyttet
 							{
-								@MekanikerList.Single(x => x.MekanikerId == ordre.MekanikerId).Navn
+								@mekanikerList.Single(x => x.MekanikerId == ordre.MekanikerId).Navn
 								;
 							}
 						</td>
@@ -182,7 +184,7 @@ else
 				<div class="modal-body">
 					<p> Vælg den nye mekaniker </p>
 					<InputSelect @bind-Value="tempId">
-						@foreach (var mekaniker in MekanikerList)
+						@foreach (var mekaniker in mekanikerList)
 						{
 							<option value="@mekaniker.MekanikerId"> @mekaniker.Navn </option>
 						}
@@ -203,9 +205,9 @@ else
 	private List<Ordre> falseOrdreList = new List<Ordre>();
 	private bool ordreListStatus = false;
 
-	private List<Mekaniker> MekanikerList = new List<Mekaniker>();
-	private List<Ydelse> YdelseList = new List<Ydelse>();
-	private List<Kunde> KundeList = new List<Kunde>();
+	private List<Mekaniker> mekanikerList = new List<Mekaniker>();
+	private List<Ydelse> ydelseList = new List<Ydelse>();
+	private List<Kunde> kundeList = new List<Kunde>();
 
 	private Ordre selectedOrdre = new Ordre();
 	private int tempId;
@@ -230,16 +232,16 @@ else
 		{
 			OrdreList = (await OrdreService.GetAllOrdre()).ToList(); // Henter alle odrer fra databasen
 			falseOrdreList = OrdreList.Where(x => x.Status == false).ToList(); // Sørger for at der kun viser ordre der ikke er fuldført
-			KundeList = (await KundeService.GetAllKunder()).ToList();
+			kundeList = (await KundeService.GetAllKunder()).ToList();
 
 		}
 		catch (Exception e)
 		{
 			Console.WriteLine(e.Message);
 		}                                                   
-		MekanikerList = (await MekanikerService.GetAllMekaniker()).ToList();
-		YdelseList = (await YdelseService.GetAllYdelser()).ToList();
-		tempId = MekanikerList[0].MekanikerId;
+		mekanikerList = (await MekanikerService.GetAllMekaniker()).ToList();
+		ydelseList = (await YdelseService.GetAllYdelser()).ToList();
+		tempId = mekanikerList[0].MekanikerId;
 	}
 
 	private void ChangeOrdreListe()
