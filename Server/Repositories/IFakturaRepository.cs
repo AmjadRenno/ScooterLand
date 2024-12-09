@@ -5,10 +5,12 @@ namespace BlazorAppClientServer.Server.Repositories
     public interface IFakturaRepository
     {
         List<Faktura> GetAllFakturaer();
-        Faktura? GetFaktura(int id);
+        Faktura? SearchFakturaByID(int searchId, bool isOrdreId);
         void AddFaktura(Faktura faktura);
-        bool DeleteFaktura(int id);
-        bool UpdateFaktura(Faktura faktura);
+        bool DeleteFakturaWithSql(int fakturaId);
         bool MarkOrderAsCompleted(int fakturaId);
+
     }
 }
+
+
