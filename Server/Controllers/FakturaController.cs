@@ -1,6 +1,7 @@
 using BlazorAppClientServer.Server.Repositories;
 using BlazorAppClientServer.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace BlazorAppClientServer.Server.Controllers
 {
@@ -8,65 +9,79 @@ namespace BlazorAppClientServer.Server.Controllers
     [ApiController]
     public class FakturaController : ControllerBase
     {
-        private readonly IFakturaRepository _repository;
+        private readonly IFakturaRepository Repository;
 
-        public FakturaController(IFakturaRepository repository)
+        public FakturaController(IFakturaRepository fakturaRepository)
         {
-            _repository = repository;
+            Repository = fakturaRepository ?? throw new ArgumentNullException(nameof(fakturaRepository));
+            Console.WriteLine("Repository initialized");
         }
 
         [HttpGet]
         public IActionResult GetAllFakturaer()
         {
-            return Ok(_repository.GetAllFakturaer());
+            return Ok(Repository.GetAllFakturaer());
         }
 
-        [HttpGet("{id}")]
-        public IActionResult GetFaktura(int id)
+        [HttpGet("search/{searchId}/{isOrdreId}")]
+        public IActionResult SearchFakturaByID(int searchId, bool isOrdreId)
         {
-            var faktura = _repository.GetFaktura(id);
+            var faktura = Repository.SearchFakturaByID(searchId, isOrdreId);
             if (faktura != null)
             {
                 return Ok(faktura);
             }
             return NotFound();
         }
+    
 
         [HttpPost]
         public IActionResult AddFaktura([FromBody] Faktura faktura)
         {
-            _repository.AddFaktura(faktura);
-            return StatusCode(201);
+            if (faktura == null)
+            {
+                return BadRequest("Fakturadata er tomme.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var ordreExists = Repository.GetAllFakturaer().Any(f => f.OrdreId == faktura.OrdreId);
+            if (!ordreExists)
+            {
+                ModelState.AddModelError("OrdreId", "Ordre-id er ugyldigt.");
+                return BadRequest(ModelState);
+            }
+
+            Repository.AddFaktura(faktura);
+            return CreatedAtAction(nameof(SearchFakturaByID), new { id = faktura.FakturaId }, faktura);
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult DeleteFaktura(int id)
+
+        [HttpDelete("delete-with-sql/{id}")]
+        public IActionResult DeleteFakturaWithSql(int id)
         {
-            if (_repository.DeleteFaktura(id))
+            if (Repository.DeleteFakturaWithSql(id))
             {
                 return NoContent();
             }
-            return NotFound();
+            return NotFound("Faktura not found or could not be deleted.");
         }
 
-        [HttpPut("{id}")]
-        public IActionResult UpdateFaktura(int id, [FromBody] Faktura faktura)
-        {
-            if (_repository.UpdateFaktura(faktura))
-            {
-                return NoContent();
-            }
-            return NotFound();
-        }
 
         [HttpPost("mark-completed/{id}")]
         public IActionResult MarkOrderAsCompleted(int id)
         {
-            if (_repository.MarkOrderAsCompleted(id))
+            if (Repository.MarkOrderAsCompleted(id))
             {
                 return NoContent();
             }
             return NotFound();
         }
+
     }
 }
+
+
