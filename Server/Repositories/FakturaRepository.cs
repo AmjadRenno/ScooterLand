@@ -1,31 +1,57 @@
 using BlazorAppClientServer.Server.Models;
 using BlazorAppClientServer.Shared.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace BlazorAppClientServer.Server.Repositories
 {
-    public class FakturaRepository : IFakturaRepository
+    internal class FakturaRepository : IFakturaRepository
     {
-        MyDBContext db = new MyDBContext();
+        private readonly MyDBContext db;
+
+        public FakturaRepository(MyDBContext context)
+        {
+            db = context;
+        }
+
+        public FakturaRepository()
+        {
+            db = new MyDBContext();
+        }
 
         public List<Faktura> GetAllFakturaer()
         {
-            return db.Fakturaer.Include(f => f.Ordre)
-                                     .ThenInclude(o => o.Kunde)
-                                     .Include(f => f.Ordre.Mekaniker)
-                                     .Include(f => f.Ordre.YdelseTilOrdre)
-                                     .ThenInclude(y => y.Ydelse)
-                                     .ToList();
+            return db.Fakturaer
+                     .Include(f => f.Ordre)
+                         .ThenInclude(o => o.Kunde)
+                     .Include(f => f.Ordre)
+                         .ThenInclude(o => o.Mekaniker)
+                     .Include(f => f.Ordre)
+                         .ThenInclude(o => o.YdelseTilOrdre)
+                             .ThenInclude(y => y.Ydelse)
+                     .ToList();
         }
 
-        public Faktura? GetFaktura(int id)
+        public Faktura? SearchFakturaByID(int searchId, bool isOrdreId)
         {
-            return db.Fakturaer.Include(f => f.Ordre)
-                                     .ThenInclude(o => o.Kunde)
-                                     .Include(f => f.Ordre.Mekaniker)
-                                     .Include(f => f.Ordre.YdelseTilOrdre)
-                                     .ThenInclude(y => y.Ydelse)
-                                     .FirstOrDefault(f => f.FakturaId == id);
+            IQueryable<Faktura> query = db.Fakturaer
+                .Include(f => f.Ordre)
+                    .ThenInclude(o => o.Kunde)
+                .Include(f => f.Ordre)
+                    .ThenInclude(o => o.Mekaniker)
+                .Include(f => f.Ordre)
+                    .ThenInclude(o => o.YdelseTilOrdre)
+                        .ThenInclude(y => y.Ydelse);
+
+            if (isOrdreId)
+            {
+                return query.FirstOrDefault(f => f.OrdreId == searchId);
+            }
+            else
+            {
+                return query.FirstOrDefault(f => f.FakturaId == searchId);
+            }
         }
 
         public void AddFaktura(Faktura faktura)
@@ -34,34 +60,48 @@ namespace BlazorAppClientServer.Server.Repositories
             db.SaveChanges();
         }
 
-        public bool DeleteFaktura(int id)
+
+        public bool DeleteFakturaWithSql(int fakturaId)
         {
-            var faktura = db.Fakturaer.Find(id);
-            if (faktura != null)
+            string connectionString = db.Database.GetDbConnection().ConnectionString;
+            bool isDeleted = false;
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                db.Fakturaer.Remove(faktura);
-                db.SaveChanges();
-                return true;
+                try
+                {
+                    connection.Open();
+
+                    string query = "DELETE FROM Fakturaer WHERE FakturaId = @FakturaId";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@FakturaId", fakturaId);
+
+                        int rowsAffected = command.ExecuteNonQuery();
+                        isDeleted = rowsAffected > 0;
+                    }
+                }
+                catch (SqlException sqlEx)
+                {
+                    Console.WriteLine($"SQL Error: {sqlEx.Message}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
+                }
             }
-            return false;
+
+            return isDeleted;
         }
 
-        public bool UpdateFaktura(Faktura faktura)
-        {
-            var existingFaktura = db.Fakturaer.Find(faktura.FakturaId);
-            if (existingFaktura != null)
-            {
-                existingFaktura.OrdreId = faktura.OrdreId;
-                db.SaveChanges();
-                return true;
-            }
-            return false;
-        }
 
         public bool MarkOrderAsCompleted(int fakturaId)
         {
-            var faktura = db.Fakturaer.Include(f => f.Ordre).FirstOrDefault(f => f.FakturaId == fakturaId);
-            if (faktura?.Ordre != null)
+            var faktura = db.Fakturaer
+                            .Include(f => f.Ordre)
+                            .FirstOrDefault(f => f.FakturaId == fakturaId);
+            if (faktura?.Ordre != null && !faktura.Ordre.Status)
             {
                 faktura.Ordre.Status = true;
                 db.SaveChanges();
@@ -69,5 +109,9 @@ namespace BlazorAppClientServer.Server.Repositories
             }
             return false;
         }
+
+       
     }
 }
+
+
