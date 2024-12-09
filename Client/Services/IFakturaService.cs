@@ -1,14 +1,16 @@
-﻿using BlazorAppClientServer.Shared.Models;
+using BlazorAppClientServer.Shared.Models;
+using System.Threading.Tasks;
 
 namespace BlazorAppClientServer.Client.Services
 {
     public interface IFakturaService
     {
-        Task<Faktura[]> GetAllFakturaer();
-        Task<Faktura?> GetFaktura(int id);
+        Task<List<Faktura>> GetAllFakturaer();
+        Task<Faktura?> SearchFakturaByID(int searchId, bool isOrdreId);
         Task<int> AddFaktura(Faktura faktura);
-        Task<int> DeleteFaktura(int id);
-        Task<int> UpdateFaktura(Faktura faktura);
+        Task<int> DeleteFakturaWithSql(int fakturaId);
         Task<int> MarkOrderAsCompleted(int fakturaId);
+
     }
 }
+
