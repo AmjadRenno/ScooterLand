@@ -1,50 +1,48 @@
-﻿using BlazorAppClientServer.Shared.Models;
+using BlazorAppClientServer.Shared.Models;
 using System.Net.Http.Json;
 
 namespace BlazorAppClientServer.Client.Services
 {
     public class FakturaService : IFakturaService
     {
-        private readonly HttpClient _httpClient;
+        private readonly HttpClient httpClient;
 
         public FakturaService(HttpClient httpClient)
         {
-            _httpClient = httpClient;
+            this.httpClient = httpClient;
         }
 
-        public async Task<Faktura[]> GetAllFakturaer()
+        public async Task<List<Faktura>> GetAllFakturaer()
         {
-            return await _httpClient.GetFromJsonAsync<Faktura[]>("api/faktura");
+            return await httpClient.GetFromJsonAsync<List<Faktura>>("api/faktura");
         }
 
-        public async Task<Faktura?> GetFaktura(int id)
+        public async Task<Faktura?> SearchFakturaByID(int searchId, bool isOrdreId)
         {
-            return await _httpClient.GetFromJsonAsync<Faktura>($"api/faktura/{id}");
+            return await httpClient.GetFromJsonAsync<Faktura>($"api/faktura/search/{searchId}/{isOrdreId}");
         }
 
         public async Task<int> AddFaktura(Faktura faktura)
         {
-            var response = await _httpClient.PostAsJsonAsync("api/faktura", faktura);
+            var response = await httpClient.PostAsJsonAsync("api/faktura", faktura);
             return (int)response.StatusCode;
         }
 
-        public async Task<int> DeleteFaktura(int id)
+        public async Task<int> DeleteFakturaWithSql(int fakturaId)
         {
-            var response = await _httpClient.DeleteAsync($"api/faktura/{id}");
+            var response = await httpClient.DeleteAsync($"api/faktura/delete-with-sql/{fakturaId}");
             return (int)response.StatusCode;
         }
 
-        public async Task<int> UpdateFaktura(Faktura faktura)
-        {
-            var response = await _httpClient.PutAsJsonAsync("api/faktura", faktura);
-            return (int)response.StatusCode;
-        }
+
         public async Task<int> MarkOrderAsCompleted(int fakturaId)
         {
-           var response = await _httpClient.PostAsync($"api/faktura/mark-completed/{fakturaId}", null);
-           return (int)response.StatusCode;
+            var response = await httpClient.PostAsync($"api/faktura/mark-completed/{fakturaId}", null);
+            return (int)response.StatusCode;
         }
 
-     
+       
     }
 }
+
+
