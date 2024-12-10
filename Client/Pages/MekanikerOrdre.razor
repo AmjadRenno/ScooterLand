@@ -1,28 +1,28 @@
-﻿@page "/mekaniker-ordre/{mekanikerId:int}"
+﻿@page "/mekaniker-ordre"
 @using BlazorAppClientServer.Client.Services
 @using BlazorAppClientServer.Shared.Models
 @using Radzen  <!-- Importer Radzen -->
 @using Radzen.Blazor
 @using BlazorAppClientServer.Client.Shared
 
+@inject IMekanikerService MekanikerService
 @inject IOrdreService OrdreService
 
-<h3>Ordrer for Mekaniker @MekanikerId</h3>
+<h3>Mekaniker Ordre</h3>
 
-@if (isLoading)
+<select @onchange="GetMekanikerOrdre">
+    <option value="">Vælg en mekaniker</option>
+    @foreach (var mekaniker in Mekaniker)
+
+    {
+        <option value="@mekaniker.MekanikerId">@mekaniker.Navn</option>
+    }
+</select>
+
+@if (Ordre != null && Ordre.Any())
+
 {
-    <p>Indlæser ordrer...</p>
-}
-else if (!string.IsNullOrWhiteSpace(errorMessage))
-{
-    <p class="text-danger">@errorMessage</p>
-}
-else if (ordrer == null || !ordrer.Any())
-{
-    <p>Ingen ordrer fundet for denne mekaniker.</p>
-}
-else
-{
+    <h4>Orders for @SelectedMechanicName:</h4>
     <table class="table">
         <thead>
             <tr>
@@ -32,7 +32,8 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var ordre in ordrer)
+            @foreach (var ordre in Ordre)
+
             {
                 <tr>
                     <td>@ordre.OrdreId</td>
@@ -44,15 +45,68 @@ else
     </table>
 }
 
-@code {
-    [Parameter]
-    public int MekanikerId { get; set; }
+else
 
-    private List<Ordre>? ordrer; // Liste til at holde ordrer
-    private bool isLoading = true; // Indikator for indlæsning
-    private string errorMessage = string.Empty; // Fejlmeddelelse
+{
+    <p>Ingen ordrer fundet for denne mekaniker.</p>
+}
+
+@code {
+    private List<Mekaniker> Mekaniker = new List<Mekaniker>();
+
+    private List<Ordre> AlleOrdre = new List<Ordre>();
+
+    private List<Ordre> Ordre = new List<Ordre>();
+
+    private string SelectedMechanicName = string.Empty;
+
+
 
     protected override async Task OnInitializedAsync()
+
     {
+
+        Mekaniker = (await MekanikerService.GetAllMekaniker()).ToList(); 
+        AlleOrdre = (await OrdreService.GetAllOrdre()).ToList();
+
+    }
+
+
+
+
+
+    private async Task GetMekanikerOrdre(ChangeEventArgs e)
+
+    {
+
+        var mechanicId = e.Value?.ToString();
+
+        if (!string.IsNullOrEmpty(mechanicId))
+
+        {
+
+            var selectedMechanic = Mekaniker.FirstOrDefault(m => m.MekanikerId == int.Parse(mechanicId));
+
+            if (selectedMechanic != null)
+
+            {
+
+                SelectedMechanicName = selectedMechanic.Navn;
+
+                Ordre = AlleOrdre.Where(o => o.MekanikerId == selectedMechanic.MekanikerId).ToList(); 
+
+            }
+
+        }
+
+        else
+
+        {
+
+            Ordre = new List<Ordre>(); 
+
+        }
+
     }
 }
+
