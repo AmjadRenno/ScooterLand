@@ -22,7 +22,7 @@
 @if (Ordre != null && Ordre.Any())
 
 {
-    <h4>Orders for @SelectedMechanicName:</h4>
+    <h4>Ordrer for @SelectedMechanicName idag og frem:</h4>
     <table class="table">
         <thead>
             <tr>
@@ -32,23 +32,57 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var ordre in Ordre)
+            @foreach (var ordre in Ordre.
+            Where(o => o.OrdreDate.Date >= DateTime.Today).
+            OrderBy(o => o.OrdreDate))
 
             {
                 <tr>
                     <td>@ordre.OrdreId</td>
-                    <td>@ordre.OrdreDate.ToShortDateString()</td>
-                    <td>@(ordre.Status ? "Afsluttet" : "I gang")</td>
+                    <td>@ordre.OrdreDate.ToString("dd-MM-yyyy HH:mm")</td>
+                    <td>@(ordre.Status ? "Fuldført" : "Ikke fuldført")</td>
                 </tr>
             }
         </tbody>
     </table>
+
+    
 }
 
 else
 
 {
     <p>Ingen ordrer fundet for denne mekaniker.</p>
+}
+
+@if (Ordre.Any(o => !o.Status && o.OrdreDate.Date < DateTime.Today))
+{
+    <h4>Ikke færdiggjorte ordrer før dagsdato:</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Ordre ID</th>
+                <th>Dato</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ordre in Ordre.
+            Where(o => !o.Status && o.OrdreDate.Date < DateTime.Today).
+            OrderBy(o => o.OrdreDate))
+            {
+                <tr>
+                    <td>@ordre.OrdreId</td>
+                    <td>@ordre.OrdreDate.ToString("dd-MM-yyyy HH:mm")</td>
+                    <td>@(ordre.Status ? "Fuldført" : "Ikke fuldført")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    
 }
 
 @code {

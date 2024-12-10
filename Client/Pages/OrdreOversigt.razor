@@ -47,8 +47,8 @@ else
 			{
 				<tr>
 					<td>@ordre.OrdreId </td>
-					<td>@ordre.OrdreDate </td>
-					<td>@ordre.Status </td>
+					<td>@ordre.OrdreDate.ToString("dd-MM-yyyy HH:mm") </td>
+					<td>@(ordre.Status ? "Fuldført" : "Ikke fuldført") </td>
 					<td>
 						@if (@ordre.MekanikerId != null) //Viser kun mekanikernavn hvis der er en mekaniker tilknyttet
 						{
