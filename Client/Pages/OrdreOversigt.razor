@@ -17,13 +17,13 @@ else
 		@if (ordreListStatus)
 		{
 			<button class="btn btn-primary" @onclick="ChangeOrdreListe">
-				Skjul fuldførte ordre
+				Vis fuldførte ordrer
 			</button>
 		}
 		else 
 		{
 			<button class="btn btn-primary" @onclick="ChangeOrdreListe">
-				Vis fuldførte ordre
+				Skjul fuldførte ordrer
 			</button>
 		}
 		
@@ -120,6 +120,7 @@ else
 
 @code {
 	private List<Ordre> OrdreList = new List<Ordre>();
+	private List<Ordre> allOrdreList = new List<Ordre>();
 	private List<Ordre> falseOrdreList = new List<Ordre>();
 	private bool ordreListStatus = false;
 
@@ -148,24 +149,33 @@ else
 	{
 		try
 		{
-			OrdreList = (await OrdreService.GetAllOrdre()).ToList(); // Henter alle odrer fra databasen
-			falseOrdreList = OrdreList.Where(x => x.Status == false).ToList(); // Sørger for at der kun viser ordre der ikke er fuldført
+			allOrdreList = (await OrdreService.GetAllOrdre()).ToList(); 
+			falseOrdreList = allOrdreList.Where(x => x.Status == false).ToList();
+			OrdreList = allOrdreList;
 			KundeList = (await KundeService.GetAllKunder()).ToList();
-
 		}
 		catch (Exception e)
 		{
 			Console.WriteLine(e.Message);
-		}                                                   
+		}
 		MekanikerList = (await MekanikerService.GetAllMekaniker()).ToList();
 		YdelseList = (await YdelseService.GetAllYdelser()).ToList();
 		tempId = MekanikerList[0].MekanikerId;
 	}
 
+
+
 	private void ChangeOrdreListe()
 	{
 		ordreListStatus = !ordreListStatus;
+		OrdreList = ordreListStatus
+			? allOrdreList.Where(x => x.Status == false).ToList() 
+			: allOrdreList; 
 	}
+
+
+
+
 
 	private async Task UpdateMekanikerHandler(Ordre ordre, int tempId)
 	{
