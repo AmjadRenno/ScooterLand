@@ -15,7 +15,7 @@
 
 <div>
     <label for="kunde">Vælg Kunde:</label>
-    <select id="kunde" @bind="selectedKundeId">
+    <select id="kunde" class="form-control dropdown-indicator" @bind="selectedKundeId">
         <option value="">-- Vælg --</option>
         @foreach (var kunde in kunder)
         {
@@ -26,7 +26,7 @@
 
 <div>
     <label for="mekaniker">Vælg Mekaniker:</label>
-    <select id="mekaniker" @bind="selectedMekanikerId">
+    <select id="mekaniker" class="form-control dropdown-indicator" @bind="selectedMekanikerId">
         <option value="">-- Vælg --</option>
         @foreach (var mekaniker in mekanikere)
         {
@@ -37,7 +37,7 @@
 
 <div>
     <label for="maerke">Vælg Mærke:</label>
-    <select id="maerke" @bind="selectedMaerkeId">
+    <select id="maerke" class="form-control dropdown-indicator" @bind="selectedMaerkeId">
         <option value="">-- Vælg --</option>
         @foreach (var maerke in maerker)
         {
@@ -45,6 +45,7 @@
         }
     </select>
 </div>
+
 
 <button @onclick="ForbindKundeTilMekaniker">Forbind</button>
 

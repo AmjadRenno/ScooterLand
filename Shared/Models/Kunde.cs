@@ -12,8 +12,8 @@ namespace BlazorAppClientServer.Shared.Models
 		[Required(ErrorMessage = "Adressefeltet er påkrævet")]
 		public string Adresse {  get; set; }
 		[Required(ErrorMessage = "Telefonnummerfeltet er påkrævet")]
-		[StringLength(8, MinimumLength = 8, ErrorMessage = "Ikke et gyldig telefon nummer")]
-		public int TelefonNummer { get; set; }
+        [Range(10000000, 99999999, ErrorMessage = "Telefonnummer skal være et gyldigt 8-cifret nummer.")]
+        public int TelefonNummer { get; set; }
 
 		public int? MekanikerId { get; set; }
 		public Mekaniker? Mekaniker { get; set; }

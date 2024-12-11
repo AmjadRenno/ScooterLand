@@ -1,10 +1,67 @@
-﻿@using BlazorAppClientServer.Client.Shared
+﻿@using BlazorAppClientServer.Shared.Models
+@using BlazorAppClientServer.Client.Services
 
 @page "/"
 
-<PageTitle>Index</PageTitle>
+@inject IOrdreService OrdreService
+@inject IMekanikerService MekanikerService
 
-<h1>Velkommen til Scooterland</h1>
+<PageTitle>Forside</PageTitle>
 
+<h1>Ordrer for idag</h1>
 
+@if (isLoading)
+{
+    <p><em>Loading...</em></p>
+}
+else if (TodayOrders == null || !TodayOrders.Any())
+{
+    <p>Ingen ordrer fundet for dags dato.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Ordre ID</th>
+                <th>Dato</th>
+                <th>Status</th>
+                <th>Mekaniker</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in TodayOrders)
+            {
+                <tr>
+                    <td>@order.OrdreId</td>
+                    <td>@order.OrdreDate.ToString("dd-MM-yyyy HH:mm")</td>
+                    <td>@(order.Status ? "Fuldført" : "Ikke fuldført")</td>
+                    <td>@(Mechanics.FirstOrDefault(m => m.MekanikerId == order.MekanikerId)?.Navn ?? "Ikke tilknyttet")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
+@code {
+    private List<Ordre> TodayOrders = new List<Ordre>();
+    private List<Mekaniker> Mechanics = new List<Mekaniker>();
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var allOrders = await OrdreService.GetAllOrdre();
+            Mechanics = (await MekanikerService.GetAllMekaniker()).ToList();
+
+            TodayOrders = allOrders
+                .Where(order => order.OrdreDate.Date == DateTime.Today)
+                .ToList();
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

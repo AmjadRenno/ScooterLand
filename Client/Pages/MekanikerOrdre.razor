@@ -10,14 +10,15 @@
 
 <h3>Mekaniker Ordre</h3>
 
-<select @onchange="GetMekanikerOrdre">
+<label for="MekanikerDropdown">Vælg Mekaniker:</label>
+<select id="MekanikerDropdown" class="form-control dropdown-indicator" @onchange="GetMekanikerOrdre">
     <option value="">Vælg en mekaniker</option>
     @foreach (var mekaniker in Mekaniker)
-
     {
         <option value="@mekaniker.MekanikerId">@mekaniker.Navn</option>
     }
 </select>
+
 
 @if (Ordre != null && Ordre.Any())
 
@@ -67,9 +68,9 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var ordre in Ordre.
-            Where(o => !o.Status && o.OrdreDate.Date < DateTime.Today).
-            OrderBy(o => o.OrdreDate))
+            @foreach (var ordre in Ordre
+            .Where(o => !o.Status && o.OrdreDate.Date < DateTime.Today)
+            .OrderBy(o => o.OrdreDate))
             {
                 <tr>
                     <td>@ordre.OrdreId</td>

@@ -6,11 +6,10 @@
 
 @page "/opretkunde"
 
-<h3>Indtast Kunde</h3>
+<h1>Indtast Kunde</h1>
 
 <EditForm Model="newKunde" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
-    <ValidationSummary />
     <div>
         <label for="KundeName">Navn:</label>
         <InputText id="KundeName" @bind-Value="newKunde.Navn" class="form-control" />
@@ -21,16 +20,19 @@
     </div>
     <div>
         <label for="KundePhone">Telefonnummer:</label>
-        <InputNumber id="KundePhone" @bind-Value="newKunde.TelefonNummer" class="form-control" />
+        <InputText id="KundePhone" @bind-Value="TelefonNummerString"
+               class="form-control" inputmode="numeric" pattern="[0-9]*" maxlength="8"
+               style="appearance: none; -moz-appearance: none; -webkit-appearance: none;" />
     </div>
     <div>
         <label for="KundeMærke">Mærke:</label>
-        <InputSelect @bind-Value ="newKunde.MærkeId"> 
+        <InputSelect @bind-Value="newKunde.MærkeId" class="form-control dropdown-indicator">
             @foreach (var mærke in mærkeList)
             {
-                <option value="@mærke.MærkeId"> @mærke.Navn </option>
+                <option value="@mærke.MærkeId">@mærke.Navn</option>
             }
         </InputSelect>
+        <ValidationSummary />
     </div>
 
     <button type="submit" class="btn btn-primary mt-2">Gem Kunde</button>
@@ -52,6 +54,22 @@
     private List<Kunde> kundeList = new List<Kunde>();
     private List<Mærke> mærkeList = new List<Mærke>();
 
+    private string TelefonNummerString //Denne er lavet for at fjerne de grimme pile (Op/ned) som var i input feltet
+    {
+        get => newKunde.TelefonNummer > 0 ? newKunde.TelefonNummer.ToString() : string.Empty;
+        set
+        {
+            if (int.TryParse(value, out var number))
+            {
+                newKunde.TelefonNummer = number;
+            }
+            else
+            {
+                newKunde.TelefonNummer = 0; // Default to 0 if parsing fails
+            }
+        }
+    }
+
     [Inject]
     private IKundeService KundeService { get; set; }
     [Inject]
@@ -65,7 +83,7 @@
         mærkeList = (await MærkeService.GetAllMærker()).ToList();
     }
 
-    private async void HandleValidSubmit()
+    private async Task HandleValidSubmit()
     {
         ErrorCode = await KundeService.AddKunde(newKunde);
         if (ErrorCode == (int)HttpStatusCode.OK)

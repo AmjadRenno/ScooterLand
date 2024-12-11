@@ -30,7 +30,7 @@ else
 
         <div class="list-group-item d-flex flex-column">
             <label class="form-label">Mekaniker:</label>
-            <select class="form-control" @bind="selectedMekaniker">
+            <select class="form-control dropdown-indicator" @bind="selectedMekaniker">
                 @foreach (var mekaniker in mekanikerList)
                 {
                     <option value="@mekaniker.MekanikerId"> @mekaniker.Navn </option>
@@ -45,7 +45,7 @@ else
 
         <div class="list-group-item d-flex flex-column">
             <label class="form-label">Vælg en Ydelse:</label>
-            <select class="form-control" name="ydelse" id="ydelse" @bind-value="selectedYdelseId" @bind-value:event="onchange" @bind-value:after=" () => ShowPopup(false)" placeholder="Vælg en Ydelse" required>
+            <select class="form-control dropdown-indicator" name="ydelse" id="ydelse" @bind-value="selectedYdelseId" @bind-value:event="onchange" @bind-value:after=" () => ShowPopup(false)" placeholder="Vælg en Ydelse" required>
                 @foreach (var ydelse in ydelseList)
                 {
                     <option value="@ydelse.YdelseId">
@@ -74,7 +74,7 @@ else
     </div>
 
     <h4>Ydelse i Ordrer:</h4>
-    @if (ordrerYdelser.Any()) // Viser ydelserne i ordreren hvis der er nogen
+    @if (ordrerYdelser.Any())
     {
         <ul class="list-group">
             @foreach (var ydelse in ordrerYdelser)
