@@ -1,5 +1,6 @@
 ﻿using BlazorAppClientServer.Server.Models;
 using BlazorAppClientServer.Shared.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazorAppClientServer.Server.Repositories
 {
@@ -9,7 +10,7 @@ namespace BlazorAppClientServer.Server.Repositories
 
 		public List<Kunde> GetKunder()
 		{
-			return db.Kunder.ToList();
+			return db.Kunder.Include(k => k.Mærke).ThenInclude(k => k.Mekaniker).ToList();
 		}
 
 		public Kunde GetKunde(int id)

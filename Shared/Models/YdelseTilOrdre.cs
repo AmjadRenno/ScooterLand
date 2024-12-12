@@ -11,7 +11,11 @@
 			get => pris;
 			set { pris = AktuelPris * Mængde;}
 			}
-
 		double pris;
+		
+		public double? GetTimer() 
+		{
+			return Ydelse?.Timer;
+		}
 	}
 }

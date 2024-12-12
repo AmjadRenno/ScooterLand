@@ -8,7 +8,9 @@
 @inject IMekanikerService MekanikerService
 @inject IOrdreService OrdreService
 
-<h3>Mekaniker Ordre</h3>
+<Header />
+
+<h3>Ordrer for Mekaniker @MekanikerId</h3>
 
 <label for="MekanikerDropdown">Vælg Mekaniker:</label>
 <select id="MekanikerDropdown" class="form-control dropdown-indicator mb-2" @onchange="GetMekanikerOrdre">

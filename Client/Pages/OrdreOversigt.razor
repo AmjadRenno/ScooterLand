@@ -6,6 +6,8 @@
 
 @page "/ordreoversigt"
 
+<Header />
+
 @if (OrdreList.Count == 0)
 {
 	<p><em>🔄 Loading...</em></p>
@@ -26,68 +28,148 @@ else
 				Skjul fuldførte ordrer
 			</button>
 		}
-		
+
 	</p>
 
-	<table class="table">
-		<thead>
-			<tr>
-				<th>Ordre Id</th>
-				<th>Dato</th>
-				<th>Status</th>
-				<th>Mekaniker</th>
-				<th>Kunde</th>
-				<th>Ydelser</th>
-				<th>Samlet Pris</th>
-				<th></th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var ordre in OrdreList)
-			{
+	@if (ordreListStatus)
+	{
+		<table class="table">
+			<thead>
 				<tr>
-					<td>@ordre.OrdreId </td>
-					<td>@ordre.OrdreDate.ToString("dd-MM-yyyy HH:mm") </td>
-					<td>@(ordre.Status ? "Fuldført" : "Ikke fuldført") </td>
-					<td>
-						@if (@ordre.MekanikerId != null) //Viser kun mekanikernavn hvis der er en mekaniker tilknyttet
-						{
-							@MekanikerList.Single(x => x.MekanikerId == ordre.MekanikerId).Navn;
-						}
-					</td>
-					<td>
-						@if (@ordre.KundeId != null) //Viser kun kunden hvis der er en kunde tilknyttet
-						{
-							@KundeList.Single(k => k.KundeId == ordre.KundeId).Navn
-						}
-					</td>
-					<td><button class="btn btn-primary" @onclick="() => ShowPopup(ordre)">Skift Mekaniker</button> </td>
-					<td>@ordre.YdelseTilOrdre.Sum(y => y.AktuelPris * y.Mængde) DKK</td> <!-- Samlet pris -->
-				</tr>		
-				<tr>
-					<td colspan="8">
-						<ul>
-							@foreach (var ydelse in ordre.YdelseTilOrdre)
-							{
-								<li>
-									Ydelse: @ydelse.Ydelse.Navn<br />
-									Art: @ydelse.Ydelse.Art<br />
-									Pris pr. enhed: @ydelse.AktuelPris DKK<br />
-									Timer: @ydelse.Ydelse.Timer<br />
-									Mængde: @ydelse.Mængde<br />
-									Subtotal: @(ydelse.AktuelPris * ydelse.Mængde) DKK
-								</li>
-							}
-						</ul>
-					</td>
+					<th>Ordre Id</th>
+					<th>Dato</th>
+					<th>Status</th>
+					<th>Kunde</th>
+					<th>Mekaniker</th>
+					<th></th>
+					<th>Samlet Pris</th>
+					<th></th>
 				</tr>
-			}
-		</tbody>
-	</table>
-	<table>
-	<tbody>
-		</tbody>
-	</table>
+			</thead>
+			<tbody>
+				@foreach (var ordre in OrdreList)
+				{
+					<tr>
+						<td>@ordre.OrdreId </td>
+						<td>@ordre.OrdreDate </td>
+						<td>@ordre.Status </td>
+						<td>
+							@if (@ordre.KundeId != null) //Viser kun kunden hvis der er en kunde tilknyttet
+							{
+								@kundeList.Single(k => k.KundeId == ordre.KundeId).Navn
+							}
+						</td>
+						<td>
+							@if (@ordre.MekanikerId != null) //Viser kun mekanikernavn hvis der er en mekaniker tilknyttet
+							{
+								@mekanikerList.Single(x => x.MekanikerId == ordre.MekanikerId).Navn
+								;
+							}
+						</td>
+						<td><button class="btn btn-primary" @onclick="() => ShowPopup(ordre)">Skift Mekaniker</button> </td>
+						<td>@ordre.YdelseTilOrdre.Sum(y => y.AktuelPris * y.Mængde) DKK</td> <!-- Samlet pris -->
+						<td>
+							@if (ordre.Status == false)
+							{
+								<button class="btn btn-primary" @onclick="() => FinishOrdre(ordre)">Fuldfør Ordre!</button>
+							}
+						</td>
+					</tr>
+					<tr>
+						<td colspan="8">
+							<ul>
+								@foreach (var ydelse in ordre.YdelseTilOrdre)
+								{
+									<li>
+										Ydelse: @ydelse.Ydelse.Navn<br />
+										Art: @ydelse.Ydelse.Art<br />
+										Pris pr. enhed: @ydelse.AktuelPris DKK<br />
+										Timer: @ydelse.Ydelse.Timer<br />
+										Mængde: @ydelse.Mængde<br />
+										Subtotal: @(ydelse.AktuelPris * ydelse.Mængde) DKK
+									</li>
+								}
+							</ul>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+		<table>
+			<tbody>
+			</tbody>
+		</table>
+	}
+
+	else 
+	{
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Ordre Id</th>
+					<th>Dato</th>
+					<th>Status</th>
+					<th>Kunde</th>
+					<th>Mekaniker</th>
+					<th></th>
+					<th>Samlet Pris</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var ordre in falseOrdreList)
+				{
+					<tr>
+						<td>@ordre.OrdreId </td>
+						<td>@ordre.OrdreDate </td>
+						<td>@ordre.Status </td>
+						<td>
+							@if (@ordre.KundeId != null) //Viser kun kunden hvis der er en kunde tilknyttet
+							{
+								@kundeList.Single(k => k.KundeId == ordre.KundeId).Navn
+							}
+						</td>
+						<td>
+							@if (@ordre.MekanikerId != null) //Viser kun mekanikernavn hvis der er en mekaniker tilknyttet
+							{
+								@mekanikerList.Single(x => x.MekanikerId == ordre.MekanikerId).Navn
+								;
+							}
+						</td>
+						<td><button class="btn btn-primary" @onclick="() => ShowPopup(ordre)">Skift Mekaniker</button> </td>
+						<td>@ordre.YdelseTilOrdre.Sum(y => y.AktuelPris * y.Mængde) DKK</td> <!-- Samlet pris -->
+						<td>@if (ordre.Status == false)
+							{
+								<button class="btn btn-primary" @onclick="() => FinishOrdre(ordre)">Fuldfør Ordre!</button>
+							}
+						</td>
+					</tr>
+					<tr>
+						<td colspan="8">
+							<ul>
+								@foreach (var ydelse in ordre.YdelseTilOrdre)
+								{
+									<li>
+										Ydelse: @ydelse.Ydelse.Navn<br />
+										Art: @ydelse.Ydelse.Art<br />
+										Pris pr. enhed: @ydelse.AktuelPris DKK<br />
+										Timer: @ydelse.Ydelse.Timer<br />
+										Mængde: @ydelse.Mængde<br />
+										Subtotal: @(ydelse.AktuelPris * ydelse.Mængde) DKK
+									</li>
+								}
+							</ul>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+		<table>
+			<tbody>
+			</tbody>
+		</table>
+	}
+
 }
 
 @if (isPopupVisible)
@@ -102,7 +184,7 @@ else
 				<div class="modal-body">
 					<p> Vælg den nye mekaniker </p>
 					<InputSelect @bind-Value="tempId">
-						@foreach (var mekaniker in MekanikerList)
+						@foreach (var mekaniker in mekanikerList)
 						{
 							<option value="@mekaniker.MekanikerId"> @mekaniker.Navn </option>
 						}
@@ -124,9 +206,9 @@ else
 	private List<Ordre> falseOrdreList = new List<Ordre>();
 	private bool ordreListStatus = false;
 
-	private List<Mekaniker> MekanikerList = new List<Mekaniker>();
-	private List<Ydelse> YdelseList = new List<Ydelse>();
-	private List<Kunde> KundeList = new List<Kunde>();
+	private List<Mekaniker> mekanikerList = new List<Mekaniker>();
+	private List<Ydelse> ydelseList = new List<Ydelse>();
+	private List<Kunde> kundeList = new List<Kunde>();
 
 	private Ordre selectedOrdre = new Ordre();
 	private int tempId;
@@ -149,18 +231,18 @@ else
 	{
 		try
 		{
-			allOrdreList = (await OrdreService.GetAllOrdre()).ToList(); 
-			falseOrdreList = allOrdreList.Where(x => x.Status == false).ToList();
-			OrdreList = allOrdreList;
-			KundeList = (await KundeService.GetAllKunder()).ToList();
+			OrdreList = (await OrdreService.GetAllOrdre()).ToList(); // Henter alle odrer fra databasen
+			falseOrdreList = OrdreList.Where(x => x.Status == false).ToList(); // Sørger for at der kun viser ordre der ikke er fuldført
+			kundeList = (await KundeService.GetAllKunder()).ToList();
+
 		}
 		catch (Exception e)
 		{
 			Console.WriteLine(e.Message);
-		}
-		MekanikerList = (await MekanikerService.GetAllMekaniker()).ToList();
-		YdelseList = (await YdelseService.GetAllYdelser()).ToList();
-		tempId = MekanikerList[0].MekanikerId;
+		}                                                   
+		mekanikerList = (await MekanikerService.GetAllMekaniker()).ToList();
+		ydelseList = (await YdelseService.GetAllYdelser()).ToList();
+		tempId = mekanikerList[0].MekanikerId;
 	}
 
 
@@ -205,14 +287,26 @@ else
 	private string modalTitle = "Skift Mekaniker";
 	private string modalButtonText = "Save";
 
-	private void ShowPopup(Ordre odre)
+	private void ShowPopup(Ordre ordre)
 	{
-		selectedOrdre = odre;
+		selectedOrdre = ordre;
 		isPopupVisible = true;
 	}
 
 	private void ClosePopup()
 	{
 		isPopupVisible = false;
+	}
+
+	private async Task FinishOrdre(Ordre ordre)
+	{
+		selectedOrdre = ordre;
+		selectedOrdre.Status = true;
+		await OrdreService.UpdateOrdre(selectedOrdre);
+
+		OrdreList = (await OrdreService.GetAllOrdre()).ToList();
+		falseOrdreList = OrdreList.Where(x => x.Status == false).ToList();
+
+		ordreListStatus = !ordreListStatus;
 	}
 }
