@@ -1,4 +1,6 @@
-﻿namespace BlazorAppClientServer.Shared.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BlazorAppClientServer.Shared.Models
 {
 	public class Faktura
 	{
