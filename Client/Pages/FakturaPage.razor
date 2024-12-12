@@ -34,11 +34,13 @@
             <label for="searchId">Søg nummer:</label>
             <input type="number" class="form-control" id="searchId" @bind="SearchId" />
         </div>
-        <div class="form-check mt-2">
-            <input type="checkbox" class="form-check-input" id="isOrdreId" @bind="IsOrdreId" />
-            <label class="form-check-label" for="isOrdreId">Søg på ordrenummer</label>
+        <div class="d-flex align-items-center mt-2">
+            <button class="btn btn-primary" @onclick="SearchFaktura">Søg</button>
+            <div class="form-check ms-4">
+                <input type="checkbox" class="form-check-input" id="isOrdreId" @bind="IsOrdreId" />
+                <label class="form-check-label" for="isOrdreId">Søg på ordrenummer</label>
+            </div>
         </div>
-        <button class="btn btn-primary mt-2" @onclick="SearchFaktura">Søg</button>
     </div>
 </div>
 
@@ -53,16 +55,18 @@ else if (FakturaList != null && FakturaList.Any())
     <ul>
         @foreach (var faktura in FakturaList)
         {
-            <li>
-                Faktura #: @faktura.FakturaId - Ordre: @(faktura.Ordre?.OrdreId.ToString() ?? "Ingen ordre")
-                <button class="btn btn-info mx-2 mb-2" @onclick="() => ShowFakturaDetails(faktura)">Vis Detaljer</button>
-                <button class="btn btn-warning mx-2 mb-2" @onclick="() => DeleteFakturaWithSql(faktura.FakturaId)">
-                    Slet
-                </button>
-                @if (faktura.Ordre != null && !faktura.Ordre.Status)
-                {
-                    <button class="btn btn-success mx-2 mb-2" @onclick="() => MarkOrderAsCompleted(faktura.FakturaId)">Markér som Fuldført</button>
-                }
+            <li class="d-flex align-items-center">
+                <div style="flex-shrink: 0; min-width: 250px;">
+                    Faktura #: @faktura.FakturaId - Ordre: @(faktura.Ordre?.OrdreId.ToString() ?? "Ingen ordre")
+                </div>
+                <div class="ms-3">
+                    <button class="btn btn-info mx-2 mb-2" @onclick="() => ShowFakturaDetails(faktura)">Vis Detaljer</button>
+                    <button class="btn btn-warning mx-2 mb-2" @onclick="() => DeleteFakturaWithSql(faktura.FakturaId)">Slet</button>
+                    @if (faktura.Ordre != null && !faktura.Ordre.Status)
+                    {
+                        <button class="btn btn-success mx-2 mb-2" @onclick="() => MarkOrderAsCompleted(faktura.FakturaId)">Markér som Fuldført</button>
+                    }
+                </div>
             </li>
         }
     </ul>
