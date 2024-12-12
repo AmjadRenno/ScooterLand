@@ -2,6 +2,7 @@
 @using BlazorAppClientServer.Client.Services
 @using BlazorAppClientServer.Shared.Models
 @inject IFakturaService FakturaService
+@inject IJSRuntime JSRuntime
 
 <Header />
 
@@ -146,6 +147,7 @@ else
         </div>
         <div class="card-footer text-center">
             <button class="btn btn-secondary" @onclick="ClearDetails">Luk Detaljer</button>
+            <button class="btn btn-primary" @onclick="PrintFakturaDetails">Print</button>
         </div>
     </div>
 }
@@ -276,6 +278,18 @@ else
             Message = $"Der er ingen Order med dette ID. Prøv igen";
         }
     }
+
+private async Task PrintFakturaDetails()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("printFakturaDetails");
+        }
+        catch (Exception ex)
+        {
+            Message = $"Fejl i udskrivning: {ex.Message}";
+        }
+ }
 }
 
 
