@@ -10,11 +10,11 @@
 
 @page "/opretordre"
 
-<h3>Create a New Order</h3>
+<h3>Opret en ny ordre</h3>
 
 @if (ydelseList.Count == 0)
 {
-    <p><em>Loading...</em></p>
+    <p><em>🔄 Loading....</em></p>
     // Viser en loading skærm indtil dataen er blevet hentet
 }
 else 
@@ -23,7 +23,7 @@ else
         <div class="list-group-item d-flex flex-column">
             <label class="form-label">Kunde Navn:</label>
             <input type="text" class="form-control" @bind="selectedKundeNavn" placeholder="Indtast navn på kunden" required />
-            <label class="form-label">Telefon Nummer:</label>
+            <label class="form-label mt-2">Telefon Nummer:</label>
             <input type="text" class="form-control" @bind-value="selectedKundeTelefon" placeholder="Indtast telefonnr på kunden" @bind-value:event="onchange" @bind-value:after="FindAssignedMekaniker" required />
 
         </div>
@@ -62,25 +62,25 @@ else
                 }
             </select>
             <div>
-                <button class="btn btn-primary btn-sm" @onclick="() => ShowPopup(true)"> Ændre pris</button>
-                <button class="btn btn-primary btn-sm" @onclick="ResetAktuelPris"> Nulstil pris</button>
+                <button class="btn btn-primary btn-sm mt-1" @onclick="() => ShowPopup(true)"> Ændre pris</button>
+                <button class="btn btn-primary btn-sm mt-1" @onclick="ResetAktuelPris"> Nulstil pris</button>
             </div>
             <div class="align-content-lg-end">
                 <label class="form-label">Mængde:</label>
                 <input type="number" class="form-control" @bind="selectedMængde" min="1" />
             </div>
         </div>
-        <button class="btn btn-primary" @onclick="AddYdelse">Add to List</button>
+        <button class="btn btn-primary mt-2 mb-2" @onclick="AddYdelse">Tilføj til ordre</button>
     </div>
 
     <h4>Ydelse i Ordrer:</h4>
     @if (ordrerYdelser.Any())
     {
-        <ul class="list-group">
+        <ul class="list-group mb-1">
             @foreach (var ydelse in ordrerYdelser)
             {
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    @ydelse.YdelseNavn - Quantity: @ydelse.YdelseMængde - Pris: @ydelse.YdelsePris
+                    @ydelse.YdelseNavn - Kvantitet: @ydelse.YdelseMængde - Pris: @ydelse.YdelsePris
                     <button class="btn btn-sm btn-danger mt-2" @onclick="() => RemoveYdelse(ydelse)">Fjern</button>
                 </li>
             }
@@ -94,7 +94,7 @@ else
         <p>Ingen ydelser tilføljet endnu.</p>
     }
 
-    <button class="btn btn-primary" @onclick="SubmitOrder">Opret Ordre</button>
+    <button class="btn btn-primary mt-2" @onclick="SubmitOrder">Opret Ordre</button>
 
     @if (!string.IsNullOrEmpty(successMessage))
     {

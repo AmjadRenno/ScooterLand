@@ -14,7 +14,8 @@
 
 @if (ydelseList.Count == 0)
 {
-    <p><em>Loading...</em></p> // Viser en loading skærm indtil dataen er blevet hentet
+    <p><em>🔄 Loading...</em></p>
+    // Viser en loading skærm indtil dataen er blevet hentet
 }
 else
 {
@@ -39,7 +40,7 @@ else
                     <td>@ydelse.Pris </td>
                     <td>@ydelse.Art </td>
                     <td>@ydelse.Timer </td>
-                    <td> <button class="btn btn-primary" @onclick="() => ShowPopup(ydelse, true)">Redigere</button> </td>
+                    <td> <button class="btn btn-primary" @onclick="() => ShowPopup(ydelse, true)">Rediger</button> </td>
                     <td>
                         <button @onclick="() => ShowDeletePopup(ydelse)"
                         class="btn btn-primary text-decoration-underline text-warning">
