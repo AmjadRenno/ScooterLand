@@ -21,7 +21,6 @@
     }
 </select>
 
-
 @if (Ordre != null && Ordre.Any())
 
 {
@@ -47,9 +46,7 @@
                 </tr>
             }
         </tbody>
-    </table>
-
-    
+    </table>    
 }
 
 else
@@ -105,10 +102,6 @@ else
         AlleOrdre = (await OrdreService.GetAllOrdre()).ToList();
 
     }
-
-
-
-
 
     private async Task GetMekanikerOrdre(ChangeEventArgs e)
 
