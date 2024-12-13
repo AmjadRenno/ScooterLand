@@ -10,233 +10,255 @@
 
 @if (OrdreList.Count == 0)
 {
-	<p><em>🔄 Loading...</em></p>
-	// Viser en loading skærm indtil dataen er blevet hentet
+    <p><em>🔄 Loading...</em></p>
 }
 else
 {
-	<p>
-		@if (ordreListStatus)
-		{
-			<button class="btn btn-primary" @onclick="ChangeOrdreListe">
-				Vis fuldførte ordrer
-			</button>
-		}
-		else 
-		{
-			<button class="btn btn-primary" @onclick="ChangeOrdreListe">
-				Skjul fuldførte ordrer
-			</button>
-		}
+    <p>
+        @if (ordreListStatus)
+        {
+            <button class="btn btn-primary" @onclick="ChangeOrdreListe">
+                Vis fuldførte ordrer
+            </button>
+        }
+        else
+        {
+            <button class="btn btn-primary" @onclick="ChangeOrdreListe">
+                Skjul fuldførte ordrer
+            </button>
+        }
+    </p>
 
-	</p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Ordre Id</th>
+                <th>Dato</th>
+                <th>Status</th>
+                <th>Kunde</th>
+                <th>Mekaniker</th>
+                <th></th>
+                <th>Samlet Pris</th>
+                <th></th>
+                <th></th> <!-- New column for toggle button -->
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ordre in OrdreList)
+            {
+                <tr>
+                    <td>@ordre.OrdreId</td>
+                    <td>@ordre.OrdreDate.ToString("dd-MM-yyyy HH:mm")</td>
+                    <td>@(ordre.Status ? "Fuldført" : "Ikke fuldført")</td>
+                    <td>
+                        @if (@ordre.KundeId != null)
+                        {
+                            @kundeList.Single(k => k.KundeId == ordre.KundeId).Navn
+                        }
+                    </td>
+                    <td>
+                        @if (@ordre.MekanikerId != null)
+                        {
+                            @mekanikerList.Single(x => x.MekanikerId == ordre.MekanikerId).Navn
+                        }
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => ShowPopup(ordre)">Skift Mekaniker</button>
+                    </td>
+                    <td>@ordre.YdelseTilOrdre.Sum(y => y.AktuelPris * y.Mængde) DKK</td>
+                    <td>
+                        @if (ordre.Status == false)
+                        {
+                            <button class="btn btn-primary" @onclick="() => FinishOrdre(ordre)">Fuldfør Ordre!</button>
+                        }
+                    </td>
+                    <td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => ToggleDetails(ordre.OrdreId)">
+                                @(VisibleOrdreId == ordre.OrdreId ? "Skjul Ydelser" : "Vis Ydelser")
+                        </button>
+                    </td>
 
-	<table class="table">
-		<thead>
-			<tr>
-				<th>Ordre Id</th>
-				<th>Dato</th>
-				<th>Status</th>
-				<th>Kunde</th>
-				<th>Mekaniker</th>
-				<th></th>
-				<th>Samlet Pris</th>
-				<th></th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var ordre in OrdreList)
-			{
-				<tr>
-					<td>@ordre.OrdreId </td>
-					<td>@ordre.OrdreDate.ToString("dd-MM-yyyy HH:mm") </td>
-					<td>@(ordre.Status ? "Fuldført" : "Ikke fuldført") </td>
-					<td>
-						@if (@ordre.KundeId != null) //Viser kun kunden hvis der er en kunde tilknyttet
-						{
-							@kundeList.Single(k => k.KundeId == ordre.KundeId).Navn
-						}
-					</td>
-					<td>
-						@if (@ordre.MekanikerId != null) //Viser kun mekanikernavn hvis der er en mekaniker tilknyttet
-						{
-							@mekanikerList.Single(x => x.MekanikerId == ordre.MekanikerId).Navn
-							;
-						}
-					</td>
-					<td><button class="btn btn-primary" @onclick="() => ShowPopup(ordre)">Skift Mekaniker</button> </td>
-					<td>@ordre.YdelseTilOrdre.Sum(y => y.AktuelPris * y.Mængde) DKK</td> <!-- Samlet pris -->
-					<td>
-						@if (ordre.Status == false)
-						{
-							<button class="btn btn-primary" @onclick="() => FinishOrdre(ordre)">Fuldfør Ordre!</button>
-						}
-					</td>
-				</tr>
-				<tr>
-					<td colspan="8">
-						<ul>
-							@foreach (var ydelse in ordre.YdelseTilOrdre)
-							{
-								<li>
-									Ydelse: @ydelse.Ydelse.Navn<br />
-									Art: @ydelse.Ydelse.Art<br />
-									Pris pr. enhed: @ydelse.AktuelPris DKK<br />
-									Timer: @ydelse.Ydelse.Timer<br />
-									Mængde: @ydelse.Mængde<br />
-									Subtotal: @(ydelse.AktuelPris * ydelse.Mængde) DKK
-								</li>
-							}
-						</ul>
-					</td>
-				</tr>
-			}
-		</tbody>
-	</table>
-	<table>
-		<tbody>
-		</tbody>
-	</table>
+                    </td>
+                </tr>
+                @if (VisibleOrdreId == ordre.OrdreId)
+                {
+                    <tr>
+                        <td colspan="9">
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Ydelse</th>
+                                        <th>Art</th>
+                                        <th>Pris pr. Enhed (DKK)</th>
+                                        <th>Timer</th>
+                                        <th>Mængde</th>
+                                        <th>Subtotal (DKK)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var ydelse in ordre.YdelseTilOrdre)
+                                    {
+                                        <tr>
+                                            <td>@ydelse.Ydelse.Navn</td>
+                                            <td>@ydelse.Ydelse.Art</td>
+                                            <td>@ydelse.AktuelPris</td>
+                                            <td>@ydelse.Ydelse.Timer</td>
+                                            <td>@ydelse.Mængde</td>
+                                            <td>@(ydelse.AktuelPris * ydelse.Mængde)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
 }
 
 @if (isPopupVisible)
 {
-	<div class="modal fade show" style="display: block;" tabindex="-1">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">@modalTitle</h5>
-					<button type="button" class="btn-close" @onclick="ClosePopup"></button>
-				</div>
-				<div class="modal-body">
-					<p> Vælg den nye mekaniker </p>
-					<InputSelect @bind-Value="tempId" class="form-control">
-						@foreach (var mekaniker in mekanikerList)
-						{
-							<option value="@mekaniker.MekanikerId"> @mekaniker.Navn </option>
-						}
-					</InputSelect>
-					<button @onclick="()=> UpdateMekanikerHandler(selectedOrdre, tempId)" class="btn btn-primary mt-3">
-						Skift Mekaniker
-					</button>
-				</div>
-
-			</div>
-		</div>
-	</div>
-	<div class="modal-backdrop fade show"></div>
-
+    <div class="modal fade show" style="display: block;" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@modalTitle</h5>
+                    <button type="button" class="btn-close" @onclick="ClosePopup"></button>
+                </div>
+                <div class="modal-body">
+                    <p> Vælg den nye mekaniker </p>
+                    <InputSelect @bind-Value="tempId" class="form-control">
+                        @foreach (var mekaniker in mekanikerList)
+                        {
+                            <option value="@mekaniker.MekanikerId"> @mekaniker.Navn </option>
+                        }
+                    </InputSelect>
+                    <button @onclick="()=> UpdateMekanikerHandler(selectedOrdre, tempId)" class="btn btn-primary mt-3">
+                        Skift Mekaniker
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
 }
 
-
-
 @code {
-	private List<Ordre> OrdreList = new List<Ordre>();
-	private List<Ordre> allOrdreList = new List<Ordre>();
-	private List<Ordre> falseOrdreList = new List<Ordre>();
-	private bool ordreListStatus = false;
+    private List<Ordre> OrdreList = new List<Ordre>();
+    private List<Ordre> allOrdreList = new List<Ordre>();
+    private List<Ordre> falseOrdreList = new List<Ordre>();
+    private bool ordreListStatus = false;
 
-	private List<Mekaniker> mekanikerList = new List<Mekaniker>();
-	private List<Ydelse> ydelseList = new List<Ydelse>();
-	private List<Kunde> kundeList = new List<Kunde>();
+    private List<Mekaniker> mekanikerList = new List<Mekaniker>();
+    private List<Ydelse> ydelseList = new List<Ydelse>();
+    private List<Kunde> kundeList = new List<Kunde>();
 
-	private Ordre selectedOrdre = new Ordre();
-	private int tempId;
+    private Ordre selectedOrdre = new Ordre();
+    private int tempId;
 
-	[Inject]
-	private IOrdreService OrdreService { get; set; }
+    private int? VisibleOrdreId = null; // Tracks the currently visible sub-table
 
-	[Inject]
-	private IMekanikerService MekanikerService { get; set; }
+    [Inject]
+    private IOrdreService OrdreService { get; set; }
 
-	[Inject]
-	private IKundeService KundeService { get; set; }
+    [Inject]
+    private IMekanikerService MekanikerService { get; set; }
 
-	[Inject]
-	private IYdelseService YdelseService { get; set; }
+    [Inject]
+    private IKundeService KundeService { get; set; }
 
-	private int ErrorCode { get; set; } = 0;
+    [Inject]
+    private IYdelseService YdelseService { get; set; }
 
-	protected override async Task OnInitializedAsync()
-	{
-		try
-		{
-			allOrdreList = (await OrdreService.GetAllOrdre()).ToList();
-			falseOrdreList = allOrdreList.Where(x => x.Status == false).ToList();
-			OrdreList = allOrdreList;
-			kundeList = (await KundeService.GetAllKunder()).ToList();
-		}
-		catch (Exception e)
-		{
-			Console.WriteLine(e.Message);
-		}
-		mekanikerList = (await MekanikerService.GetAllMekaniker()).ToList();
-		ydelseList = (await YdelseService.GetAllYdelser()).ToList();
-		tempId = mekanikerList[0].MekanikerId;
-	}
+    private int ErrorCode { get; set; } = 0;
 
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            allOrdreList = (await OrdreService.GetAllOrdre()).ToList();
+            falseOrdreList = allOrdreList.Where(x => x.Status == false).ToList();
+            OrdreList = allOrdreList;
+            kundeList = (await KundeService.GetAllKunder()).ToList();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
+        mekanikerList = (await MekanikerService.GetAllMekaniker()).ToList();
+        ydelseList = (await YdelseService.GetAllYdelser()).ToList();
+        tempId = mekanikerList[0].MekanikerId;
+    }
 
+    private void ChangeOrdreListe()
+    {
+        ordreListStatus = !ordreListStatus;
+        OrdreList = ordreListStatus
+            ? allOrdreList.Where(x => x.Status == false).ToList()
+            : allOrdreList;
+    }
 
-	private void ChangeOrdreListe()
-	{
-		ordreListStatus = !ordreListStatus;
-		OrdreList = ordreListStatus
-			? allOrdreList.Where(x => x.Status == false).ToList() 
-			: allOrdreList; 
-	}
+    private async Task UpdateMekanikerHandler(Ordre ordre, int tempId)
+    {
+        ordre.MekanikerId = tempId;
+        ErrorCode = await OrdreService.UpdateOrdre(ordre);
+        Console.WriteLine($"Odre updated: {ordre.OrdreId}, return code" + ErrorCode);
+        if (ErrorCode == (int)HttpStatusCode.OK)
+        {
+            List<Ordre> templist = (await OrdreService.GetAllOrdre()).ToList();
+            OrdreList = templist.Where(x => x.Status == false).ToList();
+            ClosePopup();
+        }
+    }
 
+    private async Task DeleteItemHandler(Ordre ordre)
+    {
+        ErrorCode = await OrdreService.DeleteOrdre(ordre.OrdreId);
+        Console.WriteLine($"Shopping item deleted: {ordre.OrdreId}, return code" + ErrorCode);
+        if (ErrorCode == (int)HttpStatusCode.OK)
+        {
+            List<Ordre> templist = (await OrdreService.GetAllOrdre()).ToList();
+            OrdreList = templist.Where(x => x.Status == false).ToList();
+        }
+    }
 
+    private void ToggleDetails(int ordreId)
+    {
+        if (VisibleOrdreId == ordreId)
+        {
+            VisibleOrdreId = null; // Hide details
+        }
+        else
+        {
+            VisibleOrdreId = ordreId; // Show details
+        }
+    }
 
+    private bool isPopupVisible = false;
+    private string modalTitle = "Skift Mekaniker";
 
+    private void ShowPopup(Ordre ordre)
+    {
+        selectedOrdre = ordre;
+        isPopupVisible = true;
+    }
 
-	private async Task UpdateMekanikerHandler(Ordre ordre, int tempId)
-	{
-		ordre.MekanikerId = tempId;
-		ErrorCode = await OrdreService.UpdateOrdre(ordre);
-		Console.WriteLine($"Odre updated: {ordre.OrdreId}, return code" + ErrorCode);
-		if (ErrorCode == (int)HttpStatusCode.OK)
-		{
-			List<Ordre> templist = (await OrdreService.GetAllOrdre()).ToList();
-			OrdreList = templist.Where(x => x.Status == false).ToList();
-			ClosePopup();
-		}
-	}
+    private void ClosePopup()
+    {
+        isPopupVisible = false;
+    }
 
-	private async Task DeleteItemHandler(Ordre ordre)
-	{
-		ErrorCode = await OrdreService.DeleteOrdre(ordre.OrdreId);
-		Console.WriteLine($"Shopping item deleted: {ordre.OrdreId}, return code" + ErrorCode);
-		if (ErrorCode == (int)HttpStatusCode.OK)
-		{
-			List<Ordre> templist = (await OrdreService.GetAllOrdre()).ToList();
-			OrdreList = templist.Where(x => x.Status == false).ToList();
-		}
-	}
+    private async Task FinishOrdre(Ordre ordre)
+    {
+        selectedOrdre = ordre;
+        selectedOrdre.Status = true;
+        await OrdreService.UpdateOrdre(selectedOrdre);
 
-	private bool isPopupVisible = false;
-	private string modalTitle = "Skift Mekaniker";
-	private string modalButtonText = "Save";
+        OrdreList = (await OrdreService.GetAllOrdre()).ToList();
+        falseOrdreList = OrdreList.Where(x => x.Status == false).ToList();
 
-	private void ShowPopup(Ordre ordre)
-	{
-		selectedOrdre = ordre;
-		isPopupVisible = true;
-	}
-
-	private void ClosePopup()
-	{
-		isPopupVisible = false;
-	}
-
-	private async Task FinishOrdre(Ordre ordre)
-	{
-		selectedOrdre = ordre;
-		selectedOrdre.Status = true;
-		await OrdreService.UpdateOrdre(selectedOrdre);
-
-		OrdreList = (await OrdreService.GetAllOrdre()).ToList();
-		falseOrdreList = OrdreList.Where(x => x.Status == false).ToList();
-
-		ordreListStatus = !ordreListStatus;
-	}
+        ordreListStatus = !ordreListStatus;
+    }
 }
