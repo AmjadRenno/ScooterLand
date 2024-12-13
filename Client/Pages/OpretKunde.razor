@@ -37,18 +37,33 @@
         <ValidationSummary />
     </div>
 
-    <button type="submit" class="btn btn-primary mt-2">Gem Kunde</button>
+    <button type="submit" class="btn btn-primary mt-2 mb-2">Gem Kunde</button>
 </EditForm>
 
 @if (kundeList.Any())
 {
-    <h4>Gemte Kunder:</h4>
-    <ul>
-        @foreach (var kunde in kundeList)
-        {
-            <li>@kunde.KundeId - @kunde.Navn - @kunde.Adresse - @kunde.TelefonNummer</li>
-        }
-    </ul>
+    <h4>Senest oprettet Kunder:</h4>
+    <table class="table table-striped text-center">
+        <thead>
+            <tr>
+                <th>Kunde ID</th>
+                <th>Navn</th>
+                <th>Adresse</th>
+                <th>Telefonnummer</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var kunde in kundeList.OrderByDescending(k => k.KundeId))
+            {
+                <tr>
+                    <td>@kunde.KundeId</td>
+                    <td>@kunde.Navn</td>
+                    <td>@kunde.Adresse</td>
+                    <td>@kunde.TelefonNummer</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }
 
 @code {
