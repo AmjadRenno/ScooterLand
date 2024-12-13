@@ -108,26 +108,15 @@ else
 
     }
 
-
-
-
-
     private async Task GetMekanikerOrdre(ChangeEventArgs e)
-
     {
-
         var mechanicId = e.Value?.ToString();
 
         if (!string.IsNullOrEmpty(mechanicId))
-
         {
-
             var selectedMechanic = Mekaniker.FirstOrDefault(m => m.MekanikerId == int.Parse(mechanicId));
-
             if (selectedMechanic != null)
-
             {
-
                 SelectedMechanicName = selectedMechanic.Navn;
 
                 Ordre = AlleOrdre.Where(o => o.MekanikerId == selectedMechanic.MekanikerId).ToList(); 
