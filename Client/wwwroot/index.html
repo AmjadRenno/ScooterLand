@@ -14,38 +14,7 @@
     <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
     <link href="_content/Radzen.Blazor/css/default.css" rel="stylesheet">
     <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
-    <script>
-     function printFakturaDetails() {
-         try {
-             const fakturaDetails = document.querySelector('.card');
-             if (!fakturaDetails) {
-                 alert('Ingen detaljer tilgængelige for print.');
-                 return;
-             }
-
-             const printWindow = window.open('', '_blank');
-             printWindow.document.write(`
-                 <html>
-                     <head>
-                         <title>Print Faktura</title>
-                         <style>
-                             body { font-family: Arial, sans-serif; }
-                             .card { margin: 20px; padding: 10px; border: 1px solid #ccc; }
-                             table { width: 100%; border-collapse: collapse; }
-                             th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                             th { background-color: #f4f4f4; }
-                         </style>
-                     </head>
-                     <body>${fakturaDetails.outerHTML}</body>
-                 </html>
-             `);
-             printWindow.document.close();
-             printWindow.print();
-         } catch (error) {
-             console.error('Fejl i printFakturaDetails:', error);
-         }
-     }
- </script>
+    
 
 </head>
 
