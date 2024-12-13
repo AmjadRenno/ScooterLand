@@ -1,0 +1,136 @@
+﻿@using BlazorAppClientServer.Shared.Models;
+@using BlazorAppClientServer.Client.Services;
+@inject IMekanikerService MekanikerService;
+@inject IMærkeService MærkeService;
+
+@page "/mekaniker-oversigt"
+
+<Header />
+
+<h3>Mekaniker Oversigt</h3>
+
+<p>
+    <button class="btn btn-primary" @onclick="ShowAddMekanikerPopup">Tilføj en Mekaniker</button>
+</p>
+
+@if (mekanikerList == null)
+{
+    <p><em>🔄 Loading...</em></p>
+}
+else
+{
+    <table class="table table-striped text-center">
+        <thead>
+            <tr>
+                <th>Navn</th>
+                <th>Email</th>
+                <th>Mærke</th>
+                <th width="75" ></th>
+                <th width="75" ></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var mekaniker in mekanikerList)
+            {
+                <tr>
+                    <td>@mekaniker.Navn</td>
+                    <td>@mekaniker.Email</td>
+                    <td>@(mærkeList.FirstOrDefault(m => m.MekanikerId == mekaniker.MekanikerId)?.Navn ?? "Ikke tilknyttet")</td>
+                    <td>
+                        <button class="btn btn-warning" @onclick="() => ShowEditMekanikerPopup(mekaniker)">Rediger</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-danger" @onclick="() => DeleteMekaniker(mekaniker.MekanikerId)">Slet</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (isPopupVisible)
+{
+    <div class="modal fade show" style="display: block;" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@((mekaniker.MekanikerId == 0) ? "Tilføj Mekaniker" : "Rediger Mekaniker")</h5>
+                    <button type="button" class="btn-close" @onclick="ClosePopup"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="mekaniker" OnValidSubmit="AddOrUpdateMekaniker" class="needs-validation" novalidate>
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="mb-3">
+                            <label for="navn" class="form-label">Navn</label>
+                            <InputText id="navn" @bind-Value="mekaniker.Navn" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <InputText id="email" @bind-Value="mekaniker.Email" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <InputText id="password" @bind-Value="mekaniker.Password" class="form-control" type="password" />
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Gem</button>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    private List<Mekaniker>? mekanikerList;
+    private List<Mærke>? mærkeList;
+    private Mekaniker mekaniker = new Mekaniker { Navn = string.Empty, Email = string.Empty, Password = string.Empty };
+    private bool isPopupVisible = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        mekanikerList = (await MekanikerService.GetAllMekaniker())?.ToList();
+        mærkeList = (await MærkeService.GetAllMærker())?.ToList();
+    }
+
+    private void ShowAddMekanikerPopup()
+    {
+        mekaniker = new Mekaniker { Navn = string.Empty, Email = string.Empty, Password = string.Empty };
+        isPopupVisible = true;
+    }
+
+    private void ShowEditMekanikerPopup(Mekaniker existingMekaniker)
+    {
+        mekaniker = existingMekaniker;
+        isPopupVisible = true;
+    }
+
+    private async Task AddOrUpdateMekaniker()
+    {
+        if (mekaniker.MekanikerId == 0)
+        {
+            await MekanikerService.AddMekaniker(mekaniker);
+        }
+        else
+        {
+            await MekanikerService.UpdateMekaniker(mekaniker);
+        }
+        mekanikerList = (await MekanikerService.GetAllMekaniker())?.ToList();
+        ClosePopup();
+    }
+
+    private async Task DeleteMekaniker(int mekanikerId)
+    {
+        await MekanikerService.DeleteMekaniker(mekanikerId);
+        mekanikerList = (await MekanikerService.GetAllMekaniker())?.ToList();
+    }
+
+    private void ClosePopup()
+    {
+        isPopupVisible = false;
+    }
+}
+
