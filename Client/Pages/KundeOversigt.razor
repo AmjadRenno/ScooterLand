@@ -120,7 +120,7 @@ else
                     <div>
                         <p>Vælg ny mærke for <b>@valgtKunde.Navn</b></p>
                     </div>
-                    <select class="form-control" @bind="selectedMærke">
+                    <select class="form-select" @bind="selectedMærke">
                         @foreach (var mærke in mærkeList)
                         {
                             <option value="@mærke.MærkeId"> @mærke.Navn </option>
@@ -151,7 +151,7 @@ else
                     <div>
                         <p>Vælg ny mekaniker for <b>@valgtKunde.Navn</b></p>
                     </div>
-                    <select class="form-control" @bind="selectedMekaniker">
+                    <select class="form-select" @bind="selectedMekaniker">
                         @foreach (var mekaniker in mekanikerList)
                         {
                             <option value="@mekaniker.MekanikerId"> @mekaniker.Navn </option>

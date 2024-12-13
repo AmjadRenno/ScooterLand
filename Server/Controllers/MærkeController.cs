@@ -62,7 +62,7 @@ namespace BlazorAppClientServer.Server.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public StatusCodeResult DeleteMærke(int id)
         {
             Console.WriteLine("Server: Delete mærke called: id = " + id);

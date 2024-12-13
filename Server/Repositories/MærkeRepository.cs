@@ -61,7 +61,7 @@ namespace BlazorAppClientServer.Server.Repositories
         {
             try
             {
-                var mærke = db.Mærker.Single(m => m.MærkeId == id);
+                var mærke = db.Mærker.SingleOrDefault(m => m.MærkeId == id);
                 if (mærke != null)
                 {
                     db.Mærker.Remove(mærke);

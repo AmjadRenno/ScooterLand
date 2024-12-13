@@ -29,7 +29,7 @@ else
 
         <div class="list-group-item d-flex flex-column">
             <label class="form-label">Mekaniker:</label>
-            <select class="form-control dropdown-indicator" @bind="selectedMekaniker">
+            <select class="form-select" @bind="selectedMekaniker">
                 @foreach (var mekaniker in mekanikerList)
                 {
                     <option value="@mekaniker.MekanikerId"> @mekaniker.Navn </option>
@@ -44,7 +44,7 @@ else
 
         <div class="list-group-item d-flex flex-column">
             <label class="form-label">Vælg en Ydelse:</label>
-            <select class="form-control dropdown-indicator" name="ydelse" id="ydelse" @bind-value="selectedYdelseId" @bind-value:event="onchange" @bind-value:after=" () => ShowPopup(false)" placeholder="Vælg en Ydelse" required>
+            <select class="form-select" name="ydelse" id="ydelse" @bind-value="selectedYdelseId" @bind-value:event="onchange" @bind-value:after=" () => ShowPopup(false)" placeholder="Vælg en Ydelse" required>
                 @foreach (var ydelse in ydelseList)
                 {
                     <option value="@ydelse.YdelseId">
