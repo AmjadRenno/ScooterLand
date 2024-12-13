@@ -10,7 +10,7 @@
 
 <Header />
 
-<h3>Ordrer for Mekaniker @MekanikerId</h3>
+<h3>Ordrer for Mekaniker</h3>
 
 <label for="MekanikerDropdown">Vælg Mekaniker:</label>
 <select id="MekanikerDropdown" class="form-control dropdown-indicator mb-2" @onchange="GetMekanikerOrdre">
@@ -20,7 +20,6 @@
         <option value="@mekaniker.MekanikerId">@mekaniker.Navn</option>
     }
 </select>
-
 
 @if (Ordre != null && Ordre.Any())
 
@@ -47,9 +46,7 @@
                 </tr>
             }
         </tbody>
-    </table>
-
-    
+    </table>    
 }
 
 else
@@ -96,8 +93,6 @@ else
     private List<Ordre> Ordre = new List<Ordre>();
 
     private string SelectedMechanicName = string.Empty;
-
-
 
     protected override async Task OnInitializedAsync()
 
