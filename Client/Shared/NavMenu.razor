@@ -1,17 +1,17 @@
 ﻿<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">
+        <a class="navbar-brand d-flex align-items-center" href="">
             <img src="logo.png" alt="logo" class="brand-logo" />
-            Scooterland
+            <span style="font-size: 28px; line-height: 30px;">Scooterland</span>
         </a>
 
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
     </div>
 </div>
 
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+<div class="collapse navbar-collapse" id="navbarNav">
     <nav class="flex-column">
         <div class="nav-item px-1">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
@@ -49,11 +49,6 @@
             </NavLink>
         </div>
         <div class="nav-item px-1">
-            <NavLink class="nav-link" href="mekaniker-oversigt">
-                <span class="oi oi-people" aria-hidden="true"></span> Mekaniker Oversigt
-            </NavLink>
-        </div>
-        <div class="nav-item px-1">
             <NavLink class="nav-link" href="fakturapage">
                 <span class="oi oi-dollar" aria-hidden="true"></span> Faktura
             </NavLink>
@@ -65,6 +60,7 @@
         </div>
     </nav>
 </div>
+
 
 @code {
     private bool collapseNavMenu = true;
