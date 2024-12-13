@@ -110,14 +110,17 @@ else
 				</div>
 				<div class="modal-body">
 					<p> Vælg den nye mekaniker </p>
-					<InputSelect @bind-Value="tempId">
+					<InputSelect @bind-Value="tempId" class="form-control">
 						@foreach (var mekaniker in mekanikerList)
 						{
 							<option value="@mekaniker.MekanikerId"> @mekaniker.Navn </option>
 						}
 					</InputSelect>
-					<button @onclick="()=> UpdateMekanikerHandler(selectedOrdre, tempId)"> Skift Mekaniker</button>
+					<button @onclick="()=> UpdateMekanikerHandler(selectedOrdre, tempId)" class="btn btn-primary mt-3">
+						Skift Mekaniker
+					</button>
 				</div>
+
 			</div>
 		</div>
 	</div>

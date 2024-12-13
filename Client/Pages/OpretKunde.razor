@@ -28,7 +28,7 @@
     </div>
     <div>
         <label for="KundeMærke">Mærke:</label>
-        <InputSelect @bind-Value="newKunde.MærkeId" class="form-control dropdown-indicator">
+        <InputSelect @bind-Value="newKunde.MærkeId" class="form-select dropdown-indicator">
             @foreach (var mærke in mærkeList)
             {
                 <option value="@mærke.MærkeId">@mærke.Navn</option>
