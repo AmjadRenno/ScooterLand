@@ -1,8 +1,6 @@
 ﻿@page "/mekaniker-ordre"
 @using BlazorAppClientServer.Client.Services
 @using BlazorAppClientServer.Shared.Models
-@using Radzen  <!-- Importer Radzen -->
-@using Radzen.Blazor
 @using BlazorAppClientServer.Client.Shared
 
 @inject IMekanikerService MekanikerService
@@ -15,13 +13,13 @@
 <label for="MekanikerDropdown">Vælg Mekaniker:</label>
 <select id="MekanikerDropdown" class="form-select mb-2" @onchange="GetMekanikerOrdre">
     <option value="">Vælg en mekaniker</option>
-    @foreach (var mekaniker in Mekaniker)
+    @foreach (var mekaniker in mekanikerList)
     {
         <option value="@mekaniker.MekanikerId">@mekaniker.Navn</option>
     }
 </select>
 
-@if (Ordre != null && Ordre.Any())
+@if (nyOrdreList != null && nyOrdreList.Any())
 
 {
     <h4>Ordrer for @SelectedMechanicName idag og frem:</h4>
@@ -34,7 +32,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var ordre in Ordre.
+            @foreach (var ordre in nyOrdreList.
             Where(o => o.OrdreDate.Date >= DateTime.Today).
             OrderBy(o => o.OrdreDate))
 
@@ -55,7 +53,7 @@ else
     <p>Ingen ordrer fundet for denne mekaniker.</p>
 }
 
-@if (Ordre.Any(o => !o.Status && o.OrdreDate.Date < DateTime.Today))
+@if (nyOrdreList.Any(o => !o.Status && o.OrdreDate.Date < DateTime.Today))
 {
     <h4>Ikke færdiggjorte ordrer før dagsdato:</h4>
     <table class="table">
@@ -67,7 +65,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var ordre in Ordre
+            @foreach (var ordre in nyOrdreList
             .Where(o => !o.Status && o.OrdreDate.Date < DateTime.Today)
             .OrderBy(o => o.OrdreDate))
             {
@@ -86,11 +84,11 @@ else
 }
 
 @code {
-    private List<Mekaniker> Mekaniker = new List<Mekaniker>();
+    private List<Mekaniker> mekanikerList = new List<Mekaniker>();
 
-    private List<Ordre> AlleOrdre = new List<Ordre>();
+    private List<Ordre> alleOrdreList = new List<Ordre>();
 
-    private List<Ordre> Ordre = new List<Ordre>();
+    private List<Ordre> nyOrdreList = new List<Ordre>();
 
     private string SelectedMechanicName = string.Empty;
 
@@ -98,8 +96,8 @@ else
 
     {
 
-        Mekaniker = (await MekanikerService.GetAllMekaniker()).ToList(); 
-        AlleOrdre = (await OrdreService.GetAllOrdre()).ToList();
+        mekanikerList = (await MekanikerService.GetAllMekaniker()).ToList();
+        alleOrdreList = (await OrdreService.GetAllOrdre()).ToList();
 
     }
 
@@ -109,12 +107,12 @@ else
 
         if (!string.IsNullOrEmpty(mechanicId))
         {
-            var selectedMechanic = Mekaniker.FirstOrDefault(m => m.MekanikerId == int.Parse(mechanicId));
+            var selectedMechanic = mekanikerList.FirstOrDefault(m => m.MekanikerId == int.Parse(mechanicId));
             if (selectedMechanic != null)
             {
                 SelectedMechanicName = selectedMechanic.Navn;
 
-                Ordre = AlleOrdre.Where(o => o.MekanikerId == selectedMechanic.MekanikerId).ToList(); 
+                nyOrdreList = alleOrdreList.Where(o => o.MekanikerId == selectedMechanic.MekanikerId).ToList();
 
             }
 
@@ -124,7 +122,7 @@ else
 
         {
 
-            Ordre = new List<Ordre>(); 
+            nyOrdreList = new List<Ordre>();
 
         }
 

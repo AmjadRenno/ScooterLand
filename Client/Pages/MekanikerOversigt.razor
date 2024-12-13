@@ -87,7 +87,12 @@ else
 @code {
     private List<Mekaniker>? mekanikerList;
     private List<Mærke>? mærkeList;
-    private Mekaniker mekaniker = new Mekaniker { Navn = string.Empty, Email = string.Empty, Password = string.Empty };
+    private Mekaniker mekaniker = new Mekaniker 
+    {
+        Navn = string.Empty,
+        Email = string.Empty,
+        Password = string.Empty 
+    };
     private bool isPopupVisible = false;
 
     protected override async Task OnInitializedAsync()
@@ -98,7 +103,11 @@ else
 
     private void ShowAddMekanikerPopup()
     {
-        mekaniker = new Mekaniker { Navn = string.Empty, Email = string.Empty, Password = string.Empty };
+        mekaniker = new Mekaniker
+        {
+            Navn = string.Empty,
+            Email = string.Empty,
+            Password = string.Empty };
         isPopupVisible = true;
     }
 

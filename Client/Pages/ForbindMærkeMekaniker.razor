@@ -22,7 +22,7 @@
     <label for="mekaniker">Mekaniker:</label>
     <select id="mekaniker" class="form-select" @bind="selectedMekanikerId">
         <option value="">Vælg...</option>
-        @foreach (var mekaniker in mekanikere)
+        @foreach (var mekaniker in mekanikerList)
         {
             <option value="@mekaniker.MekanikerId">@mekaniker.Navn</option>
         }
@@ -33,7 +33,7 @@
     <label for="maerke">Mærke:</label>
     <select id="maerke" class="form-select" @bind="selectedMaerkeId">
         <option value="">Vælg...</option>
-        @foreach (var maerke in maerker)
+        @foreach (var maerke in mærkeList)
         {
             <option value="@maerke.MærkeId">@maerke.Navn</option>
         }
@@ -73,6 +73,7 @@
             </div>
         </div>
     </div>
+    <div class="modal-backdrop fade show"></div>
 }
 
 @if (showDeleteMærkePopup)
@@ -89,7 +90,7 @@
                         <label for="selectMærke" class="form-label">Mærke til sletning</label>
                         <select id="selectMærke" class="form-select" @bind="selectedMærkeId">
                             <option value="">Vælg...</option>
-                            @foreach (var maerke in maerker)
+                            @foreach (var maerke in mærkeList)
                             {
                                 <option value="@maerke.MærkeId">@maerke.Navn</option>
                             }
@@ -102,11 +103,12 @@
             </div>
         </div>
     </div>
+    <div class="modal-backdrop fade show"></div>
 }
 
 @code {
-    private List<Mekaniker> mekanikere = new();
-    private List<Mærke> maerker = new();
+    private List<Mekaniker> mekanikerList = new();
+    private List<Mærke> mærkeList = new();
 
     private int? selectedMekanikerId;
     private int? selectedMaerkeId;
@@ -125,16 +127,16 @@
         try
         {
             var fetchedMekanikere = (await MekanikerService.GetAllMekaniker()).ToList();
-            mekanikere = fetchedMekanikere ?? new List<Mekaniker>();
+            mekanikerList = fetchedMekanikere ?? new List<Mekaniker>();
 
             var fetchedMaerker = (await MærkeService.GetAllMærker()).ToList();
-            maerker = fetchedMaerker ?? new List<Mærke>();
+            mærkeList = fetchedMaerker ?? new List<Mærke>();
         }
         catch (Exception ex)
         {
             errorMessage = "Fejl ved indlæsning af data: " + ex.Message;
-            mekanikere = new List<Mekaniker>();
-            maerker = new List<Mærke>();
+            mekanikerList = new List<Mekaniker>();
+            mærkeList = new List<Mærke>();
         }
     }
 
@@ -146,12 +148,12 @@
             return;
         }
 
-        var mekaniker = mekanikere.FirstOrDefault(m => m.MekanikerId == selectedMekanikerId);
+        var mekaniker = mekanikerList.FirstOrDefault(m => m.MekanikerId == selectedMekanikerId);
         if (mekaniker != null)
         {
             mekaniker.MærkeListe?.Clear();
 
-            var maerke = maerker.FirstOrDefault(m => m.MærkeId == selectedMaerkeId);
+            var maerke = mærkeList.FirstOrDefault(m => m.MærkeId == selectedMaerkeId);
             if (maerke != null)
             {
                 mekaniker.MærkeListe ??= new List<Mærke>();
@@ -218,6 +220,6 @@
 
     private async Task ReloadMærker()
     {
-        maerker = (await MærkeService.GetAllMærker()).ToList();
+        mærkeList = (await MærkeService.GetAllMærker()).ToList();
     }
 }

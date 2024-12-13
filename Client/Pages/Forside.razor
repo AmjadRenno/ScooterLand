@@ -17,7 +17,7 @@
 {
     <p><em>🔄 Loading...</em></p>
 }
-else if (TodayOrders == null || !TodayOrders.Any())
+else if (ordreIdag == null || !ordreIdag.Any())
 {
     <p>Ingen ordrer fundet for dags dato.</p>
 }
@@ -33,13 +33,13 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var order in TodayOrders)
+            @foreach (var ordre in ordreIdag)
             {
                 <tr>
-                    <td>@order.OrdreId</td>
-                    <td>@order.OrdreDate.ToString("dd-MM-yyyy HH:mm")</td>
-                    <td>@(order.Status ? "Fuldført" : "Ikke fuldført")</td>
-                    <td>@(Mechanics.FirstOrDefault(m => m.MekanikerId == order.MekanikerId)?.Navn ?? "Ikke tilknyttet")</td>
+                    <td>@ordre.OrdreId</td>
+                    <td>@ordre.OrdreDate.ToString("dd-MM-yyyy HH:mm")</td>
+                    <td>@(ordre.Status ? "Fuldført" : "Ikke fuldført")</td>
+                    <td>@(mekaniker.FirstOrDefault(m => m.MekanikerId == ordre.MekanikerId)?.Navn ?? "Ikke tilknyttet")</td>
                 </tr>
             }
         </tbody>
@@ -47,19 +47,19 @@ else
 }
 
 @code {
-    private List<Ordre> TodayOrders = new List<Ordre>();
-    private List<Mekaniker> Mechanics = new List<Mekaniker>();
+    private List<Ordre> ordreIdag = new List<Ordre>();
+    private List<Mekaniker> mekaniker = new List<Mekaniker>();
     private bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            var allOrders = await OrdreService.GetAllOrdre();
-            Mechanics = (await MekanikerService.GetAllMekaniker()).ToList();
+            var alleOrdre = await OrdreService.GetAllOrdre();
+            mekaniker = (await MekanikerService.GetAllMekaniker()).ToList();
 
-            TodayOrders = allOrders
-                .Where(order => order.OrdreDate.Date == DateTime.Today)
+            ordreIdag = alleOrdre
+                .Where(ordre => ordre.OrdreDate.Date == DateTime.Today)
                 .ToList();
         }
         finally

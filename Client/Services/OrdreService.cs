@@ -19,29 +19,12 @@ namespace BlazorAppClientServer.Client.Services
 			var result = await httpClient.GetFromJsonAsync<Ordre[]>("api/ordreapi");
 			return result;
 		}
+
 		public async Task<Ordre?> GetOrdre(int id)
 		{
 			var result = await httpClient.GetFromJsonAsync<Ordre>("api/ordreapi" + id);
 			return result;
 		}
-
-        public async Task<List<Ordre>> GetOrdersByMechanicAsync(int id)
-        {
-            try
-            {
-                var result = await httpClient.GetFromJsonAsync<Ordre[]>($"api/ordreapi/mekaniker/{id}");
-
-                // Hvis resultatet er null, returneres en tom liste
-                return result?.ToList() ?? new List<Ordre>();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"An error occurred while fetching orders for mekanikerId: {id}. Exception: {ex.Message}");
-
-                // I tilfælde af en fejl returneres også en tom liste
-                return new List<Ordre>();
-            }
-        }
 
 		public async Task<int> AddOrdre(Ordre ordre)
 		{
@@ -57,6 +40,7 @@ namespace BlazorAppClientServer.Client.Services
 			return (int)responseStatusCode;
 
 		}
+
 		public async Task<int> UpdateOrdre(Ordre ordre)
 		{
 			var response = await httpClient.PutAsJsonAsync("api/ordreapi", ordre);
