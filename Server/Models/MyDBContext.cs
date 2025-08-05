@@ -5,9 +5,19 @@ namespace BlazorAppClientServer.Server.Models
 {
 	public class MyDBContext : DbContext
 	{
+		private readonly IConfiguration _configuration;
+
+		public MyDBContext(DbContextOptions<MyDBContext> options, IConfiguration configuration) : base(options)
+		{
+			_configuration = configuration;
+		}
+
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-			optionsBuilder.UseSqlServer("Server=(local);DataBase=ScooterlandDB;Trusted_Connection=True;Encrypt=True;TrustServerCertificate=True");
+			if (!optionsBuilder.IsConfigured)
+			{
+				optionsBuilder.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
+			}
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -17,7 +27,7 @@ namespace BlazorAppClientServer.Server.Models
 
 		public DbSet<Ydelse> Ydelser { get; set; }
 		public DbSet<Ordre> Ordrer { get; set; }
-		public DbSet<YdelseTilOrdre> YdelseTilOrdrer {  get; set; }
+		public DbSet<YdelseTilOrdre> YdelseMængder {  get; set; }
 		public DbSet<Faktura> Fakturaer { get; set; }
 		public DbSet<Kunde> Kunder { get; set; }
 		public DbSet<Mærke> Mærker { get; set; }

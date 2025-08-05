@@ -10,15 +10,12 @@ namespace BlazorAppClientServer.Server.Controllers
 
 	public class KundeController : ControllerBase
 	{
-		private readonly IKundeRepository Repository = new KundeRepository();
+		private readonly IKundeRepository Repository;
 
 		public KundeController(IKundeRepository kundeRepository) 
 		{ 
-			if (Repository == null && kundeRepository != null)
-			{
-				Repository = kundeRepository;
-				Console.WriteLine("Repository initialized");
-			}
+			Repository = kundeRepository ?? throw new ArgumentNullException(nameof(kundeRepository));
+			Console.WriteLine("Repository initialized");
 		}
 		[HttpGet]
 		public List<Kunde> GetKunder()

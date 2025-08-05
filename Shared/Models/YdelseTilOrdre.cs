@@ -7,11 +7,7 @@
 		public Ydelse? Ydelse { get; set; }
 		public int Mængde { get; set; }
 		public double AktuelPris { get; set; }
-		public double TotalPris {  
-			get => pris;
-			set { pris = AktuelPris * Mængde;}
-			}
-		double pris;
+		public double TotalPris { get; set; }
 		
 		public double? GetTimer() 
 		{

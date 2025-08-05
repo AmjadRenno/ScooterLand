@@ -7,7 +7,12 @@ namespace BlazorAppClientServer.Server.Repositories
 {
     internal class MærkeRepository : IMærkeRepository
     {
-        MyDBContext db = new MyDBContext();
+        private readonly MyDBContext db;
+
+        public MærkeRepository(MyDBContext context)
+        {
+            db = context;
+        }
 
         public List<Mærke> GetAllMærker()
         {

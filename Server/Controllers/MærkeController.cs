@@ -10,16 +10,12 @@ namespace BlazorAppClientServer.Server.Controllers
     [Route("api/maerkeapi")]
     public class MærkeController : ControllerBase
     {
-
-        private readonly IMærkeRepository Repository = new MærkeRepository();
+        private readonly IMærkeRepository Repository;
 
         public MærkeController(IMærkeRepository mærkeRepository)
         {
-            if (Repository == null && mærkeRepository != null)
-            {
-                Repository = mærkeRepository;
-                Console.WriteLine("Repository initialized");
-            }
+            Repository = mærkeRepository ?? throw new ArgumentNullException(nameof(mærkeRepository));
+            Console.WriteLine("Repository initialized");
         }
 
         [HttpGet]

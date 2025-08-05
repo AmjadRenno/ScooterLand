@@ -10,15 +10,12 @@ namespace BlazorAppClientServer.Server.Controllers
 
 	public class MekanikerController : ControllerBase
 	{
-		private readonly IMekanikerRepository Repository = new MekanikerRepository();
+		private readonly IMekanikerRepository Repository;
 
 		public MekanikerController(IMekanikerRepository mekanikerRepository) 
 		{ 
-			if (Repository == null && mekanikerRepository != null)
-			{
-				Repository = mekanikerRepository;
-				Console.WriteLine("Repository initialized");
-			}
+			Repository = mekanikerRepository ?? throw new ArgumentNullException(nameof(mekanikerRepository));
+			Console.WriteLine("Repository initialized");
 		}
 		[HttpGet]
 		public List<Mekaniker> GetAllMekaniker()
@@ -34,10 +31,20 @@ namespace BlazorAppClientServer.Server.Controllers
 		}
 
 		[HttpPost]
-		public void AddMekaniker(Mekaniker mekaniker)
+		public IActionResult AddMekaniker(Mekaniker mekaniker)
 		{
-			Console.WriteLine("Add mekaniker called: " + mekaniker.ToString());
-			Repository.AddMekaniker(mekaniker);
+			try
+			{
+				Console.WriteLine("Add mekaniker called: " + mekaniker.ToString());
+				Repository.AddMekaniker(mekaniker);
+				Console.WriteLine("Mekaniker added successfully");
+				return Ok("Mekaniker added successfully");
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Error adding mekaniker: " + ex.Message);
+				return BadRequest("Error adding mekaniker: " + ex.Message);
+			}
 		}
 
 		[HttpDelete("{id:int}")]

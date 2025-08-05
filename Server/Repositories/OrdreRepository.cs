@@ -7,7 +7,12 @@ namespace BlazorAppClientServer.Server.Repositories
 {
 	internal class OrdreRepository : IOrdreRepository
 	{
-		MyDBContext db = new MyDBContext();
+		private readonly MyDBContext db;
+
+		public OrdreRepository(MyDBContext context)
+		{
+			db = context;
+		}
 
 		public List<Ordre> GetAllOrdre()
 		{

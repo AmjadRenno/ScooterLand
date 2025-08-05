@@ -5,7 +5,12 @@ namespace BlazorAppClientServer.Server.Repositories
 {
 	internal class MekanikerRepository : IMekanikerRepository
 	{
-		MyDBContext db = new MyDBContext();
+		private readonly MyDBContext db;
+
+		public MekanikerRepository(MyDBContext context)
+		{
+			db = context;
+		}
 
 		public List<Mekaniker> GetAllMekaniker()
 		{
@@ -24,8 +29,22 @@ namespace BlazorAppClientServer.Server.Repositories
 
 		public void AddMekaniker(Mekaniker mekaniker)
 		{
-			db.Mekanikers.Add(mekaniker);
-			db.SaveChanges();
+			try
+			{
+				Console.WriteLine("Repository: Adding mekaniker - " + mekaniker.Navn + ", " + mekaniker.Email);
+				db.Mekanikers.Add(mekaniker);
+				int result = db.SaveChanges();
+				Console.WriteLine("Repository: SaveChanges result - " + result + " rows affected");
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Repository Error: " + ex.Message);
+				if (ex.InnerException != null)
+				{
+					Console.WriteLine("Inner Exception: " + ex.InnerException.Message);
+				}
+				throw;
+			}
 		}
 
 		public bool DeleteMekaniker(int id)

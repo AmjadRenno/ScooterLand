@@ -6,7 +6,12 @@ namespace BlazorAppClientServer.Server.Repositories
 {
 	internal class KundeRepository : IKundeRepository
 	{
-		MyDBContext db = new MyDBContext();
+		private readonly MyDBContext db;
+
+		public KundeRepository(MyDBContext context)
+		{
+			db = context;
+		}
 
 		public List<Kunde> GetKunder()
 		{

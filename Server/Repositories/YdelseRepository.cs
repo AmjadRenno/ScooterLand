@@ -5,7 +5,12 @@ namespace BlazorAppClientServer.Server.Repositories
 {
 	internal class YdelseRepository : IYdelseRepository
 	{
-		MyDBContext db = new MyDBContext();
+		private readonly MyDBContext db;
+
+		public YdelseRepository(MyDBContext context)
+		{
+			db = context;
+		}
 
 		public List<Ydelse> GetYdelses()
 		{

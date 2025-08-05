@@ -8,17 +8,14 @@ namespace BlazorAppClientServer.Server.Controllers
 	[ApiController]
 	[Route("api/ordreapi")]
 
-	public class OdreController : ControllerBase
+	public class OrdreController : ControllerBase
 	{
-		private readonly IOrdreRepository Repository = new OrdreRepository();
+		private readonly IOrdreRepository Repository;
 
-		public OdreController(IOrdreRepository ordreRepository)
+		public OrdreController(IOrdreRepository ordreRepository)
 		{
-			if (Repository == null && ordreRepository != null)
-			{
-				Repository = ordreRepository;
-				Console.WriteLine("Repository initialized");
-			}
+			Repository = ordreRepository ?? throw new ArgumentNullException(nameof(ordreRepository));
+			Console.WriteLine("Repository initialized");
 		}
 
 		[HttpGet]

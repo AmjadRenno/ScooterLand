@@ -10,15 +10,12 @@ namespace BlazorAppClientServer.Server.Controllers
 
 	public class YdelseController : ControllerBase
 	{
-		private readonly IYdelseRepository Repository = new YdelseRepository();
+		private readonly IYdelseRepository Repository;
 
 		public YdelseController(IYdelseRepository ydelseRepository) 
 		{ 
-			if (Repository == null && ydelseRepository != null)
-			{
-				Repository = ydelseRepository;
-				Console.WriteLine("Repository initialized");
-			}
+			Repository = ydelseRepository ?? throw new ArgumentNullException(nameof(ydelseRepository));
+			Console.WriteLine("Repository initialized");
 		}
 		[HttpGet]
 		public List<Ydelse> GetYdelses()
