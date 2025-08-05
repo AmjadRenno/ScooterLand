@@ -196,7 +196,7 @@ This project is part of a university assignment for workshop management system d
 
 ## 👨‍💻 Development Team
 
-Developed by **Amjad Renno** as a university project at UCL for scooter workshop management system during 2nd semester.
+Developed by **Amjad Renno** and team members as a collaborative university group project at UCL for scooter workshop management system during 2nd semester.
 
 ## 🎯 For Recruiters & Hiring Managers
 
