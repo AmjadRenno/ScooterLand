@@ -33,8 +33,8 @@ Before running this application, ensure you have:
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/Scooterland/BlazorAppClientServer-Scooterland.git
-cd BlazorAppClientServer
+git clone https://github.com/AmjadRenno/ScooterLand.git
+cd ScooterLand
 ```
 
 ### 2. Database Setup
@@ -196,7 +196,7 @@ This project is part of a university assignment for workshop management system d
 
 ## 👨‍💻 Development Team
 
-Developed as a university project for scooter workshop management system.
+Developed by **Amjad Renno** as a university project at UCL for scooter workshop management system during 2nd semester.
 
 ## 🎯 For Recruiters & Hiring Managers
 
