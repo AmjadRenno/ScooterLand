@@ -41,9 +41,6 @@ dotnet run
 
 Navigate to: `https://localhost:7081`
 
-## 🎬 Demo
-
-[![ScooterLand Demo](https://img.shields.io/badge/▶️_Watch_Demo_on_YouTube-red?style=for-the-badge&logo=youtube)](https://youtube.com/watch?v=YOUR_VIDEO_ID)
 
 ## 📸 Screenshots
 
