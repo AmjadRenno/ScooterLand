@@ -95,6 +95,10 @@ Developed by **Amjad Renno** and team members as a collaborative university grou
 **Database**: SQL Server, Relational design, Migrations
 **Tools**: Git, Visual Studio, Agile development
 
+## ⚖️ Disclaimer
+
+This is a **educational project** developed for university coursework. The "ScooterLand" name is used for demonstration purposes only and is not affiliated with any real business entity. This project is intended solely for learning and portfolio demonstration.
+
 ---
 
 **Ready to manage your scooter workshop efficiently! 🛵✨**
