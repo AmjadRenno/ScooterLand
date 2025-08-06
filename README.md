@@ -51,7 +51,7 @@ Navigate to: `https://localhost:7081`
 ![Order Management](screenshots/pages/order-management.png)
 
 ### Invoice Generation
-![Invoice Management](screenshots/pages/invoice-management.png)
+![Invoice Management](screenshots/pages/services-management.png)
 
 ## 🗂️ Project Structure
 
